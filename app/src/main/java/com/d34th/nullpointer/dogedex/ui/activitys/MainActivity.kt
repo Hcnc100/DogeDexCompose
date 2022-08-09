@@ -12,7 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.d34th.nullpointer.dogedex.ui.screen.dogedex.DogeDexScreen
 import com.d34th.nullpointer.dogedex.ui.theme.DogedexTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+ @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

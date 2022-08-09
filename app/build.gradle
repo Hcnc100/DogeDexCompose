@@ -126,4 +126,14 @@ dependencies {
 
     // * gson
     implementation 'com.google.code.gson:gson:2.8.9'
+
+    // * Retrofit
+    def retrofitVersion = "2.9.0"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.1"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
+    // ? retrofit test
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.8.1")
+
 }
