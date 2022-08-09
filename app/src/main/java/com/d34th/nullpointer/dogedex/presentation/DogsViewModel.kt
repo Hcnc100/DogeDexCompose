@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -22,12 +23,11 @@ class DogsViewModel @Inject constructor(
     private val _messageDogs = Channel<String>()
     val messageDogs get() = _messageDogs.receiveAsFlow()
 
-
     val stateListDogs = flow<Resource<List<Dog>>> {
-        delay(5_000)
         emit(Resource.Success(dogsRepository.getDogs()))
     }.catch {
         Timber.e("Error get dogs $it")
+        _messageDogs.trySend("Error to get dogs ")
         emit(Resource.Failure)
     }.flowOn(Dispatchers.IO)
         .stateIn(

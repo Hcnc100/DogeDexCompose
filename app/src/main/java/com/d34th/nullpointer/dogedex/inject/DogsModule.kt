@@ -21,7 +21,7 @@ object DogsModule {
 
     @Named("BaseUrl")
     @Provides
-    fun provideBaseUrl(): String = "https://todogs.herokuapp.com/api/v1/dogs/"
+    fun provideBaseUrl(): String = "https://todogs.herokuapp.com/api/v1/"
 
     @Provides
     @Singleton
