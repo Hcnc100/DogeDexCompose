@@ -23,8 +23,6 @@ private fun DogeDexScreen(
     modifier: Modifier = Modifier
 ) {
     when (stateListDogs) {
-        Resource.Failure -> TODO()
-        Resource.Loading -> TODO()
-        is Resource.Success -> TODO()
+        else -> DogsLoadings(modifier)
     }
 }
