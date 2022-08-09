@@ -10,18 +10,24 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
+import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination(start = true)
 @Composable
 fun DogeDexScreen(
-    dogsViewModel: DogsViewModel = hiltViewModel()
+    dogsViewModel: DogsViewModel = hiltViewModel(),
+    navigator: DestinationsNavigator
 ) {
     val stateListDogs by dogsViewModel.stateListDogs.collectAsState()
-    Scaffold {
+    Scaffold { paddingValues ->
         DogeDexScreen(
             stateListDogs = stateListDogs,
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(paddingValues),
+            clickDetails = {
+                navigator.navigate(DogDetailsDestination(it))
+            }
         )
     }
 }
@@ -29,10 +35,15 @@ fun DogeDexScreen(
 @Composable
 private fun DogeDexScreen(
     stateListDogs: Resource<List<Dog>>,
+    clickDetails: (Dog) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (stateListDogs) {
-        is Resource.Success -> LazyListDogs(listDog = stateListDogs.data, modifier = modifier)
+
+        is Resource.Success -> ListDogsSuccess(
+            listDog = stateListDogs.data,
+            modifier = modifier,
+            clickDetails = clickDetails)
         else -> DogsLoadings(modifier = modifier)
     }
 }

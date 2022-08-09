@@ -1,5 +1,9 @@
 package com.d34th.nullpointer.dogedex.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Dog(
     val id: Long,
     val index: Long,
@@ -12,4 +16,4 @@ data class Dog(
     val temperament:String,
     val weightFemale: String,
     val weightMale: String,
-)
+) : Parcelable

@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,22 +24,32 @@ import com.d34th.nullpointer.dogedex.ui.share.DogImg
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LazyListDogs(listDog: List<Dog>, modifier: Modifier = Modifier) {
+fun ListDogsSuccess(
+    listDog: List<Dog>,
+    clickDetails: (Dog) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Adaptive(dimensionResource(id = R.dimen.size_item_card_dog))
     ) {
         items(listDog, key = { it.id }) { dog ->
-            ItemDog(dog = dog, modifier = Modifier.animateItemPlacement())
+            ItemDog(dog = dog,
+                modifier = Modifier.animateItemPlacement(),
+                actionClick = {
+                    clickDetails(dog)
+                })
         }
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun ItemDog(dog: Dog, modifier: Modifier = Modifier) {
+private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.padding(2.dp),
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.shape_card_dog_item))
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.shape_card_dog_item)),
+        onClick = actionClick
     ) {
         Column(
             modifier = modifier.padding(10.dp),
