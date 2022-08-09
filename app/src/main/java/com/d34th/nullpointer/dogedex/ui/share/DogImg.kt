@@ -1,6 +1,7 @@
 package com.d34th.nullpointer.dogedex.ui.share
 
 import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,8 +27,8 @@ fun DogImg(
             error = painterResource(id = R.drawable.ic_broken),
             placeholder = painterResource(id = R.drawable.ic_image)
         )
-    AsyncImage(
-        model = painter,
+    Image(
+        painter = painter,
         modifier = modifier,
         contentDescription = stringResource(id = R.string.description_img_dog)
     )
