@@ -6,12 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.d34th.nullpointer.dogedex.ui.screen.dogedex.DogeDexScreen
+import com.d34th.nullpointer.dogedex.ui.screen.NavGraphs
+import com.d34th.nullpointer.dogedex.ui.states.rememberRootScreenState
 import com.d34th.nullpointer.dogedex.ui.theme.DogedexTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
  @AndroidEntryPoint
@@ -25,7 +24,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    DogeDexScreen()
+                    val rootState = rememberRootScreenState()
+                    DestinationsNavHost(
+                        navGraph = NavGraphs.root,
+                        startRoute = NavGraphs.root.startRoute,
+                        navController = rootState.navHostController
+                    )
                 }
             }
         }

@@ -10,7 +10,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
+import com.ramcosta.composedestinations.annotation.Destination
 
+@Destination(start = true)
 @Composable
 fun DogeDexScreen(
     dogsViewModel: DogsViewModel = hiltViewModel()
