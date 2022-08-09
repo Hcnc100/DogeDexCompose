@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Dogedex</string>
+    <string name="description_img_dog">Imagen del perro actual</string>
 </resources>
