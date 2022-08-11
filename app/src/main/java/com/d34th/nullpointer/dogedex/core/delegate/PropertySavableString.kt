@@ -54,9 +54,15 @@ class PropertySavableString(
         }
     }
 
+    fun setAnotherError(@StringRes newError: Int) {
+        this.errorValue = newError
+    }
+
     fun clearValue() {
         value = ""
         errorValue = RESOURCE_DEFAULT
     }
+
+    fun reValueField() = changeValue(value)
 
 }

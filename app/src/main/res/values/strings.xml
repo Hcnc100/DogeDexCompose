@@ -10,4 +10,7 @@
     <string name="error_empty_password">La contraseña es necesaria</string>
     <string name="error_length_password">La contraseña no puede ser tan larga</string>
     <string name="hint_repeat_password">Repite la contraseña</string>
+    <string name="description_arrow_back">Navega a la pantalla anterior</string>
+    <string name="error_pass_repeat">Las ccontraseñas no coinciden</string>
+    <string name="error_valid_email">El email no es valido</string>
 </resources>
