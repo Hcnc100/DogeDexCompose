@@ -3,6 +3,7 @@ package com.d34th.nullpointer.dogedex.ui.screen.dogedex
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -11,17 +12,24 @@ import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
+import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
+import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.collect
 
 @Destination(start = true)
 @Composable
 fun DogeDexScreen(
+    navigator: DestinationsNavigator,
     dogsViewModel: DogsViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator
+    dogeDexState: SimpleScreenState = rememberSimpleScreenState(),
 ) {
     val stateListDogs by dogsViewModel.stateListDogs.collectAsState()
-    Scaffold { paddingValues ->
+    LaunchedEffect(key1 = Unit) {
+        dogsViewModel.messageDogs.collect(dogeDexState::showSnackMessage)
+    }
+    Scaffold (scaffoldState = dogeDexState.scaffoldState){ paddingValues ->
         DogeDexScreen(
             stateListDogs = stateListDogs,
             modifier = Modifier.padding(paddingValues),
