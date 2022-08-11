@@ -3,7 +3,7 @@ package com.d34th.nullpointer.dogedex.data.remote.dogs
 import com.d34th.nullpointer.dogedex.core.states.InternetCheck
 import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.Dog
-import com.d34th.nullpointer.dogedex.models.dogsApi.DogResponse
+import com.d34th.nullpointer.dogedex.models.listDogsApi.DogResponse
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout

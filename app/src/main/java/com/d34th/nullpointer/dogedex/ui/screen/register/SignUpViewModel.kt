@@ -70,7 +70,7 @@ class SignUpViewModel @Inject constructor(
                 passwordRepeatUser.setAnotherError(R.string.error_pass_repeat)
                 null
             }
-            else -> CredentialUser(emailUser.value, passwordUser.value)
+            else -> CredentialUser(emailUser.value, passwordUser.value, passwordRepeatUser.value)
         }
     }
 }

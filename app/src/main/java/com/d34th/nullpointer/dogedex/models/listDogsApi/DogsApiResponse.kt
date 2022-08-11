@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.models.dogsApi
+package com.d34th.nullpointer.dogedex.models.listDogsApi
 
 data class DogsApiResponse(
     val `data`: Data,
