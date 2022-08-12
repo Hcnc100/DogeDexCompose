@@ -12,7 +12,7 @@ class AuthDataSourceImpl(
     private val dogsApiServices: DogsApiServices
 ) : AuthDataSource {
     override suspend fun signUp(userCredentials: UserFieldSignUp): ApiResponse<User> {
-        val user = callApiWithTimeout {
+        val user = callApiWithTimeout(timeout = 10_000) {
             val userResponse = dogsApiServices.signUp(userCredentials)
             if (!userResponse.is_success) throw Exception(userResponse.message)
             userResponse.data.user.toUser()

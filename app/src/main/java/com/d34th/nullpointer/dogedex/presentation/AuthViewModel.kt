@@ -12,7 +12,6 @@ import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignUp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -54,7 +53,6 @@ class AuthViewModel @Inject constructor(
         userFieldsSignIn: UserFieldSignIn
     ) = viewModelScope.launch(Dispatchers.IO) {
         isAuthenticating = true
-        delay(3000)
         when (val userResponse = authRepo.signIn(userFieldsSignIn)) {
             is ApiResponse.Failure -> _messageAuth.trySend(userResponse.message)
             else -> Unit

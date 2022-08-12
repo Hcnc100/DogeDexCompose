@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ExtendedFloatingActionButton
-import androidx.compose.material.FabPosition
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -22,7 +19,7 @@ import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import timber.log.Timber
+import kotlinx.coroutines.flow.merge
 
 @Destination
 @Composable
@@ -34,17 +31,26 @@ fun SignUpScreen(
 ) {
 
     LaunchedEffect(key1 = Unit) {
-        signUpViewModel.messageSignUp.collect(signUpState::showSnackMessage)
+        merge(
+            signUpViewModel.messageSignUp,
+            authViewModel.messageAuth
+        ).collect(signUpState::showSnackMessage)
     }
 
     Scaffold(
         scaffoldState = signUpState.scaffoldState,
         topBar = { ToolbarBack(title = "Registro", actionBack = navigator::popBackStack) },
         floatingActionButton = {
-            ExtendedFloatingActionButton(text = { Text("Continuar") }, onClick = {
-                val dataUser = signUpViewModel.getDataValid()
-                Timber.d("$dataUser")
-            })
+            if (authViewModel.isAuthenticating) {
+                CircularProgressIndicator()
+            } else {
+                ExtendedFloatingActionButton(text = { Text("Continuar") }, onClick = {
+                    signUpViewModel.getDataValid()?.let {
+                        authViewModel.signUp(it)
+                    }
+                })
+            }
+
         }, floatingActionButtonPosition = FabPosition.Center
     ) {
         Column(
@@ -53,16 +59,19 @@ fun SignUpScreen(
                 .padding(20.dp)
         ) {
             EditableTextSavable(
+                isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.emailUser,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email)
             )
             Spacer(modifier = Modifier.size(20.dp))
             EditableTextSavable(
+                isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.passwordUser,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
             )
             Spacer(modifier = Modifier.size(20.dp))
             EditableTextSavable(
+                isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.passwordRepeatUser,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
             )
