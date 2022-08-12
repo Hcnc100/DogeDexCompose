@@ -1,6 +1,6 @@
 package com.d34th.nullpointer.dogedex.inject
 
-import com.d34th.nullpointer.dogedex.data.local.PrefsUser
+import com.d34th.nullpointer.dogedex.data.local.prefs.PrefsUser
 import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
 import com.d34th.nullpointer.dogedex.data.remote.auth.AuthDataSource
 import com.d34th.nullpointer.dogedex.data.remote.auth.AuthDataSourceImpl

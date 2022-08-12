@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.data.local
+package com.d34th.nullpointer.dogedex.data.local.prefs
 
 import android.content.Context
 import androidx.datastore.core.DataStore
