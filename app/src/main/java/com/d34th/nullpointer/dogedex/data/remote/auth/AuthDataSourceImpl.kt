@@ -1,0 +1,39 @@
+package com.d34th.nullpointer.dogedex.data.remote.auth
+
+import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
+import com.d34th.nullpointer.dogedex.data.remote.callApiWithTimeout
+import com.d34th.nullpointer.dogedex.models.ApiResponse
+import com.d34th.nullpointer.dogedex.models.User
+import com.d34th.nullpointer.dogedex.models.authDogApi.UserResponse
+import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignIn
+import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignUp
+
+class AuthDataSourceImpl(
+    private val dogsApiServices: DogsApiServices
+) : AuthDataSource {
+    override suspend fun signUp(userCredentials: UserFieldSignUp): ApiResponse<User> {
+        val user = callApiWithTimeout {
+            val userResponse = dogsApiServices.signUp(userCredentials)
+            if (!userResponse.is_success) throw Exception(userResponse.message)
+            userResponse.data.user.toUser()
+        }
+        return user
+    }
+
+    override suspend fun signIn(userCredentials: UserFieldSignIn): ApiResponse<User> {
+        val user = callApiWithTimeout {
+            val userResponse = dogsApiServices.signIn(userCredentials)
+            if (!userResponse.is_success) throw Exception(userResponse.message)
+            userResponse.data.user.toUser()
+        }
+        return user
+    }
+}
+
+private fun UserResponse.toUser(): User {
+    return User(
+        id = id.toLong(),
+        email = email,
+        token = authentication_token
+    )
+}

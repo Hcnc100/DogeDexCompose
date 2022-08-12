@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
-import com.d34th.nullpointer.dogedex.models.CredentialUser
+import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignUp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -53,7 +53,7 @@ class SignUpViewModel @Inject constructor(
 
     private val hasError get() = emailUser.hasError || passwordUser.hasError || passwordRepeatUser.hasError
 
-    fun getDataValid(): CredentialUser? {
+    fun getDataValid(): UserFieldSignUp? {
         emailUser.reValueField()
         passwordUser.reValueField()
         passwordRepeatUser.reValueField()
@@ -70,7 +70,7 @@ class SignUpViewModel @Inject constructor(
                 passwordRepeatUser.setAnotherError(R.string.error_pass_repeat)
                 null
             }
-            else -> CredentialUser(emailUser.value, passwordUser.value, passwordRepeatUser.value)
+            else -> UserFieldSignUp(emailUser.value, passwordUser.value, passwordRepeatUser.value)
         }
     }
 }

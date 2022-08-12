@@ -1,6 +1,6 @@
-package com.d34th.nullpointer.dogedex.models.signDogApi
+package com.d34th.nullpointer.dogedex.models.authDogApi
 
-data class User(
+data class UserResponse(
     val authentication_token: String,
     val created_at: String,
     val email: String,

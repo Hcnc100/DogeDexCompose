@@ -1,6 +1,6 @@
 package com.d34th.nullpointer.dogedex.inject
 
-import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsApiServices
+import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
 import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSource
 import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceImpl
 import com.d34th.nullpointer.dogedex.domain.DogsRepoImpl
