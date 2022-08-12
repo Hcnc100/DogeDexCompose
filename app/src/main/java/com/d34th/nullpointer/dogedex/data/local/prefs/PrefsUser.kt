@@ -2,10 +2,7 @@ package com.d34th.nullpointer.dogedex.data.local.prefs
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.d34th.nullpointer.dogedex.models.User
 import kotlinx.coroutines.flow.Flow
@@ -18,11 +15,13 @@ class PrefsUser(val context: Context) {
         private const val KEY_USER_NAME = "KEY_USER_NAME"
         private const val KEY_USER_ID = "KEY_USER_ID"
         private const val KEY_USER_TOKEN = "KEY_USER_TOKEN"
+        private const val KEY_FIRST_LOGIN = "KEY_FIRST_LOGIN"
     }
 
     private val keyEmailUser = stringPreferencesKey(KEY_USER_NAME)
     private val keyTokenUser = stringPreferencesKey(KEY_USER_TOKEN)
     private val keyIdUser = longPreferencesKey(KEY_USER_ID)
+    private val keyIsFirstLogin = booleanPreferencesKey(KEY_FIRST_LOGIN)
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = NAME_PREF_USER)
 
@@ -32,6 +31,14 @@ class PrefsUser(val context: Context) {
             email = pref[keyEmailUser] ?: "",
             token = pref[keyTokenUser] ?: "",
         )
+    }
+
+    fun getIsFirstLogin(): Flow<Boolean> = context.dataStore.data.map { pref ->
+        pref[keyIsFirstLogin] ?: true
+    }
+
+    suspend fun changeIsFirstLogin(isFirstLogin: Boolean) = context.dataStore.edit { pref ->
+        pref[keyIsFirstLogin] = isFirstLogin
     }
 
     suspend fun changeUser(user: User) = context.dataStore.edit { pref ->

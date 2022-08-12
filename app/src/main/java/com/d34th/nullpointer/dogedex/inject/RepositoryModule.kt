@@ -1,9 +1,9 @@
 package com.d34th.nullpointer.dogedex.inject
 
-import com.d34th.nullpointer.dogedex.domain.DogsRepoImpl
-import com.d34th.nullpointer.dogedex.domain.DogsRepository
 import com.d34th.nullpointer.dogedex.domain.auth.AuthRepoImpl
 import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
+import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepoImpl
+import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
