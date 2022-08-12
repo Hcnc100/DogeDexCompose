@@ -7,8 +7,8 @@ import com.d34th.nullpointer.dogedex.core.delegate.SavableComposeState
 import com.d34th.nullpointer.dogedex.core.states.AuthState
 import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
 import com.d34th.nullpointer.dogedex.models.ApiResponse
-import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignIn
-import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignUp
+import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
+import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -50,7 +50,7 @@ class AuthViewModel @Inject constructor(
     )
 
     fun signIn(
-        userFieldsSignIn: UserFieldSignIn
+        userFieldsSignIn: SignInDTO
     ) = viewModelScope.launch(Dispatchers.IO) {
         isAuthenticating = true
         when (val userResponse = authRepo.signIn(userFieldsSignIn)) {
@@ -61,7 +61,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun signUp(
-        userFieldSignUp: UserFieldSignUp
+        userFieldSignUp: SignUpDTO
     ) = viewModelScope.launch(Dispatchers.IO) {
         isAuthenticating = true
         when (val userResponse = authRepo.signUp(userFieldSignUp)) {

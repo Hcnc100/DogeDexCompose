@@ -1,5 +1,6 @@
 package com.d34th.nullpointer.dogedex.inject
 
+import com.d34th.nullpointer.dogedex.data.local.PrefsUser
 import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
 import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSource
 import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceImpl
@@ -52,6 +53,7 @@ object DogsModule {
     @Provides
     @Singleton
     fun provideDogsRepository(
-        dogsDataSource: DogsDataSource
-    ):DogsRepoImpl= DogsRepoImpl(dogsDataSource)
+        dogsDataSource: DogsDataSource,
+        prefsUser: PrefsUser
+    ): DogsRepoImpl = DogsRepoImpl(dogsDataSource, prefsUser)
 }

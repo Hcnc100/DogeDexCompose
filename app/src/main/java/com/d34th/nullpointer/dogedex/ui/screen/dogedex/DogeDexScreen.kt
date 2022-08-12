@@ -21,7 +21,6 @@ import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DirectionDestination
-import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.SettingsScreenDestination
 import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
@@ -48,7 +47,8 @@ fun DogeDexScreen(
             stateListDogs = stateListDogs,
             modifier = Modifier.padding(paddingValues),
             clickDetails = {
-                navigator.navigate(DogDetailsDestination(it))
+//                navigator.navigate(DogDetailsDestination(it))
+                dogsViewModel.addDog(it)
             }
         )
     }

@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
-import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignIn
+import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -44,7 +44,7 @@ class LoginViewModel @Inject constructor(
     )
 
 
-    fun getCredentialAndValidate(): UserFieldSignIn? {
+    fun getCredentialAndValidate(): SignInDTO? {
         emailLogin.reValueField()
         passwordLogin.reValueField()
         return when {
@@ -56,7 +56,7 @@ class LoginViewModel @Inject constructor(
                 emailLogin.setAnotherError(R.string.error_valid_email)
                 null
             }
-            else -> UserFieldSignIn(emailLogin.value, passwordLogin.value)
+            else -> SignInDTO(emailLogin.value, passwordLogin.value)
         }
     }
 

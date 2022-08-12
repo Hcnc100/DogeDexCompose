@@ -10,8 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import timber.log.Timber
-import java.net.UnknownHostException
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,4 +37,11 @@ class DogsViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5_000),
             Resource.Loading
         )
+
+    fun addDog(dog: Dog) = viewModelScope.launch(Dispatchers.IO) {
+        when (val response = dogsRepository.addDog(dog)) {
+            is ApiResponse.Failure -> _messageDogs.trySend(response.message)
+            is ApiResponse.Success -> _messageDogs.trySend("Success")
+        }
+    }
 }

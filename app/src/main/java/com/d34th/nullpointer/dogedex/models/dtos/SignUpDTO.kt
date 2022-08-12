@@ -1,6 +1,6 @@
-package com.d34th.nullpointer.dogedex.models.listDogsApi
+package com.d34th.nullpointer.dogedex.models.dtos
 
-data class UserFieldSignUp(
+data class SignUpDTO(
     val email: String,
     val password: String,
     val password_confirmation: String

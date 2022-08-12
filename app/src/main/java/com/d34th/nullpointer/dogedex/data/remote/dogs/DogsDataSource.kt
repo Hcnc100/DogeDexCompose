@@ -5,4 +5,5 @@ import com.d34th.nullpointer.dogedex.models.Dog
 
 interface DogsDataSource {
     suspend fun getDogs(): ApiResponse<List<Dog>>
+    suspend fun addDog(dog: Dog, token: String): ApiResponse<Unit>
 }

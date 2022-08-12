@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.models.listDogsApi
+package com.d34th.nullpointer.dogedex.models.authDogApi.listDogsApi
 
 data class DogResponse(
     val created_at: String,

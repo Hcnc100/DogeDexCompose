@@ -2,15 +2,18 @@ package com.d34th.nullpointer.dogedex.data.remote
 
 import com.d34th.nullpointer.dogedex.core.states.InternetCheck
 import com.d34th.nullpointer.dogedex.models.ApiResponse
-import com.d34th.nullpointer.dogedex.models.authDogApi.AuthApiResponse
-import com.d34th.nullpointer.dogedex.models.listDogsApi.DogsApiResponse
-import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignIn
-import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignUp
+import com.d34th.nullpointer.dogedex.models.authDogApi.AuthResponse
+import com.d34th.nullpointer.dogedex.models.authDogApi.DefaultResponse
+import com.d34th.nullpointer.dogedex.models.authDogApi.listDogsApi.DogsApiResponse
+import com.d34th.nullpointer.dogedex.models.dtos.AddDogUserDTO
+import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
+import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import timber.log.Timber
 
@@ -21,13 +24,19 @@ interface DogsApiServices {
 
     @POST("sign_up")
     suspend fun signUp(
-        @Body data: UserFieldSignUp
-    ): AuthApiResponse
+        @Body data: SignUpDTO
+    ): AuthResponse
 
     @POST("sign_in")
     suspend fun signIn(
-        @Body data: UserFieldSignIn
-    ): AuthApiResponse
+        @Body data: SignInDTO
+    ): AuthResponse
+
+    @POST("add_dog_to_user")
+    suspend fun addDog(
+        @Header("AUTH-TOKEN") token: String,
+        @Body data: AddDogUserDTO
+    ): DefaultResponse
 
 }
 
