@@ -21,7 +21,7 @@ class AuthDataSourceImpl(
     }
 
     override suspend fun signIn(userCredentials: UserFieldSignIn): ApiResponse<User> {
-        val user = callApiWithTimeout {
+        val user = callApiWithTimeout(timeout = 10_000) {
             val userResponse = dogsApiServices.signIn(userCredentials)
             if (!userResponse.is_success) throw Exception(userResponse.message)
             userResponse.data.user.toUser()

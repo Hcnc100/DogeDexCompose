@@ -12,6 +12,7 @@ import kotlinx.coroutines.withTimeout
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import timber.log.Timber
 
 interface DogsApiServices {
 
@@ -46,8 +47,12 @@ suspend fun <T> callApiWithTimeout(
             else -> when (e.message) {
                 "sign_up_error" -> "Error al crear cuenta"
                 "sign_in_error" -> "Error al autenticar"
+                "user_not_found" -> "El usuario no existe"
                 "user_already_exists" -> "El usuario ya existe"
-                else -> "unknown error"
+                else -> {
+                    Timber.d("Error api $e")
+                    "unknown error"
+                }
             }
         }
         ApiResponse.Failure(message)
