@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                      color = MaterialTheme.colors.background
                  ) {
                      val rootState = rememberRootScreenState()
-                     val isAuthUser by authViewModel.isAuthUser.collectAsState()
+                     val isAuthUser by authViewModel.stateUser.collectAsState()
                      when (isAuthUser) {
                          is AuthState.Authenticated -> DogeDexScreenDestination
                          AuthState.Unauthenticated -> LoginScreenDestination

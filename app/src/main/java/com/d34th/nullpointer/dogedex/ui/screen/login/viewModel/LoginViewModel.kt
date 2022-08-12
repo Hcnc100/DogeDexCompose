@@ -1,10 +1,14 @@
 package com.d34th.nullpointer.dogedex.ui.screen.login.viewModel
 
+import android.util.Patterns
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
+import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Inject
 
 
@@ -17,6 +21,9 @@ class LoginViewModel @Inject constructor(
         private const val EMAIL_LENGTH = 40
         private const val PASSWORD_LENGTH = 30
     }
+
+    private val _messageLogin = Channel<String>()
+    val messageLogin = _messageLogin.receiveAsFlow()
 
     val emailLogin = PropertySavableString(
         state = savedStateHandle,
@@ -36,8 +43,22 @@ class LoginViewModel @Inject constructor(
         lengthError = R.string.error_length_password
     )
 
-    val isValid get() = emailLogin.hasError && emailLogin.value.isNotEmpty()
-            || passwordLogin.hasError && passwordLogin.value.isNotEmpty()
+
+    fun getCredentialAndValidate(): UserFieldSignIn? {
+        emailLogin.reValueField()
+        passwordLogin.reValueField()
+        return when {
+            emailLogin.hasError || passwordLogin.hasError -> {
+                _messageLogin.trySend("Verifique sus datos")
+                null
+            }
+            !Patterns.EMAIL_ADDRESS.matcher(emailLogin.value).matches() -> {
+                emailLogin.setAnotherError(R.string.error_valid_email)
+                null
+            }
+            else -> UserFieldSignIn(emailLogin.value, passwordLogin.value)
+        }
+    }
 
 
 }

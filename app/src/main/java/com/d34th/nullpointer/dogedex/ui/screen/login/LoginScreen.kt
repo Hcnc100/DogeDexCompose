@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,34 +20,63 @@ import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.SignUpScreenDestination
 import com.d34th.nullpointer.dogedex.ui.screen.login.viewModel.LoginViewModel
 import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
+import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
+import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.merge
 
 @Destination(start = true)
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
     navigator: DestinationsNavigator,
-    loginViewModel: LoginViewModel = hiltViewModel()
+    loginViewModel: LoginViewModel = hiltViewModel(),
+    loginScreenState: SimpleScreenState = rememberSimpleScreenState()
 ) {
-    Scaffold(backgroundColor = MaterialTheme.colors.primary) {
+
+    LaunchedEffect(key1 = Unit) {
+        merge(
+            loginViewModel.messageLogin,
+            authViewModel.messageAuth
+        ).collect(loginScreenState::showSnackMessage)
+    }
+    Scaffold(
+        scaffoldState = loginScreenState.scaffoldState,
+        backgroundColor = MaterialTheme.colors.primary
+
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(it)
+                .padding(paddingValues)
                 .padding(20.dp)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            LogoApp()
-            ContainerLogin(
-                modifier = Modifier.width(300.dp),
-                emailValue = loginViewModel.emailLogin,
-                passwordValue = loginViewModel.passwordLogin,
-                actionClick = {
-                    navigator.navigate(SignUpScreenDestination)
-                }
-            )
+            LogoApp(modifier = Modifier.weight(.33f))
+            Column(
+                modifier = Modifier.weight(.66f),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                ContainerLogin(
+                    modifier = Modifier.width(300.dp),
+                    emailValue = loginViewModel.emailLogin,
+                    passwordValue = loginViewModel.passwordLogin,
+                    isEnableFields = authViewModel.isAuthenticating,
+                )
+
+                ButtonsSignInAndSignUp(
+                    isAuthenticating = authViewModel.isAuthenticating,
+                    actionSignUp = { navigator.navigate(SignUpScreenDestination) },
+                    actionSignIn = {
+                        loginViewModel.getCredentialAndValidate()?.let {
+                            authViewModel.signIn(it)
+                        }
+                    }
+                )
+            }
+
+
         }
     }
 }
@@ -55,7 +85,10 @@ fun LoginScreen(
 private fun LogoApp(
     modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier.size(150.dp), shape = CircleShape) {}
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        Card(modifier = Modifier.size(150.dp), shape = CircleShape) {}
+    }
+
 }
 
 @Composable
@@ -63,13 +96,14 @@ private fun ContainerLogin(
     modifier: Modifier = Modifier,
     emailValue: PropertySavableString,
     passwordValue: PropertySavableString,
-    actionClick: () -> Unit,
+    isEnableFields: Boolean,
 ) {
     Column(modifier = modifier) {
 
 
        ContainerFieldAuth {
            EditableTextSavable(
+               isEnabled = !isEnableFields,
                valueProperty = emailValue,
                modifier = Modifier.padding(10.dp),
                keyboardOptions = KeyboardOptions.Default.copy(
@@ -83,6 +117,7 @@ private fun ContainerLogin(
 
         ContainerFieldAuth {
             EditableTextSavable(
+                isEnabled = !isEnableFields,
                 valueProperty = passwordValue,
                 modifier = Modifier.padding(10.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -91,24 +126,47 @@ private fun ContainerLogin(
             )
         }
 
-        Spacer(modifier = Modifier.height(100.dp))
-
-        ExtendedFloatingActionButton(
-            modifier = Modifier.fillMaxWidth(),
-            text = { Text("Registro") },
-            onClick = actionClick
-        )
-        Spacer(modifier = Modifier.size(10.dp))
-        CreateAccount(
-            actionClick = actionClick,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
 
     }
 }
 
+
 @Composable
-fun CreateAccount(
+private fun ButtonsSignInAndSignUp(
+    isAuthenticating: Boolean,
+    actionSignUp: () -> Unit,
+    actionSignIn: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (isAuthenticating) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(90.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = MaterialTheme.colors.onPrimary)
+        }
+    } else {
+        Column(modifier) {
+            ExtendedFloatingActionButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = { Text("Registro") },
+                onClick = actionSignIn
+            )
+            Spacer(modifier = Modifier.size(10.dp))
+            CreateAccount(
+                actionClick = actionSignUp,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
+    }
+
+
+}
+
+@Composable
+private fun CreateAccount(
     actionClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

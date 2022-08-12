@@ -12,6 +12,7 @@ import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignUp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -30,10 +31,10 @@ class AuthViewModel @Inject constructor(
     private val _messageAuth = Channel<String>()
     val messageAuth = _messageAuth.receiveAsFlow()
 
-    var isAuthenticated by SavableComposeState(savedStateHandle, KEY_IS_AUTH, false)
+    var isAuthenticating by SavableComposeState(savedStateHandle, KEY_IS_AUTH, false)
         private set
 
-    val isAuthUser = flow {
+    val stateUser = flow {
         authRepo.currentUser.collect { currentUser ->
             if (currentUser.isAuth)
                 emit(AuthState.Authenticated(currentUser))
@@ -52,23 +53,24 @@ class AuthViewModel @Inject constructor(
     fun signIn(
         userFieldsSignIn: UserFieldSignIn
     ) = viewModelScope.launch(Dispatchers.IO) {
-        isAuthenticated = true
+        isAuthenticating = true
+        delay(3000)
         when (val userResponse = authRepo.signIn(userFieldsSignIn)) {
             is ApiResponse.Failure -> _messageAuth.trySend(userResponse.message)
             else -> Unit
         }
-        isAuthenticated = false
+        isAuthenticating = false
     }
 
     fun signUp(
         userFieldSignUp: UserFieldSignUp
     ) = viewModelScope.launch(Dispatchers.IO) {
-        isAuthenticated = true
+        isAuthenticating = true
         when (val userResponse = authRepo.signUp(userFieldSignUp)) {
             is ApiResponse.Failure -> _messageAuth.trySend(userResponse.message)
             else -> Unit
         }
-        isAuthenticated = false
+        isAuthenticating = false
     }
 
     fun signOut() = viewModelScope.launch(Dispatchers.IO) {
