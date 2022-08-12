@@ -37,7 +37,7 @@ class AuthViewModel @Inject constructor(
         authRepo.isAuthUser.collect {
             emit(Resource.Success(it))
         }
-    }.catch {
+    }.flowOn(Dispatchers.IO).catch {
         Timber.d("Error get user from prefereneces $it")
         emit(Resource.Failure)
     }.stateIn(
@@ -59,13 +59,17 @@ class AuthViewModel @Inject constructor(
 
     fun signUp(
         userFieldSignUp: UserFieldSignUp
-    ) = viewModelScope.launch {
+    ) = viewModelScope.launch(Dispatchers.IO) {
         isAuthenticated = true
         when (val userResponse = authRepo.signUp(userFieldSignUp)) {
             is ApiResponse.Failure -> _messageAuth.trySend(userResponse.message)
             else -> Unit
         }
         isAuthenticated = false
+    }
+
+    fun signOut() = viewModelScope.launch(Dispatchers.IO) {
+        authRepo.signOut()
     }
 
 }
