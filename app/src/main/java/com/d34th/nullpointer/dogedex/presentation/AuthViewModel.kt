@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.d34th.nullpointer.dogedex.core.delegate.SavableComposeState
-import com.d34th.nullpointer.dogedex.core.states.Resource
+import com.d34th.nullpointer.dogedex.core.states.AuthState
 import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
 import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.listDogsApi.UserFieldSignIn
@@ -33,17 +33,20 @@ class AuthViewModel @Inject constructor(
     var isAuthenticated by SavableComposeState(savedStateHandle, KEY_IS_AUTH, false)
         private set
 
-    val isAuthUser = flow<Resource<Boolean>> {
-        authRepo.isAuthUser.collect {
-            emit(Resource.Success(it))
+    val isAuthUser = flow {
+        authRepo.currentUser.collect { currentUser ->
+            if (currentUser.isAuth)
+                emit(AuthState.Authenticated(currentUser))
+            else
+                emit(AuthState.Unauthenticated)
         }
     }.flowOn(Dispatchers.IO).catch {
         Timber.d("Error get user from prefereneces $it")
-        emit(Resource.Failure)
+        emit(AuthState.Unauthenticated)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        Resource.Loading
+        AuthState.Authenticating
     )
 
     fun signIn(

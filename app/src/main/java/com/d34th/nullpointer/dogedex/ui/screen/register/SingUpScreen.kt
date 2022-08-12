@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
 import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
@@ -26,6 +27,7 @@ import timber.log.Timber
 @Destination
 @Composable
 fun SignUpScreen(
+    authViewModel: AuthViewModel,
     navigator: DestinationsNavigator,
     signUpViewModel: SignUpViewModel = hiltViewModel(),
     signUpState: SimpleScreenState = rememberSimpleScreenState()

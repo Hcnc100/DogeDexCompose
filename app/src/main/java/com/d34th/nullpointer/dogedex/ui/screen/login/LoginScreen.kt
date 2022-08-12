@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
+import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.SignUpScreenDestination
 import com.d34th.nullpointer.dogedex.ui.screen.login.viewModel.LoginViewModel
 import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
@@ -24,8 +25,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination(start = true)
 @Composable
 fun LoginScreen(
-    loginViewModel: LoginViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator
+    authViewModel: AuthViewModel,
+    navigator: DestinationsNavigator,
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     Scaffold(backgroundColor = MaterialTheme.colors.primary) {
         Column(
