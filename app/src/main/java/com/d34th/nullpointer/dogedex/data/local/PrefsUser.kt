@@ -41,9 +41,7 @@ class PrefsUser(val context: Context) {
     }
 
     suspend fun deleteUser() = context.dataStore.edit { pref ->
-        pref[keyIdUser] = -1
-        pref[keyEmailUser] = ""
-        pref[keyTokenUser] = ""
+        pref.clear()
     }
 
 

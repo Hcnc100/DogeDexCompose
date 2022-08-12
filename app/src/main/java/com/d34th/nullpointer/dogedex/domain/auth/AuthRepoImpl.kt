@@ -29,6 +29,6 @@ class AuthRepoImpl(
     }
 
     override suspend fun signOut() {
-
+        prefsUser.deleteUser()
     }
 }
