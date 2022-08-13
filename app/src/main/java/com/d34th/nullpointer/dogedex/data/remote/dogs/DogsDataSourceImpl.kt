@@ -27,6 +27,16 @@ class DogsDataSourceImpl(
         return addResponse
     }
 
+    override suspend fun getMyDogs(
+        token: String
+    ): ApiResponse<List<Dog>> {
+        val dogs = callApiWithTimeout {
+            val dogsResponse = dogsApiServices.requestMyDogs(token)
+            dogsResponse.data.dogs.map { it.toDog() }
+        }
+        return dogs
+    }
+
 
 }
 

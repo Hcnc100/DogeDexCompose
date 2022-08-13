@@ -10,12 +10,18 @@ class DogsRepoImpl(
     private val dogsDataSource: DogsDataSource,
     private val prefsUser: PrefsUser
 ):DogsRepository {
-    override suspend fun getDogs(): ApiResponse<List<Dog>> =
+    override suspend fun getAllDogs(): ApiResponse<List<Dog>> =
         dogsDataSource.getDogs()
 
     override suspend fun addDog(dog: Dog): ApiResponse<Unit> {
         val token = prefsUser.getUser().first().token
         return dogsDataSource.addDog(dog, token)
     }
+
+    override suspend fun getMyDogs(): ApiResponse<List<Dog>> {
+        val token = prefsUser.getUser().first().token
+        return dogsDataSource.getMyDogs(token)
+    }
+
 
 }

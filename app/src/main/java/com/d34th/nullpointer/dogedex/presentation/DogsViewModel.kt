@@ -22,7 +22,7 @@ class DogsViewModel @Inject constructor(
     val messageDogs get() = _messageDogs.receiveAsFlow()
 
     val stateListDogs = flow {
-        when(val result=dogsRepository.getDogs()){
+        when (val result = dogsRepository.getAllDogs()) {
             is ApiResponse.Failure -> {
                 _messageDogs.trySend(result.message)
                 emit(Resource.Failure)
