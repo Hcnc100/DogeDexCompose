@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface DogsRepository {
     suspend fun getAllDogs(): Flow<List<Dog>>
     suspend fun addDog(dog: Dog): ApiResponse<Unit>
-    suspend fun getMyDogs(): ApiResponse<List<Dog>>
+    suspend fun refreshMyDogs(): ApiResponse<Unit>
 }

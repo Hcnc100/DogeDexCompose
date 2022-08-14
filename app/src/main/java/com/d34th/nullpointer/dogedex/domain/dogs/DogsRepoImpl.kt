@@ -32,12 +32,25 @@ class DogsRepoImpl(
 
     override suspend fun addDog(dog: Dog): ApiResponse<Unit> {
         val token = prefsUser.getUser().first().token
-        return dogsDataSource.addDog(dog, token)
+        return dogsDataSource.addDog(dog, token).also {
+            if (it is ApiResponse.Success) {
+                dogDAO.insertDog(dog.copy(hasDog = true))
+            }
+        }
     }
 
-    override suspend fun getMyDogs(): ApiResponse<List<Dog>> {
+    override suspend fun refreshMyDogs(): ApiResponse<Unit> {
         val token = prefsUser.getUser().first().token
-        return dogsDataSource.getMyDogs(token)
+        return when (val dogsResponse = dogsDataSource.getMyDogs(token)) {
+            is ApiResponse.Failure -> {
+                ApiResponse.Failure(dogsResponse.message)
+            }
+            is ApiResponse.Success -> {
+                val listMyDogs = dogsResponse.response.map { it.copy(hasDog = true) }
+                dogDAO.insertDogs(listMyDogs)
+                ApiResponse.Success(Unit)
+            }
+        }
     }
 
 

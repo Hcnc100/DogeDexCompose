@@ -1,22 +1,28 @@
 package com.d34th.nullpointer.dogedex.ui.screen.dogedex
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.ui.share.DogImg
@@ -46,21 +52,35 @@ fun ListDogsSuccess(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modifier) {
+
+    val hasDog by remember(dog.hasDog) {
+        derivedStateOf { dog.hasDog }
+    }
+
     Card(
-        modifier = modifier.padding(2.dp),
+        modifier = modifier
+            .padding(2.dp)
+            .aspectRatio(1f),
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.shape_card_dog_item)),
         onClick = actionClick
     ) {
-        Column(
+        Box(
             modifier = modifier.padding(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            contentAlignment = Alignment.Center,
         ) {
-            DogImg(
-                urlImg = dog.imgUrl,
-                modifier = Modifier.size(dimensionResource(id = R.dimen.size_img_dog_item))
-            )
-            Spacer(modifier = Modifier.size(10.dp))
-            Text(text = dog.name)
+            if (hasDog) {
+                DogImg(
+                    urlImg = dog.imgUrl,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Text(
+                    text = "#${dog.index}",
+                    style = MaterialTheme.typography.body1,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.W500
+                )
+            }
         }
     }
 }

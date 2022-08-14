@@ -7,14 +7,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DogDAO {
 
-    @Query("select * from dogs")
+    @Query("SELECT * FROM dogs ORDER BY `index` ASC")
     fun getAllDogs(): Flow<List<Dog>>
 
-    @Query("delete from dogs")
+    @Query("DELETE FROM dogs")
     fun deleterAllDogs()
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDogs(listDogs: List<Dog>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertDog(dog: Dog)
 
     @Transaction
     fun updateAllDogs(listDogs: List<Dog>) {

@@ -22,6 +22,7 @@ class DogsViewModel @Inject constructor(
     val messageDogs get() = _messageDogs.receiveAsFlow()
 
     val stateListDogs = flow<Resource<List<Dog>>> {
+        dogsRepository.refreshMyDogs()
         dogsRepository.getAllDogs().collect {
             emit(Resource.Success(it))
         }

@@ -38,7 +38,7 @@ interface DogsApiServices {
         @Body data: AddDogUserDTO
     ): DefaultResponse
 
-    @POST("get_user_dogs")
+    @GET("get_user_dogs")
     suspend fun requestMyDogs(
         @Header("AUTH-TOKEN") token: String,
     ): DogsApiResponse
