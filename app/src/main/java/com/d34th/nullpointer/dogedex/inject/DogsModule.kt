@@ -1,10 +1,11 @@
 package com.d34th.nullpointer.dogedex.inject
 
-import com.d34th.nullpointer.dogedex.data.local.PrefsUser
+import com.d34th.nullpointer.dogedex.data.local.prefs.PrefsUser
+import com.d34th.nullpointer.dogedex.data.local.room.DogDAO
 import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
 import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSource
 import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceImpl
-import com.d34th.nullpointer.dogedex.domain.DogsRepoImpl
+import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepoImpl
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -54,6 +55,7 @@ object DogsModule {
     @Singleton
     fun provideDogsRepository(
         dogsDataSource: DogsDataSource,
-        prefsUser: PrefsUser
-    ): DogsRepoImpl = DogsRepoImpl(dogsDataSource, prefsUser)
+        prefsUser: PrefsUser,
+        dogDAO: DogDAO
+    ): DogsRepoImpl = DogsRepoImpl(dogsDataSource, prefsUser, dogDAO)
 }

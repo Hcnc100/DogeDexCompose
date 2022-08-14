@@ -37,22 +37,21 @@ class DogsDataSourceImpl(
         return dogs
     }
 
-
+    private fun DogResponse.toDog(): Dog {
+        return Dog(
+            id = id,
+            index = index,
+            name = name_es,
+            type = dog_type,
+            heightFemale = height_female.toDouble(),
+            heightMale = height_male.toDouble(),
+            imgUrl = image_url,
+            lifeExpectancy = life_expectancy,
+            temperament = temperament,
+            weightFemale = weight_female,
+            weightMale = weight_male
+        )
+    }
 }
 
 
-private fun DogResponse.toDog(): Dog {
-    return Dog(
-        id = id,
-        index = index,
-        name = name_es,
-        type = dog_type,
-        heightFemale = height_female.toDouble(),
-        heightMale = height_male.toDouble(),
-        imgUrl = image_url,
-        lifeExpectancy = life_expectancy,
-        temperament = temperament,
-        weightFemale = weight_female,
-        weightMale = weight_male
-    )
-}

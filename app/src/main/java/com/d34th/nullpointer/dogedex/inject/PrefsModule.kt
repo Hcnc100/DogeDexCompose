@@ -1,7 +1,7 @@
 package com.d34th.nullpointer.dogedex.inject
 
 import android.content.Context
-import com.d34th.nullpointer.dogedex.data.local.PrefsUser
+import com.d34th.nullpointer.dogedex.data.local.prefs.PrefsUser
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

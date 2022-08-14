@@ -1,6 +1,6 @@
 package com.d34th.nullpointer.dogedex.domain.auth
 
-import com.d34th.nullpointer.dogedex.data.local.PrefsUser
+import com.d34th.nullpointer.dogedex.data.local.prefs.PrefsUser
 import com.d34th.nullpointer.dogedex.data.remote.auth.AuthDataSource
 import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.User
