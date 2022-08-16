@@ -1,7 +1,9 @@
 package com.d34th.nullpointer.dogedex.presentation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.d34th.nullpointer.dogedex.core.delegate.SavableComposeState
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import com.d34th.nullpointer.dogedex.models.ApiResponse
@@ -11,18 +13,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class DogsViewModel @Inject constructor(
-    private val dogsRepository: DogsRepository
+    private val dogsRepository: DogsRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _messageDogs = Channel<String>()
     val messageDogs get() = _messageDogs.receiveAsFlow()
 
+    var isLoadingMyGogs by SavableComposeState(savedStateHandle, "KEY_LOAD_MY_DOGS", false)
+        private set
+
+    init {
+        requestMyLastDogs()
+    }
+
     val stateListDogs = flow<Resource<List<Dog>>> {
-        dogsRepository.refreshMyDogs()
         dogsRepository.getAllDogs().collect {
             emit(Resource.Success(it))
         }
@@ -36,6 +46,18 @@ class DogsViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5_000),
             Resource.Loading
         )
+
+    fun requestMyLastDogs() = viewModelScope.launch(Dispatchers.IO) {
+        try {
+            isLoadingMyGogs = true
+            dogsRepository.refreshMyDogs()
+        } catch (e: Exception) {
+            Timber.e("Error load my dogs")
+        } finally {
+            isLoadingMyGogs = false
+        }
+
+    }
 
     fun addDog(dog: Dog) = viewModelScope.launch(Dispatchers.IO) {
         when (val response = dogsRepository.addDog(dog)) {
