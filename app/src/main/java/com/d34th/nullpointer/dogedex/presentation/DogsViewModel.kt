@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -47,10 +48,12 @@ class DogsViewModel @Inject constructor(
             Resource.Loading
         )
 
-    fun requestMyLastDogs() = viewModelScope.launch(Dispatchers.IO) {
+    fun requestMyLastDogs() = viewModelScope.launch {
         try {
             isLoadingMyGogs = true
-            dogsRepository.refreshMyDogs()
+            withContext(Dispatchers.IO) {
+                dogsRepository.refreshMyDogs()
+            }
         } catch (e: Exception) {
             Timber.e("Error load my dogs")
         } finally {
