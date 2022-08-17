@@ -9,6 +9,7 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -25,7 +26,6 @@ import com.d34th.nullpointer.dogedex.ui.states.CameraScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberCameraScreenState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.rememberPermissionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import timber.log.Timber
@@ -38,16 +38,18 @@ fun CameraScreen(
     cameraViewModel: CameraViewModel = hiltViewModel(),
     cameraScreenState: CameraScreenState = rememberCameraScreenState()
 ) {
-    val cameraPermissionState = rememberPermissionState(
-        android.Manifest.permission.CAMERA
-    )
     val isFirstRequestCamera by cameraViewModel.isFirstRequestCamera.collectAsState()
+
+    // * clear task to process camera
+    DisposableEffect(key1 = Unit) {
+        onDispose(cameraScreenState::clearCamera)
+    }
 
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             MainButtons(
-                isEnableCamera = cameraPermissionState.status is PermissionStatus.Granted,
+                isEnableCamera = cameraScreenState.isCameraPermissionGranted,
                 actionIUCamera = { action ->
                     when (action) {
                         TAKE_PHOTO -> cameraScreenState.captureImage(OnSuccess = {
@@ -60,11 +62,11 @@ fun CameraScreen(
             )
         }
     ) {
-        when (cameraPermissionState.status) {
+        when (cameraScreenState.cameraPermissionStatus) {
             PermissionStatus.Granted -> {
                 CameraPreview(
                     modifier = Modifier.padding(it),
-                    imageCapture = cameraScreenState.imageCapture
+                    bindCameraToUseCases = cameraScreenState::bindCameraToUseCases
                 )
             }
             is PermissionStatus.Denied -> {
@@ -72,7 +74,7 @@ fun CameraScreen(
                     isFirstRequest = isFirstRequestCamera,
                     changeFirstRequest = cameraViewModel::changeRequestCamera,
                     modifier = Modifier.padding(it),
-                    launchPermission = cameraPermissionState::launchPermissionRequest
+                    launchPermission = cameraScreenState::launchPermissionCamera
                 )
             }
         }
