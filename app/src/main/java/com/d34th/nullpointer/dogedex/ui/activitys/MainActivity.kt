@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import com.d34th.nullpointer.dogedex.core.states.AuthState
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.NavGraphs
-import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogeDexScreenDestination
+import com.d34th.nullpointer.dogedex.ui.screen.destinations.CameraScreenDestination
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.LoginScreenDestination
 import com.d34th.nullpointer.dogedex.ui.states.rememberRootScreenState
 import com.d34th.nullpointer.dogedex.ui.theme.DogedexTheme
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                      val rootState = rememberRootScreenState()
                      val isAuthUser by authViewModel.stateUser.collectAsState()
                      when (isAuthUser) {
-                         is AuthState.Authenticated -> DogeDexScreenDestination
+                         is AuthState.Authenticated -> CameraScreenDestination
                          AuthState.Unauthenticated -> LoginScreenDestination
                          AuthState.Authenticating -> null
                      }?.let {

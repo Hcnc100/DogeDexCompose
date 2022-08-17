@@ -16,12 +16,14 @@ class PrefsUser(val context: Context) {
         private const val KEY_USER_ID = "KEY_USER_ID"
         private const val KEY_USER_TOKEN = "KEY_USER_TOKEN"
         private const val KEY_FIRST_LOGIN = "KEY_FIRST_LOGIN"
+        private const val KEY_REQUEST_CAMERA = "KEY_REQUEST_CAMERA"
     }
 
     private val keyEmailUser = stringPreferencesKey(KEY_USER_NAME)
     private val keyTokenUser = stringPreferencesKey(KEY_USER_TOKEN)
     private val keyIdUser = longPreferencesKey(KEY_USER_ID)
     private val keyIsFirstLogin = booleanPreferencesKey(KEY_FIRST_LOGIN)
+    private val keyRequestCamera = booleanPreferencesKey(KEY_REQUEST_CAMERA)
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = NAME_PREF_USER)
 
@@ -50,6 +52,15 @@ class PrefsUser(val context: Context) {
     suspend fun deleteUser() = context.dataStore.edit { pref ->
         pref.clear()
     }
+
+    fun getIsFirstCameraRequest(): Flow<Boolean> = context.dataStore.data.map { pref ->
+        pref[keyRequestCamera] ?: true
+    }
+
+    suspend fun changeIsFirstCameraRequest(isFirstRequest: Boolean) =
+        context.dataStore.edit { pref ->
+            pref[keyRequestCamera] = isFirstRequest
+        }
 
 
 }

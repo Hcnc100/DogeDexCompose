@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.ui.screen.dogedex
+package com.d34th.nullpointer.dogedex.ui.screen.listDogs
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box

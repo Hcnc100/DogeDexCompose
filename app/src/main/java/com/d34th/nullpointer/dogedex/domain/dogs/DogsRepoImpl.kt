@@ -53,5 +53,12 @@ class DogsRepoImpl(
         }
     }
 
+    override fun isFirstCameraRequest(): Flow<Boolean> =
+        prefsUser.getIsFirstCameraRequest()
+
+    override suspend fun changeIsFirstRequestCamera(isFirstRequest: Boolean) {
+        prefsUser.changeIsFirstCameraRequest(isFirstRequest)
+    }
+
 
 }
