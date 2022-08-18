@@ -54,7 +54,6 @@ fun CameraScreen(
                 actionIUCamera = { action ->
                     when (action) {
                         TAKE_PHOTO -> cameraScreenState.captureImage(OnSuccess = {
-                            Timber.d("Success $it")
                         }, OnError = {
                             Timber.e("Error take photo $it")
                             cameraScreenState.showToast("Error al tomar foto")

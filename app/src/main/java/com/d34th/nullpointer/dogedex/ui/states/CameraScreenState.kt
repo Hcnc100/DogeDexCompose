@@ -2,6 +2,7 @@ package com.d34th.nullpointer.dogedex.ui.states
 
 import android.Manifest
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
 import androidx.camera.core.*
@@ -16,12 +17,14 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
 import com.d34th.nullpointer.dogedex.core.utils.getCameraProvider
 import com.d34th.nullpointer.dogedex.core.utils.getExternalFile
+import com.d34th.nullpointer.dogedex.ia.Classifier
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.tensorflow.lite.support.common.FileUtil
 import timber.log.Timber
 import java.util.concurrent.Executors
 
@@ -35,6 +38,11 @@ class CameraScreenState(
     private val cameraPermissionState: PermissionState
 ) : SimpleScreenState(scaffoldState, context) {
 
+    companion object {
+        private const val NAME_DOG_MODEL_ASSET = "model.tflite"
+        private const val NAME_LABELS_MODEL_ASSET = "labels.txt"
+    }
+
     private val executor = Executors.newSingleThreadExecutor()
 
     // * user case camera
@@ -42,6 +50,14 @@ class CameraScreenState(
     private val previewUseCase: Preview = Preview.Builder().build()
     private val currentCameraSelector: CameraSelector = cameraSelector
     private val imageAnalysis: ImageAnalysis by lazy { createImageAnalysis() }
+
+    // * ia
+    val classifier: Classifier by lazy {
+        Classifier(
+            FileUtil.loadMappedFile(context, NAME_DOG_MODEL_ASSET),
+            FileUtil.loadLabels(context, NAME_LABELS_MODEL_ASSET)
+        )
+    }
 
 
     // * permissions
@@ -71,8 +87,12 @@ class CameraScreenState(
             executor,
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.fromFile(photoFile)
-                    OnSuccess(savedUri)
+                    outputFileResults.savedUri?.let {
+                        val bitmap = BitmapFactory.decodeFile(it.path)
+                        val list = classifier.recognizeImage(bitmap)
+                        Timber.d("Detected image $list")
+                        OnSuccess(it)
+                    }
                 }
 
                 override fun onError(exception: ImageCaptureException) {
