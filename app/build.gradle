@@ -144,5 +144,8 @@ dependencies {
     // * permission
     implementation "com.google.accompanist:accompanist-permissions:0.26.1-alpha"
 
-
+    // * Tensorflow
+    implementation 'org.tensorflow:tensorflow-lite:2.9.0'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.8.0'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.4.2'
 }
