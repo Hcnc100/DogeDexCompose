@@ -46,6 +46,7 @@ fun CameraScreen(
     }
 
     Scaffold(
+        scaffoldState = cameraScreenState.scaffoldState,
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             MainButtons(
@@ -54,7 +55,10 @@ fun CameraScreen(
                     when (action) {
                         TAKE_PHOTO -> cameraScreenState.captureImage(OnSuccess = {
                             Timber.d("Success $it")
-                        }, OnError = {})
+                        }, OnError = {
+                            Timber.e("Error take photo $it")
+                            cameraScreenState.showToast("Error al tomar foto")
+                        })
                         OPEN_COLLECTION -> navigator.navigate(ListDogsScreenDestination)
                         OPEN_SETTINGS -> navigator.navigate(SettingsScreenDestination)
                     }

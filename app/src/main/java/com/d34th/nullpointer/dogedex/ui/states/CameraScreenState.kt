@@ -3,6 +3,7 @@ package com.d34th.nullpointer.dogedex.ui.states
 import android.Manifest
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -16,8 +17,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
-import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.utils.getCameraProvider
+import com.d34th.nullpointer.dogedex.core.utils.getExternalFile
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
@@ -25,12 +26,11 @@ import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 @OptIn(ExperimentalPermissionsApi::class)
-class CameraScreenState constructor(
+class CameraScreenState(
     context: Context,
     scaffoldState: ScaffoldState,
     cameraSelector: CameraSelector,
@@ -44,29 +44,21 @@ class CameraScreenState constructor(
     // * user case camera
     private val imageCapture: ImageCapture = ImageCapture.Builder().build()
     private val previewUseCase: Preview = Preview.Builder().build()
-    var currentCameraSelector = cameraSelector
+    private val currentCameraSelector = cameraSelector
 
     // * permissions
     val cameraPermissionStatus get() = cameraPermissionState.status
     val isCameraPermissionGranted get() = cameraPermissionState.status == PermissionStatus.Granted
     fun launchPermissionCamera() = cameraPermissionState.launchPermissionRequest()
 
-    private fun getOutputDirectory(): File {
-        val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
-            File(
-                it,
-                context.resources.getString(R.string.app_name) + "${System.currentTimeMillis()}.jpg"
-            ).apply { mkdirs() }
-        }
-        return if (mediaDir != null && mediaDir.exists()) mediaDir else context.filesDir
-    }
+
 
     fun captureImage(
         OnSuccess: (Uri) -> Unit,
-        OnError: () -> Unit
+        OnError: (ImageCaptureException) -> Unit
     ) {
         executor = Executors.newSingleThreadExecutor()
-        val photoFile = getOutputDirectory()
+        val photoFile = context.getExternalFile()
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
         imageCapture.takePicture(
             outputOptions,
@@ -78,7 +70,7 @@ class CameraScreenState constructor(
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    OnError()
+                    OnError(exception)
                 }
             })
     }
@@ -103,6 +95,9 @@ class CameraScreenState constructor(
         }
     }
 
+    fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
 
     fun clearCamera() {
         if (::executor.isInitialized) executor.shutdown()
