@@ -2,19 +2,17 @@ package com.d34th.nullpointer.dogedex.data.remote
 
 import com.d34th.nullpointer.dogedex.core.states.InternetCheck
 import com.d34th.nullpointer.dogedex.models.ApiResponse
-import com.d34th.nullpointer.dogedex.models.authDogApi.AuthResponse
-import com.d34th.nullpointer.dogedex.models.authDogApi.DefaultResponse
-import com.d34th.nullpointer.dogedex.models.authDogApi.listDogsApi.DogsApiResponse
+import com.d34th.nullpointer.dogedex.models.authDogApiResponse.auth.AuthResponse
+import com.d34th.nullpointer.dogedex.models.authDogApiResponse.defaultDogs.DefaultResponse
+import com.d34th.nullpointer.dogedex.models.authDogApiResponse.listDogs.DogsApiResponse
+import com.d34th.nullpointer.dogedex.models.authDogApiResponse.simpleDog.DogApiResponse
 import com.d34th.nullpointer.dogedex.models.dtos.AddDogUserDTO
 import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
 import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withTimeout
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
+import retrofit2.http.*
 import timber.log.Timber
 
 interface DogsApiServices {
@@ -42,6 +40,11 @@ interface DogsApiServices {
     suspend fun requestMyDogs(
         @Header("AUTH-TOKEN") token: String,
     ): DogsApiResponse
+
+    @GET("find_dog_by_ml_id")
+    suspend fun requestRecognizeDog(
+        @Query("ml_id") idRecognizeDog: String
+    ): DogApiResponse
 
 }
 

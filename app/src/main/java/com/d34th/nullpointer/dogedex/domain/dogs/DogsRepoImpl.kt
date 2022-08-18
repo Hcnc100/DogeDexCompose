@@ -60,5 +60,7 @@ class DogsRepoImpl(
         prefsUser.changeIsFirstCameraRequest(isFirstRequest)
     }
 
+    override suspend fun getRecognizeDog(idRecognizeDog: String): ApiResponse<Dog> =
+        dogsDataSource.getRecognizeDog(idRecognizeDog)
 
 }

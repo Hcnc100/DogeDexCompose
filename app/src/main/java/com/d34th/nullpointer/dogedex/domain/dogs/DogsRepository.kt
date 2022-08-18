@@ -9,5 +9,6 @@ interface DogsRepository {
     suspend fun addDog(dog: Dog): ApiResponse<Unit>
     suspend fun refreshMyDogs(): ApiResponse<Unit>
     fun isFirstCameraRequest(): Flow<Boolean>
+    suspend fun getRecognizeDog(idRecognizeDog: String): ApiResponse<Dog>
     suspend fun changeIsFirstRequestCamera(isFirstRequest: Boolean)
 }

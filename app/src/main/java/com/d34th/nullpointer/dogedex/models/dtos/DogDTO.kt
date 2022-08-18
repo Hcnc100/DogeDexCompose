@@ -1,6 +1,6 @@
-package com.d34th.nullpointer.dogedex.models.authDogApi.listDogsApi
+package com.d34th.nullpointer.dogedex.models.dtos
 
-data class DogResponse(
+data class DogDTO(
     val created_at: String,
     val dog_type: String,
     val height_female: String,

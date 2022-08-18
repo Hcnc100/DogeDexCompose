@@ -29,4 +29,8 @@ class CameraViewModel @Inject constructor(
     fun changeRequestCamera(isRequestCamera: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         dogsRepository.changeIsFirstRequestCamera(isRequestCamera)
     }
+
+    fun getRecognizeDog(idRecognizeDog: String) = viewModelScope.launch(Dispatchers.IO) {
+
+    }
 }

@@ -7,4 +7,5 @@ interface DogsDataSource {
     suspend fun getDogs(): ApiResponse<List<Dog>>
     suspend fun addDog(dog: Dog, token: String): ApiResponse<Unit>
     suspend fun getMyDogs(token: String): ApiResponse<List<Dog>>
+    suspend fun getRecognizeDog(idRecognizeDog: String): ApiResponse<Dog>
 }

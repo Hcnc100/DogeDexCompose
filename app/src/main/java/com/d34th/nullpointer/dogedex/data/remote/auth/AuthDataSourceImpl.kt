@@ -4,7 +4,7 @@ import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
 import com.d34th.nullpointer.dogedex.data.remote.callApiWithTimeout
 import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.User
-import com.d34th.nullpointer.dogedex.models.authDogApi.UserResponse
+import com.d34th.nullpointer.dogedex.models.authDogApiResponse.auth.UserResponse
 import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
 import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
 

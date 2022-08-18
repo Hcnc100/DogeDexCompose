@@ -4,8 +4,8 @@ import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
 import com.d34th.nullpointer.dogedex.data.remote.callApiWithTimeout
 import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.Dog
-import com.d34th.nullpointer.dogedex.models.authDogApi.listDogsApi.DogResponse
 import com.d34th.nullpointer.dogedex.models.dtos.AddDogUserDTO
+import com.d34th.nullpointer.dogedex.models.dtos.DogDTO
 
 class DogsDataSourceImpl(
     private val dogsApiServices: DogsApiServices
@@ -37,7 +37,16 @@ class DogsDataSourceImpl(
         return dogs
     }
 
-    private fun DogResponse.toDog(): Dog {
+    override suspend fun getRecognizeDog(idRecognizeDog: String): ApiResponse<Dog> {
+        val dogRecognize = callApiWithTimeout {
+            val dogResponse = dogsApiServices.requestRecognizeDog(idRecognizeDog)
+            if (!dogResponse.is_success) throw Exception(dogResponse.message)
+            dogResponse.data.dog.toDog()
+        }
+        return dogRecognize
+    }
+
+    private fun DogDTO.toDog(): Dog {
         return Dog(
             id = id,
             index = index,

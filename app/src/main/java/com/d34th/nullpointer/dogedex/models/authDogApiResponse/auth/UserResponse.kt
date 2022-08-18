@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.models.authDogApi
+package com.d34th.nullpointer.dogedex.models.authDogApiResponse.auth
 
 data class UserResponse(
     val authentication_token: String,
