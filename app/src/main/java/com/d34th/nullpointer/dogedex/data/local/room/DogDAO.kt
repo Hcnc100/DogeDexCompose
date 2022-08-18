@@ -25,4 +25,7 @@ interface DogDAO {
         insertDogs(listDogs)
     }
 
+    @Query("SELECT * FROM dogs WHERE name is :name limit 1")
+    fun getDogById(name: String): Dog?
+
 }

@@ -62,7 +62,7 @@ class CameraViewModel @Inject constructor(
     }
 
 
-    fun getRecognizeDogSaved(callbackSuccess: (Dog) -> Unit) {
+    fun getRecognizeDogSaved(callbackSuccess: (Dog, isNewDog: Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             recognitionDog = true
             when (val response = dogsRepository.getRecognizeDog(idRecognizeDog = currentIdMlDog)) {
@@ -70,8 +70,9 @@ class CameraViewModel @Inject constructor(
                 is ApiResponse.Success -> {
                     // * update status dog
                     dogsRepository.addDog(response.response)
+                    val isNewDog = dogsRepository.isNewDog(response.response.name)
                     withContext(Dispatchers.Main) {
-                        callbackSuccess(response.response)
+                        callbackSuccess(response.response, isNewDog)
                     }
                 }
             }

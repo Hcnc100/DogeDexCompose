@@ -59,8 +59,8 @@ fun CameraScreen(
                 actionIUCamera = { action ->
                     when (action) {
                         TAKE_PHOTO -> {
-                            cameraViewModel.getRecognizeDogSaved { dog ->
-                                navigator.navigate(DogDetailsDestination(dog))
+                            cameraViewModel.getRecognizeDogSaved { dog, isNewDog ->
+                                navigator.navigate(DogDetailsDestination(dog, isNewDog))
                             }
                         }
                         OPEN_COLLECTION -> navigator.navigate(ListDogsScreenDestination)

@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -22,15 +26,30 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun DogDetails(
     dog: Dog,
+    isNewDog: Boolean,
     navigator: DestinationsNavigator
 ) {
+    val title by remember {
+        derivedStateOf {
+            if (isNewDog) "Nuevo perro" else "Info del perro"
+        }
+    }
+
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = navigator::popBackStack) {
-                Icon(painter = painterResource(id = R.drawable.ic_check), contentDescription = "")
+            if (isNewDog) {
+                FloatingActionButton(onClick = navigator::popBackStack) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_check),
+                        contentDescription = ""
+                    )
+                }
             }
         },
-        floatingActionButtonPosition = FabPosition.Center
+        floatingActionButtonPosition = FabPosition.Center,
+        topBar = {
+            ToolbarBack(title = title, navigator::popBackStack)
+        }
     ) {
         Box(
             modifier = Modifier

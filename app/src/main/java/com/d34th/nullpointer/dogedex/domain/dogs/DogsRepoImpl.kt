@@ -53,6 +53,11 @@ class DogsRepoImpl(
         }
     }
 
+    override suspend fun isNewDog(name: String): Boolean {
+        val dog = dogDAO.getDogById(name)
+        return dog != null && !dog.hasDog
+    }
+
     override fun isFirstCameraRequest(): Flow<Boolean> =
         prefsUser.getIsFirstCameraRequest()
 
