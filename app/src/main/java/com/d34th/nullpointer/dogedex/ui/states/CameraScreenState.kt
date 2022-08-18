@@ -4,10 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.view.PreviewView
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
@@ -26,7 +23,6 @@ import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -39,25 +35,35 @@ class CameraScreenState(
     private val cameraPermissionState: PermissionState
 ) : SimpleScreenState(scaffoldState, context) {
 
-    private lateinit var executor: ExecutorService
+    private val executor = Executors.newSingleThreadExecutor()
 
     // * user case camera
     private val imageCapture: ImageCapture = ImageCapture.Builder().build()
     private val previewUseCase: Preview = Preview.Builder().build()
-    private val currentCameraSelector = cameraSelector
+    private val currentCameraSelector: CameraSelector = cameraSelector
+    private val imageAnalysis: ImageAnalysis by lazy { createImageAnalysis() }
+
 
     // * permissions
     val cameraPermissionStatus get() = cameraPermissionState.status
     val isCameraPermissionGranted get() = cameraPermissionState.status == PermissionStatus.Granted
     fun launchPermissionCamera() = cameraPermissionState.launchPermissionRequest()
 
-
+    private fun createImageAnalysis(): ImageAnalysis {
+        // * only get last image
+        return ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build().apply {
+                setAnalyzer(executor) { imageProxy ->
+                    val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+                    imageProxy.close()
+                }
+            }
+    }
 
     fun captureImage(
         OnSuccess: (Uri) -> Unit,
         OnError: (ImageCaptureException) -> Unit
     ) {
-        executor = Executors.newSingleThreadExecutor()
         val photoFile = context.getExternalFile()
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
         imageCapture.takePicture(
@@ -87,7 +93,8 @@ class CameraScreenState(
                     lifecycleOwner,
                     currentCameraSelector,
                     previewUseCase,
-                    imageCapture
+                    imageCapture,
+                    imageAnalysis
                 )
             } catch (ex: Exception) {
                 Timber.d("Use case binding failed $ex")
@@ -100,7 +107,7 @@ class CameraScreenState(
     }
 
     fun clearCamera() {
-        if (::executor.isInitialized) executor.shutdown()
+        executor.shutdown()
     }
 
 }
