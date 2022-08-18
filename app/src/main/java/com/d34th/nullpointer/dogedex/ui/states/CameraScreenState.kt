@@ -3,7 +3,6 @@ package com.d34th.nullpointer.dogedex.ui.states
 import android.Manifest
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.view.PreviewView
@@ -17,7 +16,9 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
 import com.d34th.nullpointer.dogedex.core.utils.getCameraProvider
 import com.d34th.nullpointer.dogedex.core.utils.getExternalFile
+import com.d34th.nullpointer.dogedex.core.utils.toBitmap
 import com.d34th.nullpointer.dogedex.ia.Classifier
+import com.d34th.nullpointer.dogedex.ia.DogRecognition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
@@ -68,16 +69,11 @@ class CameraScreenState(
     private fun createImageAnalysis(): ImageAnalysis {
         // * only get last image
         return ImageAnalysis.Builder()
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build().apply {
-                setAnalyzer(executor) { imageProxy ->
-                    val rotationDegrees = imageProxy.imageInfo.rotationDegrees
-                    imageProxy.close()
-                }
-            }
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()
     }
 
     fun captureImage(
-        OnSuccess: (Uri) -> Unit,
+        OnSuccess: (idDogRecognition: String) -> Unit,
         OnError: (ImageCaptureException) -> Unit
     ) {
         val photoFile = context.getExternalFile()
@@ -91,7 +87,7 @@ class CameraScreenState(
                         val bitmap = BitmapFactory.decodeFile(it.path)
                         val list = classifier.recognizeImage(bitmap)
                         Timber.d("Detected image $list")
-                        OnSuccess(it)
+                        OnSuccess(list.first().id)
                     }
                 }
 
@@ -101,7 +97,18 @@ class CameraScreenState(
             })
     }
 
-    fun bindCameraToUseCases(previewView: PreviewView) {
+    fun bindCameraToUseCases(
+        previewView: PreviewView,
+        callbackRecognizeDog: (dog: DogRecognition) -> Unit
+    ) {
+        imageAnalysis.setAnalyzer(executor) { analyzer ->
+            analyzer.toBitmap()?.let { bitmap ->
+                classifier.recognizeImage(bitmap).firstOrNull()?.let {
+                    callbackRecognizeDog(it)
+                }
+            }
+            analyzer.close()
+        }
         // * bind view preview to preview use case
         previewUseCase.setSurfaceProvider(previewView.surfaceProvider)
         coroutineScope.launch {
