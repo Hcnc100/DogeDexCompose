@@ -8,13 +8,15 @@ import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.R
-import com.d34th.nullpointer.dogedex.ia.DogRecognition
 import com.d34th.nullpointer.dogedex.presentation.CameraViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.ListDogsScreenDestination
@@ -41,11 +43,6 @@ fun CameraScreen(
 
     LaunchedEffect(key1 = Unit) {
         cameraViewModel.messageCamera.collect(cameraScreenState::showSnackMessage)
-    }
-
-    // * clear task to process camera
-    DisposableEffect(key1 = Unit) {
-        onDispose(cameraScreenState::clearCamera)
     }
 
     Scaffold(
@@ -75,11 +72,10 @@ fun CameraScreen(
                 CameraPreview(
                     modifier = Modifier.padding(paddingValues),
                     bindCameraToUseCases = {
-                        cameraScreenState.bindCameraToUseCases(it) { dogRecognition: DogRecognition ->
-                            val idMlDog =
-                                if (dogRecognition.confidence > 70f) dogRecognition.id else ""
-                            cameraViewModel.changeReadyPhoto(idMlDog)
-                        }
+                        cameraViewModel.initRecognition(
+                            previewView = it,
+                            lifecycleOwner = cameraScreenState.lifecycleOwner
+                        )
                     },
                 )
             }

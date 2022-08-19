@@ -1,11 +1,15 @@
 package com.d34th.nullpointer.dogedex.presentation
 
+import androidx.camera.view.PreviewView
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
+import com.d34th.nullpointer.dogedex.domain.ia.RecognitionRepository
+import com.d34th.nullpointer.dogedex.ia.DogRecognition
 import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.Dog
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CameraViewModel @Inject constructor(
-    private val dogsRepository: DogsRepository
+    private val dogsRepository: DogsRepository,
+    private val recognitionRepository: RecognitionRepository
 ) : ViewModel() {
 
     private val _messageCamera = Channel<String>()
@@ -51,11 +56,12 @@ class CameraViewModel @Inject constructor(
         dogsRepository.changeIsFirstRequestCamera(isRequestCamera)
     }
 
-    fun changeReadyPhoto(dogId: String) = viewModelScope.launch {
+    private fun changeReadyPhoto(dogId: String) = viewModelScope.launch {
         // * has delay for no remove id dog selected fasted
-        if (editIdEnable) {
+        if (editIdEnable && dogId != currentIdMlDog) {
             editIdEnable = false
             currentIdMlDog = dogId
+            // * delay move to IO thread
             withContext(Dispatchers.IO) { delay(2_000) }
             editIdEnable = true
         }
@@ -80,23 +86,20 @@ class CameraViewModel @Inject constructor(
         }
     }
 
-    fun recognitionDogAutomatic(idDog: String, callbackSuccess: (Dog) -> Unit) {
-        if (!recognitionDog)
-            viewModelScope.launch(Dispatchers.IO) {
-                recognitionDog = true
-                delay(2000)
-                when (val response = dogsRepository.getRecognizeDog(idRecognizeDog = idDog)) {
-                    is ApiResponse.Failure -> _messageCamera.trySend(response.message)
-                    is ApiResponse.Success -> {
-                        // * update status dog
-                        dogsRepository.addDog(response.response)
-                        withContext(Dispatchers.Main) {
-                            callbackSuccess(response.response)
-                        }
-                    }
-                }
-                delay(2000)
-                recognitionDog = false
-            }
+    fun initRecognition(
+        previewView: PreviewView,
+        lifecycleOwner: LifecycleOwner
+    ) = viewModelScope.launch {
+        recognitionRepository.bindCameraToUseCases(
+            previewView = previewView,
+            lifecycleOwner = lifecycleOwner
+        ) { dog: DogRecognition, isConfidence: Boolean ->
+            changeReadyPhoto(if (isConfidence) dog.id else "")
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        recognitionRepository.clearCamera()
     }
 }
