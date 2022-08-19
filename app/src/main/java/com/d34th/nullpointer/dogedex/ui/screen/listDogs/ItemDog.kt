@@ -42,9 +42,7 @@ fun ListDogsSuccess(
         items(listDog, key = { it.id }) { dog ->
             ItemDog(dog = dog,
                 modifier = Modifier.animateItemPlacement(),
-                actionClick = {
-                    clickDetails(dog)
-                })
+                actionClick = { if (dog.hasDog) clickDetails(dog) })
         }
     }
 }

@@ -11,6 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
+import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -34,8 +35,7 @@ fun ListDogsScreen(
             stateListDogs = stateListDogs,
             modifier = Modifier.padding(paddingValues),
             clickDetails = {
-//                navigator.navigate(DogDetailsDestination(it))
-                dogsViewModel.addDog(it)
+                navigator.navigate(DogDetailsDestination(it, false))
             }
         )
     }

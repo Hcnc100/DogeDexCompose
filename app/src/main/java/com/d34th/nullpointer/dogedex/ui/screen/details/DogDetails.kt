@@ -3,10 +3,7 @@ package com.d34th.nullpointer.dogedex.ui.screen.details
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,10 +12,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
+import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
+import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -27,24 +28,28 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun DogDetails(
     dog: Dog,
     isNewDog: Boolean,
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    dogsViewModel: DogsViewModel = hiltViewModel(),
+    dogDetailsState: SimpleScreenState = rememberSimpleScreenState()
 ) {
     val title by remember {
         derivedStateOf {
             if (isNewDog) "Nuevo perro" else "Info del perro"
         }
     }
+    LaunchedEffect(key1 = Unit) {
+        dogsViewModel.messageDogs.collect(dogDetailsState::showSnackMessage)
+    }
 
     Scaffold(
+        scaffoldState = dogDetailsState.scaffoldState,
         floatingActionButton = {
-            if (isNewDog) {
-                FloatingActionButton(onClick = navigator::popBackStack) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_check),
-                        contentDescription = ""
-                    )
-                }
-            }
+            if (isNewDog)
+                ButtonSaveDog(actionBack = {
+                    dogsViewModel.addDog(dog) {
+                        navigator.popBackStack()
+                    }
+                })
         },
         floatingActionButtonPosition = FabPosition.Center,
         topBar = {
@@ -111,6 +116,27 @@ fun ImageDog(
                 .align(Alignment.BottomCenter)
         )
     }
+}
+
+@Composable
+fun ButtonSaveDog(
+    actionBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ExtendedFloatingActionButton(
+        modifier = modifier.padding(horizontal = 20.dp),
+        onClick = actionBack,
+        text = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "Save")
+                Spacer(modifier = Modifier.size(10.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_save),
+                    contentDescription = ""
+                )
+            }
+
+        })
 }
 
 
