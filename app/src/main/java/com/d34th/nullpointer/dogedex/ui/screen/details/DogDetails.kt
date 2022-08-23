@@ -60,7 +60,7 @@ fun DogDetails(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.TopCenter
         ) {
             Column(
                 modifier = Modifier
@@ -119,7 +119,7 @@ fun ImageDog(
 }
 
 @Composable
-fun ButtonSaveDog(
+private fun ButtonSaveDog(
     actionBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {

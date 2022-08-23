@@ -52,17 +52,14 @@ class DogsViewModel @Inject constructor(
         )
 
     fun requestMyLastDogs() = viewModelScope.launch {
-        try {
             isLoadingMyGogs = true
             withContext(Dispatchers.IO) {
-                dogsRepository.refreshMyDogs()
+                when (val response = dogsRepository.refreshMyDogs()) {
+                    is ApiResponse.Failure -> _messageDogs.trySend(response.message)
+                    is ApiResponse.Success -> Unit
+                }
             }
-        } catch (e: Exception) {
-            Timber.e("Error load my dogs")
-        } finally {
             isLoadingMyGogs = false
-        }
-
     }
 
     fun addDog(dog: Dog, callbackSuccess: () -> Unit) = viewModelScope.launch(Dispatchers.IO) {
