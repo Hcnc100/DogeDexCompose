@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex
+package com.d34th.nullpointer.dogedex.tests.viewModel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle

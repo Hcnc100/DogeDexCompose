@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,7 +74,7 @@ private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modi
                 )
             } else {
                 Text(
-                    text = "#${dog.index}",
+                    text = stringResource(id = R.string.name_shadow_dog, dog.index),
                     style = MaterialTheme.typography.body1,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.W500
