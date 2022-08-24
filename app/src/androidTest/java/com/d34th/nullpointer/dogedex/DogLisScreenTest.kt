@@ -1,11 +1,8 @@
 package com.d34th.nullpointer.dogedex
 
 import android.content.Context
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performScrollToKey
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -35,19 +32,30 @@ private class DogFakeRepository(
 
     companion object {
         fun generateListsDogs(numberDogsFake: Int, numberHasDog: Int = 0): List<Dog> {
-            val listFakeDogs =
-                (0 until numberDogsFake).map { Dog(index = it.toLong(), id = it.toLong()) }
-                    .toMutableList()
             return when {
-                numberHasDog == 0 -> listFakeDogs
+                numberDogsFake <= 0 -> throw Exception("The number of dogs generated must be greater than zero")
+                numberHasDog < 0 -> throw Exception("The number of dog that has,  must be greater than zero")
+                numberHasDog > numberDogsFake -> throw Exception("The number of dogs generated must be greater than the number of dog that has")
+                numberHasDog == 0 -> (0 until numberDogsFake).map {
+                    Dog(
+                        index = it.toLong(),
+                        id = it.toLong()
+                    )
+                }
+                numberDogsFake == numberHasDog -> (0 until numberDogsFake).map {
+                    Dog(index = it.toLong(), id = it.toLong(), hasDog = true, name = "dog-$it")
+                }
                 else -> {
+                    val listFakeDogs =
+                        (0 until numberDogsFake).map { Dog(index = it.toLong(), id = it.toLong()) }
+                            .toMutableList()
                     val listRandom = (0..numberDogsFake).asSequence()
                         .shuffled()
                         .take(numberHasDog)
                         .toList()
-
                     listRandom.forEach { index ->
-                        listFakeDogs[index] = listFakeDogs[index].copy(hasDog = true)
+                        listFakeDogs[index] =
+                            listFakeDogs[index].copy(hasDog = true, name = "dog-$index")
                     }
                     listFakeDogs
                 }
@@ -156,7 +164,7 @@ class DogLisScreenTest {
         with(composeTestRule.onNodeWithTag("screen-dogs")) {
             // * first check if the list is show
             assertExists()
-            // * before scroll n twice for item random for your key
+            // * before scroll n times for item random for your key
             // * and verify if the node is
             repeat(numberDogScrollTest) {
                 val dogItemRandom = result.data.random()
@@ -173,14 +181,42 @@ class DogLisScreenTest {
 
     @Test
     fun showRandomDogsHave(): Unit = runTest {
-        val list = DogFakeRepository.generateListsDogs(10, 3)
-        val dogFakeRepo =
-            DogFakeRepository(listDogsFake = emptyList())
+        val randomDogs = (180..250).random()
+        val randomHasDogs = (10..50).random()
+        val testRandom = (10..50).random()
+        val list = DogFakeRepository.generateListsDogs(randomDogs, randomHasDogs)
+        val dogFakeRepo = DogFakeRepository(listDogsFake = list)
         val dogsViewModel = DogsViewModel(dogFakeRepo, SavedStateHandle())
         composeTestRule.setContent {
             ListDogsScreen(navigator = navController, dogsViewModel = dogsViewModel)
         }
-        list
+        val result = dogsViewModel.stateListDogs.first { it is Resource.Success }
+        if (result !is Resource.Success) throw Exception("Cast is impossible")
+
+        // * repeat the test n twice
+        repeat(testRandom) {
+            // * get dog random
+            val dogItemRandom = result.data.random()
+            // * scroll to dog
+            composeTestRule.onNodeWithTag("screen-dogs").performScrollToKey(dogItemRandom.id)
+            if (!dogItemRandom.hasDog) {
+                // * if don't has dog so, only show dog index's
+                composeTestRule.onNodeWithText(
+                    context.getString(
+                        R.string.name_shadow_dog,
+                        dogItemRandom.id
+                    )
+                ).assertExists()
+            } else {
+                // * if has dog so, show image with description with her name
+                composeTestRule.onNodeWithContentDescription(
+                    context.getString(
+                        R.string.description_img_dog,
+                        dogItemRandom.name
+                    )
+                ).assertExists()
+            }
+        }
     }
 
 }

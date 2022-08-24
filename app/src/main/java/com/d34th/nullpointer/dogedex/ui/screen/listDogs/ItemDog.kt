@@ -70,7 +70,8 @@ private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modi
             if (hasDog) {
                 DogImg(
                     urlImg = dog.imgUrl,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    nameDog = dog.name
                 )
             } else {
                 Text(
