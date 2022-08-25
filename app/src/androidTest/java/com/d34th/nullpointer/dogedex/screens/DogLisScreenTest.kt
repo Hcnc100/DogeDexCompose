@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex
+package com.d34th.nullpointer.dogedex.screens
 
 import android.content.Context
 import androidx.compose.ui.test.*
@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import com.d34th.nullpointer.dogedex.models.ApiResponse
@@ -24,80 +25,86 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 
-private class DogFakeRepository(
-    val delayGetDogs: Long = 0,
-    val launchErrorGetDogs: Boolean = false,
-    val listDogsFake: List<Dog> = emptyList()
-) : DogsRepository {
-
-    companion object {
-        fun generateListsDogs(numberDogsFake: Int, numberHasDog: Int = 0): List<Dog> {
-            return when {
-                numberDogsFake <= 0 -> throw Exception("The number of dogs generated must be greater than zero")
-                numberHasDog < 0 -> throw Exception("The number of dog that has,  must be greater than zero")
-                numberHasDog > numberDogsFake -> throw Exception("The number of dogs generated must be greater than the number of dog that has")
-                numberHasDog == 0 -> (0 until numberDogsFake).map {
-                    Dog(
-                        index = it.toLong(),
-                        id = it.toLong()
-                    )
-                }
-                numberDogsFake == numberHasDog -> (0 until numberDogsFake).map {
-                    Dog(index = it.toLong(), id = it.toLong(), hasDog = true, name = "dog-$it")
-                }
-                else -> {
-                    val listFakeDogs =
-                        (0 until numberDogsFake).map { Dog(index = it.toLong(), id = it.toLong()) }
-                            .toMutableList()
-                    val listRandom = (0..numberDogsFake).asSequence()
-                        .shuffled()
-                        .take(numberHasDog)
-                        .toList()
-                    listRandom.forEach { index ->
-                        listFakeDogs[index] =
-                            listFakeDogs[index].copy(hasDog = true, name = "dog-$index")
-                    }
-                    listFakeDogs
-                }
-            }
-
-        }
-    }
-
-    override suspend fun getAllDogs(): Flow<List<Dog>> {
-        if (delayGetDogs > 0) delay(delayGetDogs)
-        return if (launchErrorGetDogs) throw Exception("Error") else flowOf(listDogsFake)
-    }
-
-    override suspend fun addDog(dog: Dog): ApiResponse<Unit> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun refreshMyDogs(): ApiResponse<Unit> {
-        return ApiResponse.Success(Unit)
-    }
-
-    override suspend fun isNewDog(name: String): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun isFirstCameraRequest(): Flow<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getRecognizeDog(idRecognizeDog: String): ApiResponse<Dog> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun changeIsFirstRequestCamera(isFirstRequest: Boolean) {
-        TODO("Not yet implemented")
-    }
-
-}
-
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class DogLisScreenTest {
+
+    private class DogFakeRepository(
+        val delayGetDogs: Long = 0,
+        val launchErrorGetDogs: Boolean = false,
+        val listDogsFake: List<Dog> = emptyList()
+    ) : DogsRepository {
+
+        companion object {
+            fun generateListsDogs(numberDogsFake: Int, numberHasDog: Int = 0): List<Dog> {
+                return when {
+                    numberDogsFake <= 0 -> throw Exception("The number of dogs generated must be greater than zero")
+                    numberHasDog < 0 -> throw Exception("The number of dog that has,  must be greater than zero")
+                    numberHasDog > numberDogsFake -> throw Exception("The number of dogs generated must be greater than the number of dog that has")
+                    numberHasDog == 0 -> (0 until numberDogsFake).map {
+                        Dog(
+                            index = it.toLong(),
+                            id = it.toLong()
+                        )
+                    }
+                    numberDogsFake == numberHasDog -> (0 until numberDogsFake).map {
+                        Dog(index = it.toLong(), id = it.toLong(), hasDog = true, name = "dog-$it")
+                    }
+                    else -> {
+                        val listFakeDogs =
+                            (0 until numberDogsFake).map {
+                                Dog(
+                                    index = it.toLong(),
+                                    id = it.toLong()
+                                )
+                            }
+                                .toMutableList()
+                        val listRandom = (0..numberDogsFake).asSequence()
+                            .shuffled()
+                            .take(numberHasDog)
+                            .toList()
+                        listRandom.forEach { index ->
+                            listFakeDogs[index] =
+                                listFakeDogs[index].copy(hasDog = true, name = "dog-$index")
+                        }
+                        listFakeDogs
+                    }
+                }
+
+            }
+        }
+
+        override suspend fun getAllDogs(): Flow<List<Dog>> {
+            if (delayGetDogs > 0) delay(delayGetDogs)
+            return if (launchErrorGetDogs) throw Exception("Error") else flowOf(listDogsFake)
+        }
+
+        override suspend fun addDog(dog: Dog): ApiResponse<Unit> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun refreshMyDogs(): ApiResponse<Unit> {
+            return ApiResponse.Success(Unit)
+        }
+
+        override suspend fun isNewDog(name: String): Boolean {
+            TODO("Not yet implemented")
+        }
+
+        override fun isFirstCameraRequest(): Flow<Boolean> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun getRecognizeDog(idRecognizeDog: String): ApiResponse<Dog> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun changeIsFirstRequestCamera(isFirstRequest: Boolean) {
+            TODO("Not yet implemented")
+        }
+
+    }
+
 
     private var navController = DestinationsNavigatorImpl()
 
