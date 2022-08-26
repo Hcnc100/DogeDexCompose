@@ -84,7 +84,7 @@ private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modi
                 )
             } else {
                 Text(
-                    text = stringResource(id = R.string.description_has_dog, dog.index, dog.name),
+                    text = stringResource(id = R.string.index_dog, dog.index),
                     style = MaterialTheme.typography.body1,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.W500

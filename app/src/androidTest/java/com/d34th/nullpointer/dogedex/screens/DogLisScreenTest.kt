@@ -8,12 +8,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.states.Resource
+import com.d34th.nullpointer.dogedex.core.utils.UtilsFake
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.ListDogsScreen
-import com.d34th.nullpointer.dogedex.utils.UtilsFake
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -37,7 +37,7 @@ class DogLisScreenTest {
     ) : DogsRepository {
         override val listDogs: Flow<List<Dog>> = flow {
             if (delayGetDogs > 0) delay(delayGetDogs)
-            if (launchErrorGetDogs) throw Exception("Error")
+            if (launchErrorGetDogs) throw Exception("Generic error occurred")
             emit(listDogsFake)
         }
 
@@ -92,7 +92,9 @@ class DogLisScreenTest {
             ListDogsScreen(navigator = navController, dogsViewModel = dogsViewModel)
         }
         // * test show error message load my dogs
-        composeTestRule.onNodeWithText("Error").assertExists()
+        composeTestRule.onNodeWithText(
+            context.getString(R.string.error_unknow)
+        ).assertExists()
     }
 
     @Test

@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.utils
+package com.d34th.nullpointer.dogedex.core.utils
 
 import com.d34th.nullpointer.dogedex.models.Dog
 

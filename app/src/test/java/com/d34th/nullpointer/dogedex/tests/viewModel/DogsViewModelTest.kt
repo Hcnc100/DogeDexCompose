@@ -1,9 +1,10 @@
 package com.d34th.nullpointer.dogedex.tests.viewModel
 
-import androidx.annotation.StringRes
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
+import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.states.Resource
+import com.d34th.nullpointer.dogedex.core.utils.UtilsFake
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
@@ -18,34 +19,30 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
-
-private class DogFakeRepoImpl(
-    private val numberFakeDogs: Int = 5,
-    private val delayRequestDog: Long = 5_000,
-    private val launchErrorGetDogs: Boolean = false,
-    @StringRes
-    private val messageError: Int = -1
-) : DogsRepository {
-
-    private val fakeListDogs = MutableStateFlow(emptyList<Dog>())
-    override val listDogs: Flow<List<Dog>> = flowOf(emptyList())
-    override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
-    override suspend fun refreshMyDogs() {
-        delay(delayRequestDog)
-        fakeListDogs.value = (0 until numberFakeDogs).map { Dog(index = it.toLong()) }
-        if (launchErrorGetDogs) throw Exception("Random exception")
-    }
-
-    override suspend fun getRecognizeDog(idRecognizeDog: String): Dog = Dog()
-    override suspend fun addDog(dog: Dog) = Unit
-    override suspend fun isNewDog(name: String): Boolean = true
-    override suspend fun changeIsFirstRequestCamera() = Unit
-}
-
-
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(JUnit4::class)
 class DogsViewModelTest {
+
+    private class DogFakeRepoImpl(
+        private val delayRequestDog: Long = 2_000,
+        private val launchErrorGetDogs: Boolean = false,
+        val listFakeDogs: List<Dog> = emptyList()
+    ) : DogsRepository {
+        override val listDogs: Flow<List<Dog>> = flow {
+            delay(delayRequestDog)
+            emit(listFakeDogs)
+        }
+        override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
+        override suspend fun refreshMyDogs() {
+            delay(delayRequestDog)
+            if (launchErrorGetDogs) throw Exception("Random exception")
+        }
+
+        override suspend fun getRecognizeDog(idRecognizeDog: String): Dog = Dog()
+        override suspend fun addDog(dog: Dog) = Unit
+        override suspend fun isNewDog(name: String): Boolean = true
+        override suspend fun changeIsFirstRequestCamera() = Unit
+    }
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -90,15 +87,15 @@ class DogsViewModelTest {
 
     @Test
     fun `Test get all dogs for repository`() = runTest(mainCoroutineRule.dispatcher) {
-        val sizeFakeDog = 10
+        val listFakeDogs = UtilsFake.generateListsDogs(10)
         val dogsViewModel = DogsViewModel(
-            DogFakeRepoImpl(numberFakeDogs = sizeFakeDog),
+            DogFakeRepoImpl(listFakeDogs = listFakeDogs),
             SavedStateHandle()
         )
         val listDogs = dogsViewModel.stateListDogs.first {
             it is Resource.Success && it.data.isNotEmpty()
         } as Resource.Success<List<Dog>>
-        assert(listDogs.data.size == sizeFakeDog)
+        assert(listDogs.data.size == listFakeDogs.size)
     }
 
     @Test
@@ -111,7 +108,7 @@ class DogsViewModelTest {
                 savedStateHandle = SavedStateHandle(),
             )
             val message = dogsViewModel.messageDogs.first()
-            assert(message != -1)
+            assert(message == R.string.error_unknow)
         }
 
 }
