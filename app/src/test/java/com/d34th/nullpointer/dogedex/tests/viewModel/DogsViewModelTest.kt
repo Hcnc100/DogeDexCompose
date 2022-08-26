@@ -1,10 +1,10 @@
 package com.d34th.nullpointer.dogedex.tests.viewModel
 
+import androidx.annotation.StringRes
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.utils.MainCoroutineRule
@@ -22,38 +22,24 @@ import org.junit.runners.JUnit4
 private class DogFakeRepoImpl(
     private val numberFakeDogs: Int = 5,
     private val delayRequestDog: Long = 5_000,
-    private val launchError: Boolean = false
+    private val launchErrorGetDogs: Boolean = false,
+    @StringRes
+    private val messageError: Int = -1
 ) : DogsRepository {
 
     private val fakeListDogs = MutableStateFlow(emptyList<Dog>())
-
-    override suspend fun getAllDogs(): Flow<List<Dog>> = fakeListDogs.asStateFlow()
-
-    override suspend fun refreshMyDogs(): ApiResponse<Unit> {
+    override val listDogs: Flow<List<Dog>> = flowOf(emptyList())
+    override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
+    override suspend fun refreshMyDogs() {
         delay(delayRequestDog)
         fakeListDogs.value = (0 until numberFakeDogs).map { Dog(index = it.toLong()) }
-        return if (launchError) ApiResponse.Failure("Error request") else ApiResponse.Success(Unit)
+        if (launchErrorGetDogs) throw Exception("Random exception")
     }
 
-    override suspend fun addDog(dog: Dog): ApiResponse<Unit> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun isNewDog(name: String): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun isFirstCameraRequest(): Flow<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getRecognizeDog(idRecognizeDog: String): ApiResponse<Dog> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun changeIsFirstRequestCamera(isFirstRequest: Boolean) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getRecognizeDog(idRecognizeDog: String): Dog = Dog()
+    override suspend fun addDog(dog: Dog) = Unit
+    override suspend fun isNewDog(name: String): Boolean = true
+    override suspend fun changeIsFirstRequestCamera() = Unit
 }
 
 
@@ -72,7 +58,10 @@ class DogsViewModelTest {
     @Test
     fun `Check change state for request my dogs manually`() =
         runTest(mainCoroutineRule.dispatcher) {
-            val dogsViewModel = DogsViewModel(DogFakeRepoImpl(), SavedStateHandle())
+            val dogsViewModel = DogsViewModel(
+                dogsRepository = DogFakeRepoImpl(),
+                savedStateHandle = SavedStateHandle()
+            )
             // * check init state
             assert(!dogsViewModel.isLoadingMyGogs)
             // * launch request
@@ -88,7 +77,10 @@ class DogsViewModelTest {
 
     @Test
     fun `Test launch request dog when init view model`() = runTest(mainCoroutineRule.dispatcher) {
-        val dogsViewModel = DogsViewModel(DogFakeRepoImpl(), SavedStateHandle())
+        val dogsViewModel = DogsViewModel(
+            dogsRepository = DogFakeRepoImpl(),
+            savedStateHandle = SavedStateHandle()
+        )
         // * get only 2 states, Loading and Success
         dogsViewModel.stateListDogs.take(2).collectIndexed { index, value ->
             if (index == 0) assert(value is Resource.Loading)
@@ -99,7 +91,10 @@ class DogsViewModelTest {
     @Test
     fun `Test get all dogs for repository`() = runTest(mainCoroutineRule.dispatcher) {
         val sizeFakeDog = 10
-        val dogsViewModel = DogsViewModel(DogFakeRepoImpl(sizeFakeDog), SavedStateHandle())
+        val dogsViewModel = DogsViewModel(
+            DogFakeRepoImpl(numberFakeDogs = sizeFakeDog),
+            SavedStateHandle()
+        )
         val listDogs = dogsViewModel.stateListDogs.first {
             it is Resource.Success && it.data.isNotEmpty()
         } as Resource.Success<List<Dog>>
@@ -109,10 +104,14 @@ class DogsViewModelTest {
     @Test
     fun `Launch Error request my dogs and no correctly collect error`() =
         runTest(mainCoroutineRule.dispatcher) {
-            val dogsViewModel =
-                DogsViewModel(DogFakeRepoImpl(launchError = true), SavedStateHandle())
+            val dogsViewModel = DogsViewModel(
+                dogsRepository = DogFakeRepoImpl(
+                    launchErrorGetDogs = true
+                ),
+                savedStateHandle = SavedStateHandle(),
+            )
             val message = dogsViewModel.messageDogs.first()
-            assert(message.isNotEmpty())
+            assert(message != -1)
         }
 
 }

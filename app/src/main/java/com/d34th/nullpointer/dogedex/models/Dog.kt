@@ -9,15 +9,15 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Dog(
     @PrimaryKey
-    val index: Long,
-    val name: String,
-    val type: String,
-    val heightFemale: Double,
-    val heightMale: Double,
-    val imgUrl: String,
-    val lifeExpectancy: String,
-    val temperament: String,
-    val weightFemale: String,
-    val weightMale: String,
+    val index: Long = 0,
+    val name: String = "",
+    val type: String = "",
+    val heightFemale: Double = 0.0,
+    val heightMale: Double = 0.0,
+    val imgUrl: String = "",
+    val lifeExpectancy: String = "",
+    val temperament: String = "",
+    val weightFemale: String = "",
+    val weightMale: String = "",
     val hasDog: Boolean = false,
 ) : Parcelable

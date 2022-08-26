@@ -9,15 +9,16 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.ListDogsScreen
+import com.d34th.nullpointer.dogedex.utils.UtilsFake
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -34,74 +35,18 @@ class DogLisScreenTest {
         val launchErrorGetDogs: Boolean = false,
         val listDogsFake: List<Dog> = emptyList()
     ) : DogsRepository {
-
-        companion object {
-            fun generateListsDogs(numberDogsFake: Int, numberHasDog: Int = 0): List<Dog> {
-                return when {
-                    numberDogsFake <= 0 -> throw Exception("The number of dogs generated must be greater than zero")
-                    numberHasDog < 0 -> throw Exception("The number of dog that has,  must be greater than zero")
-                    numberHasDog > numberDogsFake -> throw Exception("The number of dogs generated must be greater than the number of dog that has")
-                    numberHasDog == 0 -> (0 until numberDogsFake).map {
-                        Dog(
-                            index = it.toLong(),
-                            id = it.toLong()
-                        )
-                    }
-                    numberDogsFake == numberHasDog -> (0 until numberDogsFake).map {
-                        Dog(index = it.toLong(), id = it.toLong(), hasDog = true, name = "dog-$it")
-                    }
-                    else -> {
-                        val listFakeDogs =
-                            (0 until numberDogsFake).map {
-                                Dog(
-                                    index = it.toLong(),
-                                    id = it.toLong()
-                                )
-                            }
-                                .toMutableList()
-                        val listRandom = (0..numberDogsFake).asSequence()
-                            .shuffled()
-                            .take(numberHasDog)
-                            .toList()
-                        listRandom.forEach { index ->
-                            listFakeDogs[index] =
-                                listFakeDogs[index].copy(hasDog = true, name = "dog-$index")
-                        }
-                        listFakeDogs
-                    }
-                }
-
-            }
-        }
-
-        override suspend fun getAllDogs(): Flow<List<Dog>> {
+        override val listDogs: Flow<List<Dog>> = flow {
             if (delayGetDogs > 0) delay(delayGetDogs)
-            return if (launchErrorGetDogs) throw Exception("Error") else flowOf(listDogsFake)
+            if (launchErrorGetDogs) throw Exception("Error")
+            emit(listDogsFake)
         }
 
-        override suspend fun addDog(dog: Dog): ApiResponse<Unit> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun refreshMyDogs(): ApiResponse<Unit> {
-            return ApiResponse.Success(Unit)
-        }
-
-        override suspend fun isNewDog(name: String): Boolean {
-            TODO("Not yet implemented")
-        }
-
-        override fun isFirstCameraRequest(): Flow<Boolean> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun getRecognizeDog(idRecognizeDog: String): ApiResponse<Dog> {
-            TODO("Not yet implemented")
-        }
-
-        override suspend fun changeIsFirstRequestCamera(isFirstRequest: Boolean) {
-            TODO("Not yet implemented")
-        }
+        override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
+        override suspend fun addDog(dog: Dog) = Unit
+        override suspend fun refreshMyDogs() = Unit
+        override suspend fun changeIsFirstRequestCamera() = Unit
+        override suspend fun isNewDog(name: String): Boolean = true
+        override suspend fun getRecognizeDog(idRecognizeDog: String) = Dog()
 
     }
 
@@ -158,8 +103,7 @@ class DogLisScreenTest {
         // ? this indirect confirm that dog exist in this list
         val numberDogScrollTest = (10..25).random()
         // * create a fake data
-        val dogFakeRepo =
-            DogFakeRepository(listDogsFake = DogFakeRepository.generateListsDogs(randomDogs))
+        val dogFakeRepo = DogFakeRepository(listDogsFake = UtilsFake.generateListsDogs(randomDogs))
         val dogsViewModel = DogsViewModel(dogFakeRepo, SavedStateHandle())
         composeTestRule.setContent {
             ListDogsScreen(navigator = navController, dogsViewModel = dogsViewModel)
@@ -175,10 +119,10 @@ class DogLisScreenTest {
             // * and verify if the node is
             repeat(numberDogScrollTest) {
                 val dogItemRandom = result.data.random()
-                performScrollToKey(dogItemRandom.id)
+                performScrollToKey(dogItemRandom.index)
                 composeTestRule.onNodeWithText(
                     context.getString(
-                        R.string.name_shadow_dog,
+                        R.string.index_dog,
                         dogItemRandom.index
                     )
                 )
@@ -191,7 +135,7 @@ class DogLisScreenTest {
         val randomDogs = (180..250).random()
         val randomHasDogs = (10..50).random()
         val testRandom = (10..50).random()
-        val list = DogFakeRepository.generateListsDogs(randomDogs, randomHasDogs)
+        val list = UtilsFake.generateListsDogs(randomDogs, randomHasDogs)
         val dogFakeRepo = DogFakeRepository(listDogsFake = list)
         val dogsViewModel = DogsViewModel(dogFakeRepo, SavedStateHandle())
         composeTestRule.setContent {
@@ -205,20 +149,21 @@ class DogLisScreenTest {
             // * get dog random
             val dogItemRandom = result.data.random()
             // * scroll to dog
-            composeTestRule.onNodeWithTag("screen-dogs").performScrollToKey(dogItemRandom.id)
+            composeTestRule.onNodeWithTag("screen-dogs").performScrollToKey(dogItemRandom.index)
             if (!dogItemRandom.hasDog) {
                 // * if don't has dog so, only show dog index's
                 composeTestRule.onNodeWithText(
                     context.getString(
-                        R.string.name_shadow_dog,
-                        dogItemRandom.id
+                        R.string.index_dog,
+                        dogItemRandom.index
                     )
                 ).assertExists()
             } else {
                 // * if has dog so, show image with description with her name
                 composeTestRule.onNodeWithContentDescription(
                     context.getString(
-                        R.string.description_img_dog,
+                        R.string.description_has_dog,
+                        dogItemRandom.index,
                         dogItemRandom.name
                     )
                 ).assertExists()
