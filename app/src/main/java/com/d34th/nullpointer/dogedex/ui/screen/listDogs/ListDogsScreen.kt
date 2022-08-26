@@ -7,6 +7,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.models.Dog
@@ -51,9 +53,9 @@ private fun ListDogsScreen(
 
         is Resource.Success -> ListDogsSuccess(
             listDog = stateListDogs.data,
-            modifier = modifier,
+            modifier = modifier.semantics { testTag = "screen-dogs" },
             clickDetails = clickDetails
         )
-        else -> DogsLoadings(modifier = modifier)
+        else -> DogsLoadings(modifier = modifier.semantics { testTag = "screen-shimmer" })
     }
 }

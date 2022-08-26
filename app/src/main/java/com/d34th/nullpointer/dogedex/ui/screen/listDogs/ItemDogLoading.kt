@@ -1,5 +1,6 @@
 package com.d34th.nullpointer.dogedex.ui.screen.listDogs
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.d34th.nullpointer.dogedex.R
@@ -26,14 +28,16 @@ import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun DogsLoadings(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    numberLoadingItems: Int = context.resources.getInteger(R.integer.number_dog_loading)
 ) {
     val shimmer = rememberShimmer(shimmerBounds = ShimmerBounds.View)
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Adaptive(dimensionResource(id = R.dimen.size_item_card_dog))
     ) {
-        items(20, key = { it }) {
+        items(numberLoadingItems, key = { it }) {
             ItemDogLoading(shimmer = shimmer)
         }
     }
