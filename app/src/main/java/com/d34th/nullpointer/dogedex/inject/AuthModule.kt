@@ -1,6 +1,6 @@
 package com.d34th.nullpointer.dogedex.inject
 
-import com.d34th.nullpointer.dogedex.data.local.prefs.PrefsUser
+import com.d34th.nullpointer.dogedex.data.local.prefereneces.PreferencesDataSource
 import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
 import com.d34th.nullpointer.dogedex.data.remote.auth.AuthDataSource
 import com.d34th.nullpointer.dogedex.data.remote.auth.AuthDataSourceImpl
@@ -24,7 +24,7 @@ object AuthModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        prefsUser: PrefsUser,
-        authDataSource: AuthDataSource
-    ): AuthRepoImpl = AuthRepoImpl(prefsUser, authDataSource)
+        authDataSource: AuthDataSource,
+        preferencesDataSource: PreferencesDataSource,
+    ): AuthRepoImpl = AuthRepoImpl(authDataSource, preferencesDataSource)
 }

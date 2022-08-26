@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "dogs")
 @Parcelize
 data class Dog(
+    @PrimaryKey
     val index: Long,
     val name: String,
     val type: String,
@@ -19,6 +20,4 @@ data class Dog(
     val weightFemale: String,
     val weightMale: String,
     val hasDog: Boolean = false,
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
 ) : Parcelable

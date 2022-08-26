@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.data.local.prefs
+package com.d34th.nullpointer.dogedex.data.local.prefereneces.dataStore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -8,7 +8,7 @@ import com.d34th.nullpointer.dogedex.models.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class PrefsUser(val context: Context) {
+class PreferencesUser(val context: Context) {
 
     companion object {
         private const val NAME_PREF_USER = "DOGE_DEX_PREF"
@@ -49,7 +49,7 @@ class PrefsUser(val context: Context) {
         pref[keyTokenUser] = user.token
     }
 
-    suspend fun deleteUser() = context.dataStore.edit { pref ->
+    suspend fun clearPreferences() = context.dataStore.edit { pref ->
         pref.clear()
     }
 

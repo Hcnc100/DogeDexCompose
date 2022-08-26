@@ -5,16 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.d34th.nullpointer.dogedex.core.delegate.SavableComposeState
 import com.d34th.nullpointer.dogedex.core.states.AuthState
+import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager.showMessageForException
+import com.d34th.nullpointer.dogedex.core.utils.launchSafeIO
 import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
-import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
 import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +26,7 @@ class AuthViewModel @Inject constructor(
         private const val KEY_IS_AUTH = "KEY_IS_AUTH"
     }
 
-    private val _messageAuth = Channel<String>()
+    private val _messageAuth = Channel<Int>()
     val messageAuth = _messageAuth.receiveAsFlow()
 
     var isAuthenticating by SavableComposeState(savedStateHandle, KEY_IS_AUTH, false)
@@ -41,7 +40,7 @@ class AuthViewModel @Inject constructor(
                 emit(AuthState.Unauthenticated)
         }
     }.flowOn(Dispatchers.IO).catch {
-        Timber.d("Error get user from prefereneces $it")
+        _messageAuth.trySend(showMessageForException(it, "state user pref"))
         emit(AuthState.Unauthenticated)
     }.stateIn(
         viewModelScope,
@@ -51,27 +50,22 @@ class AuthViewModel @Inject constructor(
 
     fun signIn(
         userFieldsSignIn: SignInDTO
-    ) = viewModelScope.launch(Dispatchers.IO) {
-        isAuthenticating = true
-        when (val userResponse = authRepo.signIn(userFieldsSignIn)) {
-            is ApiResponse.Failure -> _messageAuth.trySend(userResponse.message)
-            else -> Unit
-        }
-        isAuthenticating = false
-    }
+    ) = launchSafeIO(
+        blockBefore = { isAuthenticating = true },
+        blockAfter = { isAuthenticating = false },
+        blockIO = { authRepo.signIn(userFieldsSignIn) },
+        blockException = { _messageAuth.trySend(showMessageForException(it, "signIn")) }
+    )
 
-    fun signUp(
-        userFieldSignUp: SignUpDTO
-    ) = viewModelScope.launch(Dispatchers.IO) {
-        isAuthenticating = true
-        when (val userResponse = authRepo.signUp(userFieldSignUp)) {
-            is ApiResponse.Failure -> _messageAuth.trySend(userResponse.message)
-            else -> Unit
-        }
-        isAuthenticating = false
-    }
+    fun signUp(userFieldSignUp: SignUpDTO) = launchSafeIO(
+        blockBefore = { isAuthenticating = true },
+        blockAfter = { isAuthenticating = false },
+        blockIO = { authRepo.signUp(userFieldSignUp) },
+        blockException = { _messageAuth.trySend(showMessageForException(it, "signUp")) }
+    )
 
-    fun signOut() = viewModelScope.launch(Dispatchers.IO) {
+
+    fun signOut() = launchSafeIO {
         authRepo.signOut()
     }
 

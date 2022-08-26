@@ -17,18 +17,18 @@ class SignUpViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val MAX_LENGHT_EMAIL = 40
-        private const val MAX_LENGHT_PASS = 40
+        private const val MAX_LENGTH_EMAIL = 40
+        private const val MAX_LENGTH_PASS = 40
     }
 
-    private val _messageSignUp = Channel<String>()
+    private val _messageSignUp = Channel<Int>()
     val messageSignUp = _messageSignUp.receiveAsFlow()
 
     val emailUser = PropertySavableString(
         savedStateHandle,
         label = R.string.label_email,
         hint = R.string.hint_email,
-        maxLength = MAX_LENGHT_EMAIL,
+        maxLength = MAX_LENGTH_EMAIL,
         emptyError = R.string.error_empty_email,
         lengthError = R.string.error_length_email
     )
@@ -37,7 +37,7 @@ class SignUpViewModel @Inject constructor(
         savedStateHandle,
         label = R.string.label_password,
         hint = R.string.hint_password,
-        maxLength = MAX_LENGHT_PASS,
+        maxLength = MAX_LENGTH_PASS,
         emptyError = R.string.error_empty_password,
         lengthError = R.string.error_length_password
     )
@@ -46,7 +46,7 @@ class SignUpViewModel @Inject constructor(
         savedStateHandle,
         label = R.string.label_password,
         hint = R.string.hint_repeat_password,
-        maxLength = MAX_LENGHT_PASS,
+        maxLength = MAX_LENGTH_PASS,
         emptyError = R.string.error_empty_password,
         lengthError = R.string.error_length_password
     )
@@ -59,7 +59,7 @@ class SignUpViewModel @Inject constructor(
         passwordRepeatUser.reValueField()
         return when {
             hasError -> {
-                _messageSignUp.trySend("Verifique sus datos")
+                _messageSignUp.trySend(R.string.error_data_invalid)
                 null
             }
             !Patterns.EMAIL_ADDRESS.matcher(emailUser.value).matches() -> {

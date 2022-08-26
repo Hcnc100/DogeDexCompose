@@ -5,7 +5,10 @@ import android.graphics.*
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.d34th.nullpointer.dogedex.R
+import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.concurrent.Executor
@@ -58,4 +61,25 @@ fun ImageProxy.toBitmap(): Bitmap? {
     yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
     val imageBytes = out.toByteArray()
     return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+}
+
+fun ViewModel.launchSafeIO(
+    blockBefore: suspend CoroutineScope.() -> Unit = {},
+    blockAfter: suspend CoroutineScope.() -> Unit = {},
+    blockException: suspend CoroutineScope.(Exception) -> Unit = {},
+    blockIO: suspend CoroutineScope.() -> Unit,
+): Job {
+    return viewModelScope.launch {
+        try {
+            blockBefore()
+            withContext(Dispatchers.IO) { blockIO() }
+        } catch (e: Exception) {
+            when (e) {
+                is CancellationException -> throw e
+                else -> blockException(e)
+            }
+        } finally {
+            blockAfter()
+        }
+    }
 }

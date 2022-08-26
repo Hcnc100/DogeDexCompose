@@ -7,19 +7,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager.showMessageForException
+import com.d34th.nullpointer.dogedex.core.utils.launchSafeIO
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import com.d34th.nullpointer.dogedex.domain.ia.RecognitionRepository
 import com.d34th.nullpointer.dogedex.ia.DogRecognition
-import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.Dog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -30,30 +28,34 @@ class CameraViewModel @Inject constructor(
     private val recognitionRepository: RecognitionRepository
 ) : ViewModel() {
 
-    private val _messageCamera = Channel<String>()
+    private val _messageCamera = Channel<Int>()
     val messageCamera = _messageCamera.receiveAsFlow()
 
     var recognitionDog by mutableStateOf(false)
         private set
 
     private var currentIdMlDog by mutableStateOf("")
+
     val isPhotoReady get() = currentIdMlDog.isNotEmpty()
 
-    private var editIdEnable by mutableStateOf(true)
-
+    private var editIdEnable = false
 
     val isFirstRequestCamera = dogsRepository
-        .isFirstCameraRequest().flowOn(Dispatchers.IO)
+        .isFirstRequestCameraPermission
+        .catch {
+            _messageCamera.trySend(showMessageForException(it, "get fist pref camera"))
+        }
+        .flowOn(Dispatchers.IO)
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             false
         )
 
-    fun changeRequestCamera(
-        isRequestCamera: Boolean
-    ) = viewModelScope.launch(Dispatchers.IO) {
-        dogsRepository.changeIsFirstRequestCamera(isRequestCamera)
+
+
+    fun changeRequestCamera() = launchSafeIO {
+        dogsRepository.changeIsFirstRequestCamera()
     }
 
     private fun changeReadyPhoto(dogId: String) = viewModelScope.launch {
@@ -68,24 +70,6 @@ class CameraViewModel @Inject constructor(
     }
 
 
-    fun getRecognizeDogSaved(callbackSuccess: (Dog, isNewDog: Boolean) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            recognitionDog = true
-            when (val response = dogsRepository.getRecognizeDog(idRecognizeDog = currentIdMlDog)) {
-                is ApiResponse.Failure -> _messageCamera.trySend(response.message)
-                is ApiResponse.Success -> {
-                    // * update status dog
-                    dogsRepository.addDog(response.response)
-                    val isNewDog = dogsRepository.isNewDog(response.response.name)
-                    withContext(Dispatchers.Main) {
-                        callbackSuccess(response.response, isNewDog)
-                    }
-                }
-            }
-            recognitionDog = false
-        }
-    }
-
     fun initRecognition(
         previewView: PreviewView,
         lifecycleOwner: LifecycleOwner
@@ -97,6 +81,23 @@ class CameraViewModel @Inject constructor(
             changeReadyPhoto(if (isConfidence) dog.id else "")
         }
     }
+
+    fun getRecognizeDogSaved(
+        callbackSuccess: (Dog, isNewDog: Boolean) -> Unit
+    ) = launchSafeIO(
+        blockBefore = { recognitionDog = true },
+        blockAfter = { recognitionDog = false },
+        blockException = {
+            _messageCamera.trySend(showMessageForException(it, "recognize dog"))
+        },
+        blockIO = {
+            val dogRecognition = dogsRepository.getRecognizeDog(idRecognizeDog = currentIdMlDog)
+            val isNewDog = dogsRepository.isNewDog(dogRecognition.name)
+            withContext(Dispatchers.Main) {
+                callbackSuccess(dogRecognition, isNewDog)
+            }
+        }
+    )
 
     override fun onCleared() {
         super.onCleared()

@@ -2,6 +2,9 @@ package com.d34th.nullpointer.dogedex.ui.states
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -22,11 +25,16 @@ class CameraScreenState(
     private val cameraPermissionState: PermissionState
 ) : SimpleScreenState(scaffoldState, context) {
 
-
     // * permissions
     val cameraPermissionStatus get() = cameraPermissionState.status
     val isCameraPermissionGranted get() = cameraPermissionState.status == PermissionStatus.Granted
     fun launchPermissionCamera() = cameraPermissionState.launchPermissionRequest()
+
+    fun openSettingsApp() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = Uri.parse("package:" + context.packageName)
+        context.startActivity(intent)
+    }
 
 }
 
@@ -44,4 +52,5 @@ fun rememberCameraScreenState(
         lifecycleOwner = lifecycleOwner,
         cameraPermissionState = cameraPermissionState
     )
+
 }

@@ -5,15 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.d34th.nullpointer.dogedex.core.delegate.SavableComposeState
 import com.d34th.nullpointer.dogedex.core.states.Resource
+import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager.showMessageForException
+import com.d34th.nullpointer.dogedex.core.utils.launchSafeIO
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-import com.d34th.nullpointer.dogedex.models.ApiResponse
 import com.d34th.nullpointer.dogedex.models.Dog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -24,11 +24,14 @@ class DogsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    companion object {
+        private const val KEY_LOAD_MY_DOG = "KEY_LOAD_MY_DOGS"
+    }
 
-    private val _messageDogs = Channel<String>()
+    private val _messageDogs = Channel<Int>()
     val messageDogs get() = _messageDogs.receiveAsFlow()
 
-    var isLoadingMyGogs by SavableComposeState(savedStateHandle, "KEY_LOAD_MY_DOGS", false)
+    var isLoadingMyGogs by SavableComposeState(savedStateHandle, KEY_LOAD_MY_DOG, false)
         private set
 
     init {
@@ -37,13 +40,13 @@ class DogsViewModel @Inject constructor(
     }
 
     val stateListDogs = flow<Resource<List<Dog>>> {
-        dogsRepository.getAllDogs().collect {
+        dogsRepository.listDogs.collect {
             emit(Resource.Success(it))
         }
     }.catch {
         // ! only work this, for control the message error after
         emit(Resource.Failure)
-        it.message?.let { message -> _messageDogs.trySend(message) }
+        _messageDogs.trySend(showMessageForException(it, "get my dogs"))
     }.flowOn(Dispatchers.IO)
         .stateIn(
             viewModelScope,
@@ -51,30 +54,28 @@ class DogsViewModel @Inject constructor(
             Resource.Loading
         )
 
-    fun requestMyLastDogs() = viewModelScope.launch {
-        try {
-            isLoadingMyGogs = true
-            withContext(Dispatchers.IO) {
-                dogsRepository.refreshMyDogs()
-            }
-        } catch (e: Exception) {
-            Timber.e("Error load my dogs")
-        } finally {
-            isLoadingMyGogs = false
-        }
+    fun requestMyLastDogs() = launchSafeIO(
+        blockBefore = { isLoadingMyGogs = true },
+        blockAfter = { isLoadingMyGogs = false },
+        blockException = {
+            _messageDogs.trySend(showMessageForException(it, "requestMyDogs"))
+        },
+        blockIO = { dogsRepository.refreshMyDogs() }
+    )
 
-    }
-
-    fun addDog(dog: Dog, callbackSuccess: () -> Unit) = viewModelScope.launch(Dispatchers.IO) {
-        when (val response = dogsRepository.addDog(dog)) {
-            is ApiResponse.Failure -> _messageDogs.trySend(response.message)
-            is ApiResponse.Success -> {
-                _messageDogs.trySend("Success")
-                delay(2_000)
-                withContext(Dispatchers.Main) {
-                    callbackSuccess()
-                }
+    fun addDog(
+        dog: Dog,
+        callbackSuccess: () -> Unit
+    ) = launchSafeIO(
+        blockException = {
+            _messageDogs.trySend(showMessageForException(it, "addDog"))
+        },
+        blockIO = {
+            dogsRepository.addDog(dog)
+            delay(1_000)
+            withContext(Dispatchers.Main) {
+                callbackSuccess()
             }
         }
-    }
+    )
 }

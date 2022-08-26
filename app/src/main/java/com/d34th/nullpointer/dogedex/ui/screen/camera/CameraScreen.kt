@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.R
@@ -80,11 +81,12 @@ fun CameraScreen(
                 )
             }
             is PermissionStatus.Denied -> {
-                MessageCamera(
+                PermissionsCameraScreen(
                     isFirstRequest = isFirstRequestCamera,
                     changeFirstRequest = cameraViewModel::changeRequestCamera,
                     modifier = Modifier.padding(paddingValues),
-                    launchPermission = cameraScreenState::launchPermissionCamera
+                    launchPermission = cameraScreenState::launchPermissionCamera,
+                    launchOpenSettings = cameraScreenState::openSettingsApp
                 )
             }
         }
@@ -102,21 +104,29 @@ private fun MainButtons(
 ) {
     Row(modifier = modifier) {
         FloatingActionButton(onClick = { actionIUCamera(OPEN_COLLECTION) }) {
-            Icon(painter = painterResource(id = R.drawable.ic_menu), contentDescription = "")
+            Icon(
+                painter = painterResource(id = R.drawable.ic_menu),
+                contentDescription = stringResource(id = R.string.description_button_collections)
+            )
         }
         Spacer(modifier = Modifier.width(20.dp))
         if (isEnableCamera) {
             ProcessingActionButton(
                 isProcessing = isRecognizing,
                 onClick = { actionIUCamera(TAKE_PHOTO) },
-                contentDescription = "",
+                contentDescription = stringResource(R.string.description_button_camera),
                 painter = painterResource(id = R.drawable.ic_camera),
                 isReady = isReadingPhoto
             )
             Spacer(modifier = Modifier.width(20.dp))
         }
         FloatingActionButton(onClick = { actionIUCamera(OPEN_SETTINGS) }) {
-            Icon(painter = painterResource(id = R.drawable.ic_settings), contentDescription = "")
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.ic_settings
+                ),
+                contentDescription = stringResource(R.string.description_button_settings)
+            )
         }
     }
 }

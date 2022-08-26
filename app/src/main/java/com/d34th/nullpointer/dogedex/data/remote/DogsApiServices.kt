@@ -1,7 +1,7 @@
 package com.d34th.nullpointer.dogedex.data.remote
 
 import com.d34th.nullpointer.dogedex.core.states.InternetCheck
-import com.d34th.nullpointer.dogedex.models.ApiResponse
+import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager.NO_NETWORK_MESSAGE
 import com.d34th.nullpointer.dogedex.models.authDogApiResponse.auth.AuthResponse
 import com.d34th.nullpointer.dogedex.models.authDogApiResponse.defaultDogs.DefaultResponse
 import com.d34th.nullpointer.dogedex.models.authDogApiResponse.listDogs.DogsApiResponse
@@ -9,69 +9,58 @@ import com.d34th.nullpointer.dogedex.models.authDogApiResponse.simpleDog.DogApiR
 import com.d34th.nullpointer.dogedex.models.dtos.AddDogUserDTO
 import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
 import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import retrofit2.http.*
-import timber.log.Timber
 
 interface DogsApiServices {
 
-    @GET("dogs")
+    companion object {
+        const val BASE_URL_API = "https://todogs.herokuapp.com/api/v1/"
+        private const val DOG_PATH = "dogs"
+        private const val SIGN_UP_PATH = "sign_up"
+        private const val SIGN_IN_PATH = "sign_in"
+        private const val ADD_DOG_PATH = "add_dog_to_user"
+        private const val AUTH_HEADER = "AUTH-TOKEN"
+        private const val DOG_USER_PATH = "get_user_dogs"
+        private const val DOG_FOR_IM_PATH = "find_dog_by_ml_id"
+        private const val ML_ID_PARAMETER = "ml_id"
+    }
+
+    @GET(DOG_PATH)
     suspend fun requestAllDogs(): DogsApiResponse
 
-    @POST("sign_up")
+    @POST(SIGN_UP_PATH)
     suspend fun signUp(
         @Body data: SignUpDTO
     ): AuthResponse
 
-    @POST("sign_in")
+    @POST(SIGN_IN_PATH)
     suspend fun signIn(
         @Body data: SignInDTO
     ): AuthResponse
 
-    @POST("add_dog_to_user")
+    @POST(ADD_DOG_PATH)
     suspend fun addDog(
-        @Header("AUTH-TOKEN") token: String,
+        @Header(AUTH_HEADER) token: String,
         @Body data: AddDogUserDTO
     ): DefaultResponse
 
-    @GET("get_user_dogs")
+    @GET(DOG_USER_PATH)
     suspend fun requestMyDogs(
-        @Header("AUTH-TOKEN") token: String,
+        @Header(AUTH_HEADER) token: String,
     ): DogsApiResponse
 
-    @GET("find_dog_by_ml_id")
+    @GET(DOG_FOR_IM_PATH)
     suspend fun requestRecognizeDog(
-        @Query("ml_id") idRecognizeDog: String
+        @Query(ML_ID_PARAMETER) idRecognizeDog: String
     ): DogApiResponse
 
 }
 
-suspend fun <T> callApiWithTimeout(
+suspend fun <T> callApiDogsWithTimeOut(
     timeout: Long = 3_000,
     callApi: suspend () -> T,
-): ApiResponse<T> {
-    return try {
-        if (!InternetCheck.isNetworkAvailable()) return ApiResponse.Failure("Network is not available")
-        withTimeout(timeout) {
-            ApiResponse.Success(callApi())
-        }
-    } catch (e: Exception) {
-        val message = when (e) {
-            is TimeoutCancellationException -> "El servidor no responde"
-            is CancellationException -> throw e
-            else -> when (e.message) {
-                "sign_up_error" -> "Error al crear cuenta"
-                "sign_in_error" -> "Error al autenticar"
-                "user_not_found" -> "El usuario no existe"
-                "user_already_exists" -> "El usuario ya existe"
-                else -> {
-                    Timber.d("Error api $e")
-                    "unknown error"
-                }
-            }
-        }
-        ApiResponse.Failure(message)
-    }
+): T {
+    if (!InternetCheck.isNetworkAvailable()) throw Exception(NO_NETWORK_MESSAGE)
+    return withTimeoutOrNull(timeout) { callApi() }!!
 }

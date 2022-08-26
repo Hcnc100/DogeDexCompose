@@ -1,6 +1,44 @@
 <resources>
     <string name="app_name">Dogedex</string>
-    <string name="description_img_dog">Imagen del perro actual</string>
+    <string name="description_arrow_back">Navega a la pantalla anterior</string>
+
+    <!-- errors exceptions -->
+    <string name="error_credentials_sign_up">Verifique sus credenciales</string>
+    <string name="error_user_no_register">El usuario no esta registrado</string>
+    <string name="error_unknow">Error Desconocido</string>
+    <string name="error_no_network_avariable">Verifique su conexion a intenet</string>
+    <string name="error_server_connect">El servidor no reponde</string>
+    <string name="error_sign_up">Hubo un error al creare la cuenta, reintente</string>
+    <string name="error_sign_in">Error al ingresar a la cuenta, reintente</string>
+    <string name="error_user_already_registered">Este usuario ya esta registrado</string>
+    <string name="internal_server_error">Hubo un error en el servidor, reintente más tarde</string>
+
+    <!-- Camera screen -->
+
+    <string name="description_button_collections">Ir a la coleccion de perros</string>
+    <string name="description_button_camera">Tomar foto de el perro enfocado</string>
+    <string name="description_button_settings">Ir a la pantall de configuracion</string>
+    <string name="message_permission_camera_is_necesary">Se requiere el permiso de la camara</string>
+    <string name="message_button_lauch_camera_permission">Conceder permiso</string>
+
+    <!-- dog details screen -->
+
+    <string name="title_details_new_dog">Nuevo perro</string>
+    <string name="title_details_saved_dog">Info del perro</string>
+    <string name="index_dog">#%d</string>
+    <string name="description_img_details_dog">Perro actual %s con indice %d</string>
+    <string name="text_save_dog">Save Dog</string>
+    <string name="description_button_save_dog">Guardar perro actual</string>
+    <string name="title_gender_female">Femenino</string>
+    <string name="title_gender_male">Masculino</string>
+    <string name="title_dog_group">Grupo</string>
+    <string name="title_weight_dog">Peso</string>
+    <string name="title_height_dog">Height</string>
+
+    <!-- list dog screen -->
+    <string name="description_has_dog">Perro guardado con el indice %d con el nombre de %s</string>
+
+    <!-- login screen -->
     <string name="label_email">Email</string>
     <string name="hint_email">Escribe tu email</string>
     <string name="error_empty_email">El email es necesario</string>
@@ -10,7 +48,17 @@
     <string name="error_empty_password">La contraseña es necesaria</string>
     <string name="error_length_password">La contraseña no puede ser tan larga</string>
     <string name="hint_repeat_password">Repite la contraseña</string>
-    <string name="description_arrow_back">Navega a la pantalla anterior</string>
     <string name="error_pass_repeat">Las ccontraseñas no coinciden</string>
     <string name="error_valid_email">El email no es valido</string>
+    <string name="error_data_invalid">Verifique sus datos</string>
+    <string name="text_button_sign_in">Iniciar Session</string>
+    <string name="text_has_not_account">¿No tienes cuenta?</string>
+    <string name="text_button_go_sign_up">Registrate</string>
+    <string name="title_sign_up">Registro</string>
+    <string name="text_button_next_sign_up">Continuar</string>
+    <string name="title_settings">Settings</string>
+    <string name="text_button_sign_out">LogOut</string>
+
+    <!-- SignUP screen -->
+
 </resources>

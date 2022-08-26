@@ -11,10 +11,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.SignUpScreenDestination
@@ -75,8 +77,6 @@ fun LoginScreen(
                     }
                 )
             }
-
-
         }
     }
 }
@@ -125,8 +125,6 @@ private fun ContainerLogin(
                 )
             )
         }
-
-
     }
 }
 
@@ -151,7 +149,7 @@ private fun ButtonsSignInAndSignUp(
         Column(modifier) {
             ExtendedFloatingActionButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = { Text("Registro") },
+                text = { Text(stringResource(R.string.text_button_sign_in)) },
                 onClick = actionSignIn
             )
             Spacer(modifier = Modifier.size(10.dp))
@@ -171,10 +169,10 @@ private fun CreateAccount(
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "¿No tienes cuenta?")
+        Text(text = stringResource(R.string.text_has_not_account))
         Spacer(modifier = Modifier.size(10.dp))
         OutlinedButton(onClick = actionClick) {
-            Text(text = "Registrate")
+            Text(text = stringResource(R.string.text_button_go_sign_up))
         }
     }
 }

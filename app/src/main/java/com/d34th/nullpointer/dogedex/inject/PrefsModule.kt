@@ -1,7 +1,9 @@
 package com.d34th.nullpointer.dogedex.inject
 
 import android.content.Context
-import com.d34th.nullpointer.dogedex.data.local.prefs.PrefsUser
+import com.d34th.nullpointer.dogedex.data.local.prefereneces.PreferencesDataSource
+import com.d34th.nullpointer.dogedex.data.local.prefereneces.PreferencesDataSourceImpl
+import com.d34th.nullpointer.dogedex.data.local.prefereneces.PreferencesUser
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,5 +19,11 @@ object PrefsModule {
     @Singleton
     fun providePreferences(
         @ApplicationContext context: Context,
-    ): PrefsUser = PrefsUser(context)
+    ): PreferencesUser = PreferencesUser(context)
+
+    @Provides
+    @Singleton
+    fun providePreferencesDataSource(
+        preferencesUser: PreferencesUser
+    ): PreferencesDataSource = PreferencesDataSourceImpl(preferencesUser)
 }

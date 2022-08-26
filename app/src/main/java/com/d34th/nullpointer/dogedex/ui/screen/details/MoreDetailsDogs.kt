@@ -1,28 +1,31 @@
 package com.d34th.nullpointer.dogedex.ui.screen.details
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.models.Dog
 
 @Composable
 fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
 
     Row(
-        modifier = modifier.padding(10.dp).fillMaxWidth(),
+        modifier = modifier
+            .padding(10.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         GenderDetailsDog(
-            gender = "Female",
+            gender = stringResource(R.string.title_gender_female),
             dogWeight = dog.weightFemale,
             dogHeight = dog.heightFemale.toString()
         )
@@ -44,7 +47,7 @@ fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
         )
 
         GenderDetailsDog(
-            gender = "Male",
+            gender = stringResource(R.string.title_gender_male),
             dogWeight = dog.weightMale,
             dogHeight = dog.heightMale.toString()
         )
@@ -53,9 +56,12 @@ fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
 
 @Composable
 fun GroupDogDetails(dog: Dog, modifier: Modifier = Modifier) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(text = dog.type)
-        Text("Group")
+        Text(stringResource(R.string.title_dog_group))
     }
 }
 
@@ -66,7 +72,10 @@ fun GenderDetailsDog(
     gender: String,
     modifier: Modifier = Modifier
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
         Text(
             text = gender,
             style = MaterialTheme.typography.caption,
@@ -83,7 +92,7 @@ fun GenderDetailsDog(
             fontSize = 15.sp
         )
         Text(
-            text = "Weight",
+            text = stringResource(R.string.title_weight_dog),
             style = MaterialTheme.typography.caption,
             fontWeight = FontWeight.W300,
             fontSize = 15.sp
@@ -95,7 +104,7 @@ fun GenderDetailsDog(
             fontSize = 15.sp
         )
         Text(
-            text = "Height",
+            text = stringResource(R.string.title_height_dog),
             style = MaterialTheme.typography.caption,
             fontWeight = FontWeight.W300,
             fontSize = 15.sp

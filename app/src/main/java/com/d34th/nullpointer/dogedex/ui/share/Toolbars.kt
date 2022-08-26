@@ -23,11 +23,3 @@ fun ToolbarBack(title: String, actionBack: () -> Unit) {
             }
         })
 }
-
-@Composable
-fun SimpleToolbar(title: String) {
-    TopAppBar(
-        contentColor = Color.White,
-        backgroundColor = MaterialTheme.colors.primary,
-        title = { Text(title) })
-}

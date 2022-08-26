@@ -9,9 +9,11 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
@@ -39,19 +41,26 @@ fun SignUpScreen(
 
     Scaffold(
         scaffoldState = signUpState.scaffoldState,
-        topBar = { ToolbarBack(title = "Registro", actionBack = navigator::popBackStack) },
+        topBar = {
+            ToolbarBack(
+                title = stringResource(R.string.title_sign_up),
+                actionBack = navigator::popBackStack
+            )
+        },
         floatingActionButton = {
             if (authViewModel.isAuthenticating) {
                 CircularProgressIndicator()
             } else {
-                ExtendedFloatingActionButton(text = { Text("Continuar") }, onClick = {
-                    signUpViewModel.getDataValid()?.let {
-                        authViewModel.signUp(it)
-                    }
-                })
+                ExtendedFloatingActionButton(
+                    text = { Text(stringResource(R.string.text_button_next_sign_up)) },
+                    onClick = {
+                        signUpViewModel.getDataValid()?.let {
+                            authViewModel.signUp(it)
+                        }
+                    })
             }
-
-        }, floatingActionButtonPosition = FabPosition.Center
+        },
+        floatingActionButtonPosition = FabPosition.Center
     ) {
         Column(
             modifier = Modifier

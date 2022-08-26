@@ -1,71 +1,57 @@
 package com.d34th.nullpointer.dogedex.domain.dogs
 
-import com.d34th.nullpointer.dogedex.data.local.prefs.PrefsUser
-import com.d34th.nullpointer.dogedex.data.local.room.DogDAO
-import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSource
-import com.d34th.nullpointer.dogedex.models.ApiResponse
+import com.d34th.nullpointer.dogedex.data.local.dogs.DogDataSourceLocal
+import com.d34th.nullpointer.dogedex.data.local.prefereneces.PreferencesDataSource
+import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceRemote
 import com.d34th.nullpointer.dogedex.models.Dog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 
 
 class DogsRepoImpl(
-    private val dogsDataSource: DogsDataSource,
-    private val prefsUser: PrefsUser,
-    private val dogDAO: DogDAO
+    private val dogDataSourceLocal: DogDataSourceLocal,
+    private val dogsDataSourceRemote: DogsDataSourceRemote,
+    private val preferencesDataSource: PreferencesDataSource
 ) : DogsRepository {
-    override suspend fun getAllDogs(): Flow<List<Dog>> {
-        val isFirstLogin = prefsUser.getIsFirstLogin().first()
+
+    override val listDogs: Flow<List<Dog>> = flow {
+        val isFirstLogin = preferencesDataSource.isFirstLoadingUser.first()
         if (isFirstLogin) {
-            when (val dogs = dogsDataSource.getDogs()) {
-                is ApiResponse.Failure -> {
-                    throw Exception(dogs.message)
-                }
-                is ApiResponse.Success -> {
-                    dogDAO.updateAllDogs(dogs.response)
-                    prefsUser.changeIsFirstLogin(false)
-                }
-            }
+            val listDogs = dogsDataSourceRemote.getAllDogs()
+            dogDataSourceLocal.updateAllDogs(listDogs)
         }
-        return dogDAO.getAllDogs()
+        dogDataSourceLocal.listDogsSaved.collect(::emit)
     }
 
-    override suspend fun addDog(dog: Dog): ApiResponse<Unit> {
-        val token = prefsUser.getUser().first().token
-        return dogsDataSource.addDog(dog, token).also {
-            if (it is ApiResponse.Success) {
-                dogDAO.insertDog(dog.copy(hasDog = true))
-            }
-        }
+    override val isFirstRequestCameraPermission: Flow<Boolean> =
+        preferencesDataSource.isFirstRequestCameraPermission
+
+    override suspend fun addDog(dog: Dog) {
+        val userToken = preferencesDataSource.currentUser.first().token
+        dogsDataSourceRemote.addDog(dog, userToken)
+        dogDataSourceLocal.insertDog(dog.copy(hasDog = true))
     }
 
-    override suspend fun refreshMyDogs(): ApiResponse<Unit> {
-        val token = prefsUser.getUser().first().token
-        return when (val dogsResponse = dogsDataSource.getMyDogs(token)) {
-            is ApiResponse.Failure -> {
-                ApiResponse.Failure(dogsResponse.message)
-            }
-            is ApiResponse.Success -> {
-                val listMyDogs = dogsResponse.response.map { it.copy(hasDog = true) }
-                dogDAO.insertDogs(listMyDogs)
-                ApiResponse.Success(Unit)
-            }
+    override suspend fun refreshMyDogs() {
+        val userToken = preferencesDataSource.currentUser.first().token
+        val listMyDogsServer = dogsDataSourceRemote.getMyDogs(userToken)
+        if (listMyDogsServer.size != dogDataSourceLocal.countHasDog()) {
+            val newLisHasDog = listMyDogsServer.map { it.copy(hasDog = true) }
+            dogDataSourceLocal.insertAllDogs(newLisHasDog)
         }
+
     }
 
     override suspend fun isNewDog(name: String): Boolean {
-        val dog = dogDAO.getDogById(name)
+        val dog = dogDataSourceLocal.getDogByName(name)
         return dog != null && !dog.hasDog
     }
 
-    override fun isFirstCameraRequest(): Flow<Boolean> =
-        prefsUser.getIsFirstCameraRequest()
+    override suspend fun changeIsFirstRequestCamera() =
+        preferencesDataSource.changeIsFirstLoginUser()
 
-    override suspend fun changeIsFirstRequestCamera(isFirstRequest: Boolean) {
-        prefsUser.changeIsFirstCameraRequest(isFirstRequest)
-    }
-
-    override suspend fun getRecognizeDog(idRecognizeDog: String): ApiResponse<Dog> =
-        dogsDataSource.getRecognizeDog(idRecognizeDog)
+    override suspend fun getRecognizeDog(idRecognizeDog: String): Dog =
+        getRecognizeDog(idRecognizeDog)
 
 }

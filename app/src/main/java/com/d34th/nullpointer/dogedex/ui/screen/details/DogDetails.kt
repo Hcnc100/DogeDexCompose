@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,7 +35,8 @@ fun DogDetails(
 ) {
     val title by remember {
         derivedStateOf {
-            if (isNewDog) "Nuevo perro" else "Info del perro"
+            if (isNewDog)
+                R.string.title_details_new_dog else R.string.title_details_saved_dog
         }
     }
     LaunchedEffect(key1 = Unit) {
@@ -52,9 +54,7 @@ fun DogDetails(
                 })
         },
         floatingActionButtonPosition = FabPosition.Center,
-        topBar = {
-            ToolbarBack(title = title, navigator::popBackStack)
-        }
+        topBar = { ToolbarBack(title = stringResource(id = title), navigator::popBackStack) }
     ) {
         Box(
             modifier = Modifier
@@ -77,15 +77,15 @@ fun DogDetails(
                         MoreDetailsDogs(dog = dog)
                     }
                 }
-
             }
         }
     }
 }
 
 @Composable
-fun ImageDog(
-    dog: Dog, modifier: Modifier = Modifier
+private fun ImageDog(
+    dog: Dog,
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
@@ -99,7 +99,7 @@ fun ImageDog(
             shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
         ) {
             Text(
-                text = "#${dog.index}",
+                text = stringResource(id = R.string.index_dog, dog.index),
                 modifier = Modifier.padding(10.dp),
                 style = MaterialTheme.typography.caption,
                 fontWeight = FontWeight.W500,
@@ -109,7 +109,11 @@ fun ImageDog(
         }
         AsyncImage(
             model = dog.imgUrl,
-            contentDescription = "",
+            contentDescription = stringResource(
+                R.string.description_img_details_dog,
+                dog.name,
+                dog.index
+            ),
             modifier = Modifier
                 .fillMaxHeight()
                 .aspectRatio(1f)
@@ -128,14 +132,13 @@ fun ButtonSaveDog(
         onClick = actionBack,
         text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Save")
+                Text(text = stringResource(R.string.text_save_dog))
                 Spacer(modifier = Modifier.size(10.dp))
                 Icon(
                     painter = painterResource(id = R.drawable.ic_save),
-                    contentDescription = ""
+                    contentDescription = stringResource(R.string.description_button_save_dog)
                 )
             }
-
         })
 }
 

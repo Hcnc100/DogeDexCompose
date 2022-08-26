@@ -2,8 +2,8 @@ package com.d34th.nullpointer.dogedex.inject
 
 import android.content.Context
 import androidx.room.Room
-import com.d34th.nullpointer.dogedex.data.local.room.DogDAO
-import com.d34th.nullpointer.dogedex.data.local.room.DogeDexDatabase
+import com.d34th.nullpointer.dogedex.data.local.dogs.room.DogDAO
+import com.d34th.nullpointer.dogedex.data.local.dogs.room.DogeDexDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

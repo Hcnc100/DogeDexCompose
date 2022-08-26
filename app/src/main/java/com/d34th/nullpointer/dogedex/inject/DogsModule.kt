@@ -1,61 +1,44 @@
 package com.d34th.nullpointer.dogedex.inject
 
-import com.d34th.nullpointer.dogedex.data.local.prefs.PrefsUser
-import com.d34th.nullpointer.dogedex.data.local.room.DogDAO
+import com.d34th.nullpointer.dogedex.data.local.dogs.DogDataSourceLocal
+import com.d34th.nullpointer.dogedex.data.local.dogs.DogDataSourceLocalImpl
+import com.d34th.nullpointer.dogedex.data.local.dogs.room.DogDAO
+import com.d34th.nullpointer.dogedex.data.local.prefereneces.PreferencesDataSource
 import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
-import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSource
-import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceImpl
+import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceRemote
+import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceRemoteImpl
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepoImpl
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DogsModule {
 
-    @Named("BaseUrl")
     @Provides
-    fun provideBaseUrl(): String = "https://todogs.herokuapp.com/api/v1/"
+    @Singleton
+    fun provideDogDataSourceLocal(
+        dogDAO: DogDAO
+    ): DogDataSourceLocal = DogDataSourceLocalImpl(dogDAO)
 
     @Provides
     @Singleton
-    fun provideGson(): Gson = GsonBuilder().create()
-
-    @Provides
-    @Singleton
-    fun provideRetrofit(
-        @Named("BaseUrl") baseUrl: String,
-        gson: Gson,
-    ): Retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .build()
-
-    @Singleton
-    @Provides
-    fun provideDogsApiServices(
-        retrofit: Retrofit,
-    ): DogsApiServices = retrofit.create(DogsApiServices::class.java)
-
-    @Provides
-    @Singleton
-    fun provideDogsDataSource(
+    fun provideDogsDataSourceRemote(
         dogsApiServices: DogsApiServices
-    ): DogsDataSource = DogsDataSourceImpl(dogsApiServices)
+    ): DogsDataSourceRemote = DogsDataSourceRemoteImpl(dogsApiServices)
 
     @Provides
     @Singleton
     fun provideDogsRepository(
-        dogsDataSource: DogsDataSource,
-        prefsUser: PrefsUser,
-        dogDAO: DogDAO
-    ): DogsRepoImpl = DogsRepoImpl(dogsDataSource, prefsUser, dogDAO)
+        dogDataSourceLocal: DogDataSourceLocal,
+        dogsDataSourceRemote: DogsDataSourceRemote,
+        preferencesDataSource: PreferencesDataSource,
+    ): DogsRepoImpl = DogsRepoImpl(
+        dogDataSourceLocal,
+        dogsDataSourceRemote,
+        preferencesDataSource
+    )
 }

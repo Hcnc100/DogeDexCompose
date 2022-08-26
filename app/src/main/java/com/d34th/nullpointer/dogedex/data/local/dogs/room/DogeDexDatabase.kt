@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.data.local.room
+package com.d34th.nullpointer.dogedex.data.local.dogs.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

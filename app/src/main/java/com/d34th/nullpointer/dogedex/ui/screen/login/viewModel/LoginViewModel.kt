@@ -22,7 +22,7 @@ class LoginViewModel @Inject constructor(
         private const val PASSWORD_LENGTH = 30
     }
 
-    private val _messageLogin = Channel<String>()
+    private val _messageLogin = Channel<Int>()
     val messageLogin = _messageLogin.receiveAsFlow()
 
     val emailLogin = PropertySavableString(
@@ -49,7 +49,7 @@ class LoginViewModel @Inject constructor(
         passwordLogin.reValueField()
         return when {
             emailLogin.hasError || passwordLogin.hasError -> {
-                _messageLogin.trySend("Verifique sus datos")
+                _messageLogin.trySend(R.string.error_data_invalid)
                 null
             }
             !Patterns.EMAIL_ADDRESS.matcher(emailLogin.value).matches() -> {

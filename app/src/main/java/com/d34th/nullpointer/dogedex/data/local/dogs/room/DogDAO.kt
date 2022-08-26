@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.data.local.room
+package com.d34th.nullpointer.dogedex.data.local.dogs.room
 
 import androidx.room.*
 import com.d34th.nullpointer.dogedex.models.Dog
@@ -10,11 +10,14 @@ interface DogDAO {
     @Query("SELECT * FROM dogs ORDER BY `index` ASC")
     fun getAllDogs(): Flow<List<Dog>>
 
+    @Query("SELECT * FROM dogs WHERE hasDog")
+    fun getAllHasDog(): List<Dog>
+
     @Query("DELETE FROM dogs")
     fun deleterAllDogs()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertDogs(listDogs: List<Dog>)
+    fun insertAllDogs(listDogs: List<Dog>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDog(dog: Dog)
@@ -22,10 +25,10 @@ interface DogDAO {
     @Transaction
     fun updateAllDogs(listDogs: List<Dog>) {
         deleterAllDogs()
-        insertDogs(listDogs)
+        insertAllDogs(listDogs)
     }
 
     @Query("SELECT * FROM dogs WHERE name is :name limit 1")
-    fun getDogById(name: String): Dog?
+    fun getDogByName(name: String): Dog?
 
 }
