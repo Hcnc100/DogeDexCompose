@@ -110,9 +110,9 @@ private fun ImageDog(
         AsyncImage(
             model = dog.imgUrl,
             contentDescription = stringResource(
-                R.string.description_img_details_dog,
-                dog.name,
-                dog.index
+                R.string.description_has_dog,
+                dog.index,
+                dog.name
             ),
             modifier = Modifier
                 .fillMaxHeight()
