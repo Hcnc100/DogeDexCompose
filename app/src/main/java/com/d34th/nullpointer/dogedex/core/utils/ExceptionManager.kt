@@ -7,7 +7,7 @@ import java.net.ConnectException
 
 object ExceptionManager {
     const val NO_NETWORK_MESSAGE = "NO_NETWORK_MESSAGE"
-    private const val USER_NOT_FOUND = "user_not_found"
+    const val USER_NOT_FOUND = "user_not_found"
     private const val INVALID_CREDENTIAL = "unauthorized"
     private const val ERROR_SING_UP = "sign_up_error"
     private const val ERROR_SIGN_IN = "sign_in_error"

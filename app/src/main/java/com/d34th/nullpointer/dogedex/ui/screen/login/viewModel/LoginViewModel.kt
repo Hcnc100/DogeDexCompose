@@ -54,6 +54,7 @@ class LoginViewModel @Inject constructor(
             }
             !Patterns.EMAIL_ADDRESS.matcher(emailLogin.value).matches() -> {
                 emailLogin.setAnotherError(R.string.error_valid_email)
+                _messageLogin.trySend(R.string.error_data_invalid)
                 null
             }
             else -> SignInDTO(emailLogin.value, passwordLogin.value)

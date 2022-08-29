@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -20,6 +22,7 @@ import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.SignUpScreenDestination
+import com.d34th.nullpointer.dogedex.ui.screen.login.test.LoginTestTags
 import com.d34th.nullpointer.dogedex.ui.screen.login.viewModel.LoginViewModel
 import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
 import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
@@ -99,13 +102,12 @@ private fun ContainerLogin(
     isEnableFields: Boolean,
 ) {
     Column(modifier = modifier) {
-
-
        ContainerFieldAuth {
            EditableTextSavable(
                isEnabled = !isEnableFields,
                valueProperty = emailValue,
                modifier = Modifier.padding(10.dp),
+               modifierText = Modifier.semantics { testTag = LoginTestTags.INPUT_EMAIL },
                keyboardOptions = KeyboardOptions.Default.copy(
                    keyboardType = KeyboardType.Email,
                    capitalization = KeyboardCapitalization.None
@@ -120,6 +122,7 @@ private fun ContainerLogin(
                 isEnabled = !isEnableFields,
                 valueProperty = passwordValue,
                 modifier = Modifier.padding(10.dp),
+                modifierText = Modifier.semantics { testTag = LoginTestTags.INPUT_PASSWORD },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password
                 )
@@ -143,7 +146,10 @@ private fun ButtonsSignInAndSignUp(
                 .height(90.dp),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator(color = MaterialTheme.colors.onPrimary)
+            CircularProgressIndicator(
+                color = MaterialTheme.colors.onSecondary,
+                modifier = Modifier.semantics { testTag = LoginTestTags.INDICATOR_PROGRESS }
+            )
         }
     } else {
         Column(modifier) {
