@@ -168,10 +168,9 @@ class SignUpScreenTest {
 
     @Test
     fun showProgressIndicatorSignUp() = runTest {
-        val delaySignIn = 500L
         val authViewModel = AuthViewModel(
             savedStateHandle = SavedStateHandle(),
-            authRepo = AuthFakeRepo(delaySignIn = delaySignIn)
+            authRepo = AuthFakeRepo()
         )
         composeTestRule.setContent {
             SignUpScreen(
@@ -195,11 +194,11 @@ class SignUpScreenTest {
 
             // * when is authenticating the button next no exist
             onNodeWithText(context.getString(R.string.text_button_next_sign_up)).assertDoesNotExist()
-            waitUntil(delaySignIn) { authViewModel.isAuthenticating }
+            waitUntil{ authViewModel.isAuthenticating }
 
             // * and show progress indicator
             onNodeWithTag(SignUpTestTag.INDICATOR_PROGRESS).assertIsDisplayed()
-            waitUntil(delaySignIn) { !authViewModel.isAuthenticating }
+            waitUntil{ !authViewModel.isAuthenticating }
 
             // * when finish, so show button next
             onNodeWithText(context.getString(R.string.text_button_next_sign_up)).assertExists()

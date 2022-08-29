@@ -31,7 +31,8 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class LoginScreenScreenTest {
     private class AuthRepoFake(
-        val exceptionMessage: String = ""
+        val exceptionMessage: String = "",
+        val delaySignIn: Long = 500L
     ) : AuthRepository {
 
         private val _currentUser = MutableStateFlow(User())
@@ -40,10 +41,10 @@ class LoginScreenScreenTest {
         override val isAuthUser: Flow<Boolean> = flowOf(false)
 
         override suspend fun signIn(userCredentials: SignInDTO) {
+            delay(delaySignIn)
             if (exceptionMessage.isNotEmpty()) {
                 throw Exception(exceptionMessage)
             } else {
-                delay(2_000)
                 _currentUser.value = User(
                     id = 12345,
                     email = userCredentials.email,
@@ -142,10 +143,12 @@ class LoginScreenScreenTest {
     @Test
     fun errorCredentials() = runTest {
         // * add exception error
+        val delaySignIn = 500L
         val authViewModel = AuthViewModel(
             savedStateHandle = SavedStateHandle(),
             authRepo = AuthRepoFake(
-                exceptionMessage = ExceptionManager.USER_NOT_FOUND
+                exceptionMessage = ExceptionManager.USER_NOT_FOUND,
+                delaySignIn = delaySignIn
             )
         )
         composeTestRule.setContent {
@@ -159,7 +162,7 @@ class LoginScreenScreenTest {
 
             onNodeWithText(context.getString((R.string.text_button_sign_in))).performClick()
 
-            delay(2_500)
+            waitUntil { !authViewModel.isAuthenticating }
 
             // * show correct error
             onNodeWithText(context.getString(R.string.error_user_no_register)).assertIsDisplayed()
@@ -185,6 +188,7 @@ class LoginScreenScreenTest {
             onNodeWithText(context.getString((R.string.text_button_sign_in))).performClick()
 
             // * show circulate progress indicator
+            waitUntil { authViewModel.isAuthenticating }
             onNodeWithTag(LoginTestTags.INDICATOR_PROGRESS).assertExists()
         }
     }
