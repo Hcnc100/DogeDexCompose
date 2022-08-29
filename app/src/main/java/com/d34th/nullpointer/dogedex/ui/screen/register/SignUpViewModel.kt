@@ -64,10 +64,12 @@ class SignUpViewModel @Inject constructor(
             }
             !Patterns.EMAIL_ADDRESS.matcher(emailUser.value).matches() -> {
                 emailUser.setAnotherError(R.string.error_valid_email)
+                _messageSignUp.trySend(R.string.error_data_invalid)
                 null
             }
             passwordUser.value != passwordRepeatUser.value -> {
                 passwordRepeatUser.setAnotherError(R.string.error_pass_repeat)
+                _messageSignUp.trySend(R.string.error_data_invalid)
                 null
             }
             else -> SignUpDTO(emailUser.value, passwordUser.value, passwordRepeatUser.value)

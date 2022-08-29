@@ -10,11 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
+import com.d34th.nullpointer.dogedex.ui.screen.register.test.SignUpTestTag
 import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
 import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
@@ -49,7 +52,9 @@ fun SignUpScreen(
         },
         floatingActionButton = {
             if (authViewModel.isAuthenticating) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    modifier = Modifier.semantics { testTag = SignUpTestTag.INDICATOR_PROGRESS }
+                )
             } else {
                 ExtendedFloatingActionButton(
                     text = { Text(stringResource(R.string.text_button_next_sign_up)) },
@@ -70,19 +75,22 @@ fun SignUpScreen(
             EditableTextSavable(
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.emailUser,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email)
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                modifierText = Modifier.semantics { testTag = SignUpTestTag.INPUT_EMAIL }
             )
             Spacer(modifier = Modifier.size(20.dp))
             EditableTextSavable(
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.passwordUser,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                modifierText = Modifier.semantics { testTag = SignUpTestTag.INPUT_PASSWORD }
             )
             Spacer(modifier = Modifier.size(20.dp))
             EditableTextSavable(
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.passwordRepeatUser,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                modifierText = Modifier.semantics { testTag = SignUpTestTag.INPUT_PASSWORD_CONFIRM }
             )
         }
     }
