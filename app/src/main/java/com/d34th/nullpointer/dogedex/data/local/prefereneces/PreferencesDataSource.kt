@@ -9,7 +9,7 @@ interface PreferencesDataSource {
     val isFirstRequestCameraPermission: Flow<Boolean>
 
     suspend fun updateCurrentUser(user: User)
-    suspend fun changeFirstRequestCameraPermission()
+    suspend fun changeIsFirstRequestCamera()
     suspend fun changeIsFirstLoginUser()
     suspend fun clearDataSaved()
 }

@@ -34,10 +34,6 @@ class DogsViewModel @Inject constructor(
     var isLoadingMyGogs by SavableComposeState(savedStateHandle, KEY_LOAD_MY_DOG, false)
         private set
 
-    init {
-        Timber.d("Init dogs view model")
-        requestMyLastDogs()
-    }
 
     val stateListDogs = flow<Resource<List<Dog>>> {
         dogsRepository.listDogs.collect {

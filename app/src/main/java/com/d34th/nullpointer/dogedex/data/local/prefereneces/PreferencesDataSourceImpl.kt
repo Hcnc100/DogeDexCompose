@@ -14,7 +14,7 @@ class PreferencesDataSourceImpl(
         prefsUser.changeUser(user)
     }
 
-    override suspend fun changeFirstRequestCameraPermission() {
+    override suspend fun changeIsFirstRequestCamera() {
         prefsUser.changeIsFirstCameraRequest(false)
     }
 

@@ -20,7 +20,10 @@ class DogsRepoImpl(
         if (isFirstLogin) {
             val listDogs = dogsDataSourceRemote.getAllDogs()
             dogDataSourceLocal.updateAllDogs(listDogs)
+            // * change isFirstLogin
+            preferencesDataSource.changeIsFirstLoginUser()
         }
+        refreshMyDogs()
         dogDataSourceLocal.listDogsSaved.collect(::emit)
     }
 
@@ -49,7 +52,7 @@ class DogsRepoImpl(
     }
 
     override suspend fun changeIsFirstRequestCamera() =
-        preferencesDataSource.changeIsFirstLoginUser()
+        preferencesDataSource.changeIsFirstRequestCamera()
 
     override suspend fun getRecognizeDog(idRecognizeDog: String): Dog =
         getRecognizeDog(idRecognizeDog)
