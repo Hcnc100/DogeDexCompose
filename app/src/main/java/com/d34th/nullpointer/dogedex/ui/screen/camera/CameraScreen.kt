@@ -15,10 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.presentation.CameraViewModel
+import com.d34th.nullpointer.dogedex.ui.screen.camera.test.CameraTestTag
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.ListDogsScreenDestination
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.SettingsScreenDestination
@@ -71,7 +74,9 @@ fun CameraScreen(
         when (cameraScreenState.cameraPermissionStatus) {
             PermissionStatus.Granted -> {
                 CameraPreview(
-                    modifier = Modifier.padding(paddingValues),
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .semantics { testTag = CameraTestTag.SCREEN_CAPTURE_IMAGE },
                     bindCameraToUseCases = {
                         cameraViewModel.initRecognition(
                             previewView = it,
@@ -84,7 +89,9 @@ fun CameraScreen(
                 PermissionsCameraScreen(
                     isFirstRequest = isFirstRequestCamera,
                     changeFirstRequest = cameraViewModel::changeRequestCamera,
-                    modifier = Modifier.padding(paddingValues),
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .semantics { testTag = CameraTestTag.SCREEN_PERMISSION },
                     launchPermission = cameraScreenState::launchPermissionCamera,
                     launchOpenSettings = cameraScreenState::openSettingsApp
                 )
