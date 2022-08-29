@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
@@ -89,7 +90,13 @@ private fun LogoApp(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Card(modifier = Modifier.size(150.dp), shape = CircleShape) {}
+        Card(modifier = Modifier.size(150.dp), shape = CircleShape) {
+            AsyncImage(
+                modifier = Modifier.padding(20.dp),
+                model = R.drawable.ic_dog,
+                contentDescription = stringResource(id = R.string.app_name)
+            )
+        }
     }
 
 }

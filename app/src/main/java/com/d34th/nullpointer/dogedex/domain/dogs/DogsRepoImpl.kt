@@ -22,8 +22,9 @@ class DogsRepoImpl(
             dogDataSourceLocal.updateAllDogs(listDogs)
             // * change isFirstLogin
             preferencesDataSource.changeIsFirstLoginUser()
+            refreshMyDogs()
         }
-        refreshMyDogs()
+
         dogDataSourceLocal.listDogsSaved.collect(::emit)
     }
 
@@ -37,13 +38,15 @@ class DogsRepoImpl(
     }
 
     override suspend fun refreshMyDogs() {
-        val userToken = preferencesDataSource.currentUser.first().token
-        val listMyDogsServer = dogsDataSourceRemote.getMyDogs(userToken)
-        if (listMyDogsServer.size != dogDataSourceLocal.countHasDog()) {
-            val newLisHasDog = listMyDogsServer.map { it.copy(hasDog = true) }
-            dogDataSourceLocal.insertAllDogs(newLisHasDog)
+        val isFirstLogin = preferencesDataSource.isFirstLoadingUser.first()
+        if (!isFirstLogin) {
+            val userToken = preferencesDataSource.currentUser.first().token
+            val listMyDogsServer = dogsDataSourceRemote.getMyDogs(userToken)
+            if (listMyDogsServer.size != dogDataSourceLocal.countHasDog()) {
+                val newLisHasDog = listMyDogsServer.map { it.copy(hasDog = true) }
+                dogDataSourceLocal.insertAllDogs(newLisHasDog)
+            }
         }
-
     }
 
     override suspend fun isNewDog(name: String): Boolean {

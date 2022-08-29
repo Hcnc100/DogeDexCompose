@@ -15,7 +15,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +33,9 @@ class DogsViewModel @Inject constructor(
     var isLoadingMyGogs by SavableComposeState(savedStateHandle, KEY_LOAD_MY_DOG, false)
         private set
 
+    init {
+        requestMyLastDogs()
+    }
 
     val stateListDogs = flow<Resource<List<Dog>>> {
         dogsRepository.listDogs.collect {

@@ -11,7 +11,7 @@ import com.d34th.nullpointer.dogedex.R
 @Composable
 fun ToolbarBack(title: String, actionBack: () -> Unit) {
     TopAppBar(
-        backgroundColor = MaterialTheme.colors.primary,
+        backgroundColor = MaterialTheme.colors.primaryVariant,
         title = { Text(title) },
         contentColor = Color.White,
         navigationIcon = {
