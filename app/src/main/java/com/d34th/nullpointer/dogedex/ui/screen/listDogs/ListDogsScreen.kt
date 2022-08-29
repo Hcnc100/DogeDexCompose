@@ -14,6 +14,7 @@ import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
+import com.d34th.nullpointer.dogedex.ui.screen.listDogs.test.ListDogsTestTag
 import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -53,9 +54,11 @@ private fun ListDogsScreen(
 
         is Resource.Success -> ListDogsSuccess(
             listDog = stateListDogs.data,
-            modifier = modifier.semantics { testTag = "screen-dogs" },
+            modifier = modifier.semantics { testTag = ListDogsTestTag.LIST_DOGS },
             clickDetails = clickDetails
         )
-        else -> DogsLoadings(modifier = modifier.semantics { testTag = "screen-shimmer" })
+        else -> DogsLoadings(modifier = modifier.semantics {
+            testTag = ListDogsTestTag.LOADING_LIST
+        })
     }
 }

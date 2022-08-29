@@ -14,6 +14,7 @@ import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.ListDogsScreen
+import com.d34th.nullpointer.dogedex.ui.screen.listDogs.test.ListDogsTestTag
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +29,7 @@ import org.junit.runner.RunWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
-class DogLisScreenTest {
+class ListDogsScreenTest {
 
     private class DogFakeRepository(
         val delayGetDogs: Long = 0,
@@ -71,7 +72,7 @@ class DogLisScreenTest {
         composeTestRule.setContent {
             ListDogsScreen(navigator = navController, dogsViewModel = dogsViewModel)
         }
-        with(composeTestRule.onNodeWithTag("screen-shimmer")) {
+        with(composeTestRule.onNodeWithTag(ListDogsTestTag.LOADING_LIST)) {
             // * test all list grid items loading
             assertIsDisplayed()
             // * test exist first item shimmer
@@ -91,6 +92,7 @@ class DogLisScreenTest {
         composeTestRule.setContent {
             ListDogsScreen(navigator = navController, dogsViewModel = dogsViewModel)
         }
+        dogsViewModel.stateListDogs.first { it is Resource.Failure }
         // * test show error message load my dogs
         composeTestRule.onNodeWithText(
             context.getString(R.string.error_unknow)
@@ -114,7 +116,7 @@ class DogLisScreenTest {
         // ? this confirm correctly functionality between viewModel and repository
         val result = dogsViewModel.stateListDogs.first { it is Resource.Success }
         if (result !is Resource.Success) throw Exception("Cast is impossible")
-        with(composeTestRule.onNodeWithTag("screen-dogs")) {
+        with(composeTestRule.onNodeWithTag(ListDogsTestTag.LIST_DOGS)) {
             // * first check if the list is show
             assertExists()
             // * before scroll n times for item random for your key
@@ -151,7 +153,8 @@ class DogLisScreenTest {
             // * get dog random
             val dogItemRandom = result.data.random()
             // * scroll to dog
-            composeTestRule.onNodeWithTag("screen-dogs").performScrollToKey(dogItemRandom.index)
+            composeTestRule.onNodeWithTag(ListDogsTestTag.LIST_DOGS)
+                .performScrollToKey(dogItemRandom.index)
             if (!dogItemRandom.hasDog) {
                 // * if don't has dog so, only show dog index's
                 composeTestRule.onNodeWithText(
