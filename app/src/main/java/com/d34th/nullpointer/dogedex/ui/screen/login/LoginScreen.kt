@@ -61,8 +61,11 @@ fun LoginScreen(
         ) {
             LogoApp(modifier = Modifier.weight(.33f))
             Column(
-                modifier = Modifier.weight(.66f),
-                verticalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier
+                    .weight(.66f)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 ContainerLogin(
                     modifier = Modifier.width(300.dp),
