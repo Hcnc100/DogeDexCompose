@@ -60,6 +60,10 @@
     <string name="text_button_sign_out">LogOut</string>
     <string name="description_show_password">Mostrar contraseña</string>
     <string name="description_hide_password">Ocultar contraseña</string>
+    <string name="title_info_user">Informacion del usuario</string>
+    <string name="title_id_user">Id: %s</string>
+    <string name="title_email_user">Email: %s</string>
+    <string name="title_token_user">Token: %s</string>
 
     <!-- SignUP screen -->
 
