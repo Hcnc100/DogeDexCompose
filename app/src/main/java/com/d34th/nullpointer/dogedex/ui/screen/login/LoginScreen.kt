@@ -132,7 +132,6 @@ private fun ContainerLogin(
                modifierText = Modifier.semantics { testTag = LoginTestTags.INPUT_EMAIL },
                keyboardOptions = KeyboardOptions.Default.copy(
                    keyboardType = KeyboardType.Email,
-                   capitalization = KeyboardCapitalization.None,
                    imeAction = ImeAction.Next,
                    autoCorrect = false
                ),
@@ -152,10 +151,10 @@ private fun ContainerLogin(
                 modifierText = Modifier.semantics { testTag = LoginTestTags.INPUT_PASSWORD },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Go
+                    imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onGo = { signInAction() }
+                    onDone = { signInAction() }
                 )
             )
         }

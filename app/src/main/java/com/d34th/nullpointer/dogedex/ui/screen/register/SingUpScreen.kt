@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,9 +21,10 @@ import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.register.test.SignUpTestTag
 import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
+import com.d34th.nullpointer.dogedex.ui.share.PasswordTextSavable
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
-import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
-import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
+import com.d34th.nullpointer.dogedex.ui.states.FieldsScreenState
+import com.d34th.nullpointer.dogedex.ui.states.rememberFieldsScreenState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.merge
@@ -32,7 +35,7 @@ fun SignUpScreen(
     authViewModel: AuthViewModel,
     navigator: DestinationsNavigator,
     signUpViewModel: SignUpViewModel = hiltViewModel(),
-    signUpState: SimpleScreenState = rememberSimpleScreenState()
+    signUpState: FieldsScreenState = rememberFieldsScreenState()
 ) {
 
     LaunchedEffect(key1 = Unit) {
@@ -51,47 +54,86 @@ fun SignUpScreen(
             )
         },
         floatingActionButton = {
-            if (authViewModel.isAuthenticating) {
-                CircularProgressIndicator(
-                    modifier = Modifier.semantics { testTag = SignUpTestTag.INDICATOR_PROGRESS }
-                )
-            } else {
-                ExtendedFloatingActionButton(
-                    text = { Text(stringResource(R.string.text_button_next_sign_up)) },
-                    onClick = {
-                        signUpViewModel.getDataValid()?.let {
-                            authViewModel.signUp(it)
-                        }
-                    })
-            }
+            ButtonProgressAuthentication(
+                isAuthenticating = authViewModel.isAuthenticating,
+                actionClickAuth = {
+                    signUpViewModel.getDataValid()?.let {
+                        authViewModel.signUp(it)
+                    }
+                })
         },
         floatingActionButtonPosition = FabPosition.Center
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(it)
+                .padding(paddingValues)
                 .padding(20.dp)
         ) {
             EditableTextSavable(
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.emailUser,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
+                    autoCorrect = false
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { signUpState.downAnotherField() }
+                ),
                 modifierText = Modifier.semantics { testTag = SignUpTestTag.INPUT_EMAIL }
             )
             Spacer(modifier = Modifier.size(20.dp))
-            EditableTextSavable(
+            PasswordTextSavable(
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.passwordUser,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
-                modifierText = Modifier.semantics { testTag = SignUpTestTag.INPUT_PASSWORD }
+                modifierText = Modifier.semantics { testTag = SignUpTestTag.INPUT_PASSWORD },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { signUpState.downAnotherField() }
+                )
             )
             Spacer(modifier = Modifier.size(20.dp))
-            EditableTextSavable(
+            PasswordTextSavable(
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.passwordRepeatUser,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
-                modifierText = Modifier.semantics { testTag = SignUpTestTag.INPUT_PASSWORD_CONFIRM }
+                modifierText = Modifier.semantics {
+                    testTag = SignUpTestTag.INPUT_PASSWORD_CONFIRM
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        signUpState.clearFocus()
+                        signUpViewModel.getDataValid()?.let {
+                            authViewModel.signUp(it)
+                        }
+                    }
+                )
             )
         }
+    }
+}
+
+@Composable
+private fun ButtonProgressAuthentication(
+    isAuthenticating: Boolean,
+    modifier: Modifier = Modifier,
+    actionClickAuth: () -> Unit
+) {
+    if (isAuthenticating) {
+        CircularProgressIndicator(
+            modifier = modifier.semantics { testTag = SignUpTestTag.INDICATOR_PROGRESS }
+        )
+    } else {
+        ExtendedFloatingActionButton(
+            modifier = modifier,
+            text = { Text(stringResource(R.string.text_button_next_sign_up)) },
+            onClick = actionClickAuth
+        )
     }
 }
