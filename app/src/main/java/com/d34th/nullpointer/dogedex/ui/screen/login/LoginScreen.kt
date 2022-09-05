@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -26,8 +28,9 @@ import com.d34th.nullpointer.dogedex.ui.screen.destinations.SignUpScreenDestinat
 import com.d34th.nullpointer.dogedex.ui.screen.login.test.LoginTestTags
 import com.d34th.nullpointer.dogedex.ui.screen.login.viewModel.LoginViewModel
 import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
-import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
-import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
+import com.d34th.nullpointer.dogedex.ui.share.PasswordTextSavable
+import com.d34th.nullpointer.dogedex.ui.states.FieldsScreenState
+import com.d34th.nullpointer.dogedex.ui.states.rememberFieldsScreenState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.merge
@@ -38,7 +41,7 @@ fun LoginScreen(
     authViewModel: AuthViewModel,
     navigator: DestinationsNavigator,
     loginViewModel: LoginViewModel = hiltViewModel(),
-    loginScreenState: SimpleScreenState = rememberSimpleScreenState()
+    loginScreenState: FieldsScreenState = rememberFieldsScreenState()
 ) {
 
     LaunchedEffect(key1 = Unit) {
@@ -72,6 +75,13 @@ fun LoginScreen(
                     emailValue = loginViewModel.emailLogin,
                     passwordValue = loginViewModel.passwordLogin,
                     isEnableFields = authViewModel.isAuthenticating,
+                    moveNextAction = loginScreenState::downAnotherField,
+                    signInAction = {
+                        loginScreenState.clearFocus()
+                        loginViewModel.getCredentialAndValidate()?.let {
+                            authViewModel.signIn(it)
+                        }
+                    }
                 )
 
                 ButtonsSignInAndSignUp(
@@ -106,10 +116,12 @@ private fun LogoApp(
 
 @Composable
 private fun ContainerLogin(
-    modifier: Modifier = Modifier,
+    isEnableFields: Boolean,
+    signInAction: () -> Unit,
+    moveNextAction: () -> Unit,
     emailValue: PropertySavableString,
     passwordValue: PropertySavableString,
-    isEnableFields: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
        ContainerFieldAuth {
@@ -120,7 +132,12 @@ private fun ContainerLogin(
                modifierText = Modifier.semantics { testTag = LoginTestTags.INPUT_EMAIL },
                keyboardOptions = KeyboardOptions.Default.copy(
                    keyboardType = KeyboardType.Email,
-                   capitalization = KeyboardCapitalization.None
+                   capitalization = KeyboardCapitalization.None,
+                   imeAction = ImeAction.Next,
+                   autoCorrect = false
+               ),
+               keyboardActions = KeyboardActions(
+                   onNext = { moveNextAction() }
                )
            )
        }
@@ -128,13 +145,17 @@ private fun ContainerLogin(
         Spacer(modifier = Modifier.size(20.dp))
 
         ContainerFieldAuth {
-            EditableTextSavable(
+            PasswordTextSavable(
                 isEnabled = !isEnableFields,
                 valueProperty = passwordValue,
                 modifier = Modifier.padding(10.dp),
                 modifierText = Modifier.semantics { testTag = LoginTestTags.INPUT_PASSWORD },
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Go
+                ),
+                keyboardActions = KeyboardActions(
+                    onGo = { signInAction() }
                 )
             )
         }
