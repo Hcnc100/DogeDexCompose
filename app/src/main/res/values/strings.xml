@@ -44,7 +44,7 @@
     <string name="error_empty_email">El email es necesario</string>
     <string name="error_length_email">El email no puede ser tan largo</string>
     <string name="label_password">Contraseña</string>
-    <string name="hint_password">Escribe tu nombre</string>
+    <string name="hint_password">Escribe tu contraseña</string>
     <string name="error_empty_password">La contraseña es necesaria</string>
     <string name="error_length_password">La contraseña no puede ser tan larga</string>
     <string name="hint_repeat_password">Repite la contraseña</string>
