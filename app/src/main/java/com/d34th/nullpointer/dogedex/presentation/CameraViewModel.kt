@@ -20,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,7 +39,7 @@ class CameraViewModel @Inject constructor(
 
     val isPhotoReady get() = currentIdMlDog.isNotEmpty()
 
-    private var editIdEnable = false
+    private var editIdEnable = true
 
     val isFirstRequestCamera = dogsRepository
         .isFirstRequestCameraPermission
@@ -78,6 +79,7 @@ class CameraViewModel @Inject constructor(
             previewView = previewView,
             lifecycleOwner = lifecycleOwner
         ) { dog: DogRecognition, isConfidence: Boolean ->
+            Timber.d("${dog.confidence}")
             changeReadyPhoto(if (isConfidence) dog.id else "")
         }
     }

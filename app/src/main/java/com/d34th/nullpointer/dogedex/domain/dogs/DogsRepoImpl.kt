@@ -58,6 +58,6 @@ class DogsRepoImpl(
         preferencesDataSource.changeIsFirstRequestCamera()
 
     override suspend fun getRecognizeDog(idRecognizeDog: String): Dog =
-        getRecognizeDog(idRecognizeDog)
+        dogsDataSourceRemote.getRecognizeDog(idRecognizeDog)
 
 }
