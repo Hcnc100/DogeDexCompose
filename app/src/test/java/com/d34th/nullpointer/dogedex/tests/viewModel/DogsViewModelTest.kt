@@ -108,7 +108,7 @@ class DogsViewModelTest {
                 savedStateHandle = SavedStateHandle(),
             )
             val message = dogsViewModel.messageDogs.first()
-            assert(message == R.string.error_unknow)
+            assert(message == R.string.error_unknown)
         }
 
 }

@@ -37,7 +37,7 @@ object ExceptionManager {
                     ERROR_SERVER -> R.string.internal_server_error
                     else -> {
                         Timber.e("Unknown exception ${"$message "}-> $exception")
-                        R.string.error_unknow
+                        R.string.error_unknown
                     }
                 }
             }

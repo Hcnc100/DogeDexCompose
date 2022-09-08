@@ -95,7 +95,7 @@ class ListDogsScreenTest {
         dogsViewModel.stateListDogs.first { it is Resource.Failure }
         // * test show error message load my dogs
         composeTestRule.onNodeWithText(
-            context.getString(R.string.error_unknow)
+            context.getString(R.string.error_unknown)
         ).assertExists()
     }
 
