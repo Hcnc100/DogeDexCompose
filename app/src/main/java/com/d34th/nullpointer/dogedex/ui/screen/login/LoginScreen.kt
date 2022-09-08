@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -126,6 +125,7 @@ private fun ContainerLogin(
     Column(modifier = modifier) {
        ContainerFieldAuth {
            EditableTextSavable(
+               singleLine = true,
                isEnabled = !isEnableFields,
                valueProperty = emailValue,
                modifier = Modifier.padding(10.dp),
@@ -145,6 +145,7 @@ private fun ContainerLogin(
 
         ContainerFieldAuth {
             PasswordTextSavable(
+                singleLine = true,
                 isEnabled = !isEnableFields,
                 valueProperty = passwordValue,
                 modifier = Modifier.padding(10.dp),

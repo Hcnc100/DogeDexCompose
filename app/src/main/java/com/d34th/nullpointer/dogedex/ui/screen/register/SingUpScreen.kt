@@ -72,6 +72,7 @@ fun SignUpScreen(
             EditableTextSavable(
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.emailUser,
+                singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next,
@@ -86,6 +87,7 @@ fun SignUpScreen(
             PasswordTextSavable(
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.passwordUser,
+                singleLine = true,
                 modifierText = Modifier.semantics { testTag = SignUpTestTag.INPUT_PASSWORD },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password,
@@ -97,6 +99,7 @@ fun SignUpScreen(
             )
             Spacer(modifier = Modifier.size(20.dp))
             PasswordTextSavable(
+                singleLine = true,
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.passwordRepeatUser,
                 modifierText = Modifier.semantics {

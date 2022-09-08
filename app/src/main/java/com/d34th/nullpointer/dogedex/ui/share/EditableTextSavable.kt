@@ -24,11 +24,12 @@ fun EditableTextSavable(
     modifier: Modifier = Modifier,
     modifierText: Modifier = Modifier,
     isEnabled: Boolean = true,
+    singleLine: Boolean = false,
     valueProperty: PropertySavableString,
     shape: Shape = MaterialTheme.shapes.small,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     Surface {
         Column(modifier = modifier.fillMaxWidth()) {
@@ -43,7 +44,8 @@ fun EditableTextSavable(
                 keyboardOptions = keyboardOptions,
                 keyboardActions = keyboardActions,
                 shape = shape,
-                visualTransformation = visualTransformation
+                visualTransformation = visualTransformation,
+                singleLine = singleLine,
             )
             Row {
                 Text(
@@ -64,13 +66,14 @@ fun EditableTextSavable(
 
 @Composable
 fun PasswordTextSavable(
-    valueProperty: PropertySavableString,
     modifier: Modifier = Modifier,
     modifierText: Modifier = Modifier,
+    isEnabled: Boolean = true,
+    singleLine: Boolean = false,
+    valueProperty: PropertySavableString,
+    shape: Shape = MaterialTheme.shapes.small,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    isEnabled: Boolean = true,
-    shape: Shape = MaterialTheme.shapes.small,
 ) {
     val (passwordVisible, changeVisible) = rememberSaveable { mutableStateOf(false) }
 
@@ -101,6 +104,7 @@ fun PasswordTextSavable(
                 keyboardOptions = keyboardOptions,
                 keyboardActions = keyboardActions,
                 shape = shape,
+                singleLine = singleLine,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     val (iconRes, descriptionRes) = iconAndDescription
