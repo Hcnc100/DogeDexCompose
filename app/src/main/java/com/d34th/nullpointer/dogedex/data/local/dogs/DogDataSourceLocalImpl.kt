@@ -23,4 +23,7 @@ class DogDataSourceLocalImpl(
 
     override suspend fun countHasDog(): Int =
         dogDAO.getAllHasDog().size
+
+    override suspend fun deleteAllDogs() =
+        dogDAO.deleterAllDogs()
 }

@@ -10,4 +10,5 @@ interface DogDataSourceLocal {
     suspend fun updateAllDogs(list: List<Dog>)
     suspend fun getDogByName(nameDog: String): Dog?
     suspend fun countHasDog(): Int
+    suspend fun deleteAllDogs()
 }
