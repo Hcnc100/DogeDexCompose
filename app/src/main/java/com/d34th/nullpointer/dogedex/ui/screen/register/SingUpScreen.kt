@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.register.test.SignUpTestTag
+import com.d34th.nullpointer.dogedex.ui.screen.register.viewModel.SignUpViewModel
 import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
 import com.d34th.nullpointer.dogedex.ui.share.PasswordTextSavable
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
@@ -70,9 +71,9 @@ fun SignUpScreen(
                 .padding(20.dp)
         ) {
             EditableTextSavable(
+                singleLine = true,
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.emailUser,
-                singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next,
@@ -85,9 +86,9 @@ fun SignUpScreen(
             )
             Spacer(modifier = Modifier.size(20.dp))
             PasswordTextSavable(
+                singleLine = true,
                 isEnabled = !authViewModel.isAuthenticating,
                 valueProperty = signUpViewModel.passwordUser,
-                singleLine = true,
                 modifierText = Modifier.semantics { testTag = SignUpTestTag.INPUT_PASSWORD },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password,

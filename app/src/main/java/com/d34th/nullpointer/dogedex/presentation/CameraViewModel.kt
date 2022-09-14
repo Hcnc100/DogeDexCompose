@@ -41,18 +41,14 @@ class CameraViewModel @Inject constructor(
 
     private var editIdEnable = true
 
-    val isFirstRequestCamera = dogsRepository
-        .isFirstRequestCameraPermission
-        .catch {
+    val isFirstRequestCamera =
+        dogsRepository.isFirstRequestCameraPermission.flowOn(Dispatchers.IO).catch {
             _messageCamera.trySend(showMessageForException(it, "get fist pref camera"))
-        }
-        .flowOn(Dispatchers.IO)
-        .stateIn(
+        }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             false
         )
-
 
 
     fun changeRequestCamera() = launchSafeIO {

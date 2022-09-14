@@ -14,8 +14,8 @@ import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.register.SignUpScreen
-import com.d34th.nullpointer.dogedex.ui.screen.register.SignUpViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.register.test.SignUpTestTag
+import com.d34th.nullpointer.dogedex.ui.screen.register.viewModel.SignUpViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

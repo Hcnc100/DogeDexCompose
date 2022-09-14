@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.ui.screen.register
+package com.d34th.nullpointer.dogedex.ui.screen.register.viewModel
 
 import android.util.Patterns
 import androidx.lifecycle.SavedStateHandle
@@ -19,34 +19,40 @@ class SignUpViewModel @Inject constructor(
     companion object {
         private const val MAX_LENGTH_EMAIL = 40
         private const val MAX_LENGTH_PASS = 40
+        private const val TAG_EMAIL_USER = "TAG_SIGN_UP_EMAIL_USER"
+        private const val TAG_PASS_USER = "TAG_SIGN_UP_PASS_USER"
+        private const val TAG_PASS_REPEAT_USER = "TAG_SIGN_UP_PASS_REPEAT_USER"
     }
 
     private val _messageSignUp = Channel<Int>()
     val messageSignUp = _messageSignUp.receiveAsFlow()
 
     val emailUser = PropertySavableString(
-        savedStateHandle,
-        label = R.string.label_email,
-        hint = R.string.hint_email,
+        savedState = savedStateHandle,
+        tagSavable = TAG_EMAIL_USER,
         maxLength = MAX_LENGTH_EMAIL,
+        hint = R.string.hint_email,
+        label = R.string.label_email,
         emptyError = R.string.error_empty_email,
         lengthError = R.string.error_length_email
     )
 
     val passwordUser = PropertySavableString(
-        savedStateHandle,
-        label = R.string.label_password,
-        hint = R.string.hint_password,
+        savedState = savedStateHandle,
+        tagSavable = TAG_PASS_USER,
         maxLength = MAX_LENGTH_PASS,
+        hint = R.string.hint_password,
+        label = R.string.label_password,
         emptyError = R.string.error_empty_password,
         lengthError = R.string.error_length_password
     )
 
     val passwordRepeatUser = PropertySavableString(
-        savedStateHandle,
+        savedState = savedStateHandle,
+        tagSavable = TAG_PASS_REPEAT_USER,
+        maxLength = MAX_LENGTH_PASS,
         label = R.string.label_password,
         hint = R.string.hint_repeat_password,
-        maxLength = MAX_LENGTH_PASS,
         emptyError = R.string.error_empty_password,
         lengthError = R.string.error_length_password
     )
@@ -62,17 +68,21 @@ class SignUpViewModel @Inject constructor(
                 _messageSignUp.trySend(R.string.error_data_invalid)
                 null
             }
-            !Patterns.EMAIL_ADDRESS.matcher(emailUser.value).matches() -> {
+            !Patterns.EMAIL_ADDRESS.matcher(emailUser.currentValue).matches() -> {
                 emailUser.setAnotherError(R.string.error_valid_email)
                 _messageSignUp.trySend(R.string.error_data_invalid)
                 null
             }
-            passwordUser.value != passwordRepeatUser.value -> {
+            passwordUser.currentValue != passwordRepeatUser.currentValue -> {
                 passwordRepeatUser.setAnotherError(R.string.error_pass_repeat)
                 _messageSignUp.trySend(R.string.error_data_invalid)
                 null
             }
-            else -> SignUpDTO(emailUser.value, passwordUser.value, passwordRepeatUser.value)
+            else -> SignUpDTO(
+                emailUser.currentValue,
+                passwordUser.currentValue,
+                passwordRepeatUser.currentValue
+            )
         }
     }
 }

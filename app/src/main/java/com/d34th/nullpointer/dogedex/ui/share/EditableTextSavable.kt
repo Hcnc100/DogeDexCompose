@@ -32,32 +32,32 @@ fun EditableTextSavable(
     visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     Surface {
-        Column(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = modifier) {
             OutlinedTextField(
+                shape = shape,
                 enabled = isEnabled,
-                label = { Text(stringResource(id = valueProperty.label)) },
-                placeholder = { Text(stringResource(id = valueProperty.hint)) },
-                value = valueProperty.value,
-                onValueChange = valueProperty::changeValue,
+                singleLine = singleLine,
                 isError = valueProperty.hasError,
-                modifier = modifierText.fillMaxWidth(),
                 keyboardOptions = keyboardOptions,
                 keyboardActions = keyboardActions,
-                shape = shape,
+                value = valueProperty.currentValue,
+                modifier = modifierText.fillMaxWidth(),
+                onValueChange = valueProperty::changeValue,
                 visualTransformation = visualTransformation,
-                singleLine = singleLine,
+                label = { Text(stringResource(id = valueProperty.label)) },
+                placeholder = { Text(stringResource(id = valueProperty.hint)) },
             )
             Row {
                 Text(
-                    text = if (valueProperty.hasError) stringResource(id = valueProperty.errorValue) else "",
-                    style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.error,
-                    modifier = Modifier.weight(.9f)
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.weight(.9f),
+                    text = if (valueProperty.hasError) stringResource(id = valueProperty.errorValue) else ""
                 )
                 Text(
                     text = valueProperty.countLength,
-                    color = if (valueProperty.hasError) MaterialTheme.colors.error else Color.Unspecified,
-                    style = MaterialTheme.typography.caption
+                    style = MaterialTheme.typography.caption,
+                    color = if (valueProperty.hasError) MaterialTheme.colors.error else Color.Unspecified
                 )
             }
         }
@@ -94,21 +94,21 @@ fun PasswordTextSavable(
     Surface {
         Column(modifier = modifier.fillMaxWidth()) {
             OutlinedTextField(
+                shape = shape,
                 enabled = isEnabled,
-                label = { Text(stringResource(id = valueProperty.label)) },
-                placeholder = { Text(stringResource(id = valueProperty.hint)) },
-                value = valueProperty.value,
-                onValueChange = valueProperty::changeValue,
+                singleLine = singleLine,
                 isError = valueProperty.hasError,
-                modifier = modifierText.fillMaxWidth(),
                 keyboardOptions = keyboardOptions,
                 keyboardActions = keyboardActions,
-                shape = shape,
-                singleLine = singleLine,
+                value = valueProperty.currentValue,
+                modifier = modifierText.fillMaxWidth(),
+                onValueChange = valueProperty::changeValue,
+                label = { Text(stringResource(id = valueProperty.label)) },
+                placeholder = { Text(stringResource(id = valueProperty.hint)) },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     val (iconRes, descriptionRes) = iconAndDescription
-                    if (valueProperty.value.isNotEmpty())
+                    if (valueProperty.currentValue.isNotEmpty())
                         IconButton(onClick = { changeVisible(!passwordVisible) }) {
                             Icon(
                                 painter = painterResource(id = iconRes),
@@ -119,15 +119,15 @@ fun PasswordTextSavable(
             )
             Row {
                 Text(
-                    text = if (valueProperty.hasError) stringResource(id = valueProperty.errorValue) else "",
-                    style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.error,
-                    modifier = Modifier.weight(.9f)
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.weight(.9f),
+                    text = if (valueProperty.hasError) stringResource(id = valueProperty.errorValue) else ""
                 )
                 Text(
                     text = valueProperty.countLength,
-                    color = if (valueProperty.hasError) MaterialTheme.colors.error else Color.Unspecified,
-                    style = MaterialTheme.typography.caption
+                    style = MaterialTheme.typography.caption,
+                    color = if (valueProperty.hasError) MaterialTheme.colors.error else Color.Unspecified
                 )
             }
         }

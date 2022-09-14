@@ -20,27 +20,31 @@ class LoginViewModel @Inject constructor(
     companion object {
         private const val EMAIL_LENGTH = 40
         private const val PASSWORD_LENGTH = 30
+        private const val TAG_EMAIL_USER = "TAG_SIGN_IN_EMAIL_USER"
+        private const val TAG_PASSWORD_USER = "TAG_SIGN_IN_PASSWORD_USER"
     }
 
     private val _messageLogin = Channel<Int>()
     val messageLogin = _messageLogin.receiveAsFlow()
 
     val emailLogin = PropertySavableString(
-        state = savedStateHandle,
-        label = R.string.label_email,
-        hint = R.string.hint_email,
         maxLength = EMAIL_LENGTH,
+        tagSavable = TAG_EMAIL_USER,
+        savedState = savedStateHandle,
+        hint = R.string.hint_email,
+        label = R.string.label_email,
         emptyError = R.string.error_empty_email,
         lengthError = R.string.error_length_email
     )
 
     val passwordLogin = PropertySavableString(
-        state = savedStateHandle,
+        savedState = savedStateHandle,
         label = R.string.label_password,
         hint = R.string.hint_password,
         maxLength = PASSWORD_LENGTH,
         emptyError = R.string.error_empty_password,
-        lengthError = R.string.error_length_password
+        lengthError = R.string.error_length_password,
+        tagSavable = TAG_PASSWORD_USER
     )
 
 
@@ -52,12 +56,12 @@ class LoginViewModel @Inject constructor(
                 _messageLogin.trySend(R.string.error_data_invalid)
                 null
             }
-            !Patterns.EMAIL_ADDRESS.matcher(emailLogin.value).matches() -> {
+            !Patterns.EMAIL_ADDRESS.matcher(emailLogin.currentValue).matches() -> {
                 emailLogin.setAnotherError(R.string.error_valid_email)
                 _messageLogin.trySend(R.string.error_data_invalid)
                 null
             }
-            else -> SignInDTO(emailLogin.value, passwordLogin.value)
+            else -> SignInDTO(emailLogin.currentValue, passwordLogin.currentValue)
         }
     }
 
