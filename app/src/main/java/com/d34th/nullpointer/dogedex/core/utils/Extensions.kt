@@ -4,10 +4,19 @@ import android.content.Context
 import android.graphics.*
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil.compose.AsyncImagePainter
 import com.d34th.nullpointer.dogedex.R
+import com.valentinilk.shimmer.Shimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -82,4 +91,17 @@ fun ViewModel.launchSafeIO(
             blockAfter()
         }
     }
+}
+
+val AsyncImagePainter.isSuccess get() = state is AsyncImagePainter.State.Success
+
+@Composable
+fun getGrayColor(): Color {
+    return if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
+}
+
+fun Modifier.myShimmer(
+    shimmer: Shimmer,
+): Modifier = composed {
+    shimmer(shimmer).background(getGrayColor())
 }

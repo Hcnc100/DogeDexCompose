@@ -38,6 +38,7 @@ class DogsViewModelTest {
             if (launchErrorGetDogs) throw Exception("Random exception")
         }
 
+        override suspend fun firstRequestAllDogs() = Unit
         override suspend fun getRecognizeDog(idRecognizeDog: String): Dog = Dog()
         override suspend fun addDog(dog: Dog) = Unit
         override suspend fun isNewDog(name: String): Boolean = true

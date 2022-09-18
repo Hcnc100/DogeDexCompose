@@ -14,8 +14,8 @@ import com.d34th.nullpointer.dogedex.models.Dog
 
 @Composable
 fun HeaderDetailsDogs(
-    modifier: Modifier = Modifier,
-    dog: Dog
+    dog: Dog,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         NameDog(name = dog.name,modifier=Modifier)

@@ -8,6 +8,7 @@ interface DogsRepository {
     val isFirstRequestCameraPermission: Flow<Boolean>
     suspend fun addDog(dog: Dog)
     suspend fun refreshMyDogs()
+    suspend fun firstRequestAllDogs()
     suspend fun changeIsFirstRequestCamera()
     suspend fun isNewDog(name: String): Boolean
     suspend fun getRecognizeDog(idRecognizeDog: String): Dog

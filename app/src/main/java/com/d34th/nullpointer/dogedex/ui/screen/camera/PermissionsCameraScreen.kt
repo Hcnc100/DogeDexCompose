@@ -29,10 +29,10 @@ fun PermissionsCameraScreen(
     ) {
 
         LottieContainer(
+            animation = R.raw.cute_dog,
             modifier = Modifier
                 .height(250.dp)
-                .fillMaxWidth(),
-            animation = R.raw.cute_dog
+                .fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -57,7 +57,7 @@ fun PermissionsCameraScreen(
 }
 
 @Composable
-fun LottieContainer(modifier: Modifier, @RawRes animation: Int) {
+private fun LottieContainer(modifier: Modifier, @RawRes animation: Int) {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(animation)
     )

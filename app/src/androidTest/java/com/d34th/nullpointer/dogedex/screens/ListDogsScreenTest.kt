@@ -45,6 +45,7 @@ class ListDogsScreenTest {
         override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
         override suspend fun addDog(dog: Dog) = Unit
         override suspend fun refreshMyDogs() = Unit
+        override suspend fun firstRequestAllDogs() = Unit
         override suspend fun changeIsFirstRequestCamera() = Unit
         override suspend fun isNewDog(name: String): Boolean = true
         override suspend fun getRecognizeDog(idRecognizeDog: String) = Dog()

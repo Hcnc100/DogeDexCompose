@@ -50,8 +50,8 @@ class MainActivity : ComponentActivity() {
                      }?.let {
                          isSplash = false
                          DestinationsNavHost(
-                             navGraph = NavGraphs.root,
                              startRoute = it,
+                             navGraph = NavGraphs.root,
                              navController = rootState.navHostController,
                              dependenciesContainerBuilder = {
                                  dependency(authViewModel)

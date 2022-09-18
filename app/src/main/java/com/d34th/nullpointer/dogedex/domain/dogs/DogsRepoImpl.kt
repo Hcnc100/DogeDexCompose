@@ -6,7 +6,6 @@ import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceRemote
 import com.d34th.nullpointer.dogedex.models.Dog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 
 
 class DogsRepoImpl(
@@ -15,17 +14,16 @@ class DogsRepoImpl(
     private val preferencesDataSource: PreferencesDataSource
 ) : DogsRepository {
 
-    override val listDogs: Flow<List<Dog>> = flow {
+    override val listDogs: Flow<List<Dog>> = dogDataSourceLocal.listDogsSaved
+
+    override suspend fun firstRequestAllDogs() {
         val isFirstLogin = preferencesDataSource.isFirstLoadingUser.first()
         if (isFirstLogin) {
             val listDogs = dogsDataSourceRemote.getAllDogs()
             dogDataSourceLocal.updateAllDogs(listDogs)
             // * change isFirstLogin
             preferencesDataSource.changeIsFirstLoginUser()
-            refreshMyDogs()
         }
-
-        dogDataSourceLocal.listDogsSaved.collect(::emit)
     }
 
     override val isFirstRequestCameraPermission: Flow<Boolean> =

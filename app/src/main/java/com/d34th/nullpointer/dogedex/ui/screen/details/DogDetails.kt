@@ -3,7 +3,9 @@ package com.d34th.nullpointer.dogedex.ui.screen.details
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -14,10 +16,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
+import com.d34th.nullpointer.dogedex.ui.share.AsyncImageFade
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
 import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
@@ -33,11 +35,8 @@ fun DogDetails(
     dogsViewModel: DogsViewModel = hiltViewModel(),
     dogDetailsState: SimpleScreenState = rememberSimpleScreenState()
 ) {
-    val title by remember {
-        derivedStateOf {
-            if (isNewDog)
-                R.string.title_details_new_dog else R.string.title_details_saved_dog
-        }
+    val title = remember {
+        if (isNewDog) R.string.title_details_new_dog else R.string.title_details_saved_dog
     }
     LaunchedEffect(key1 = Unit) {
         dogsViewModel.messageDogs.collect(dogDetailsState::showSnackMessage)
@@ -107,8 +106,8 @@ private fun ImageDog(
                 textAlign = TextAlign.End
             )
         }
-        AsyncImage(
-            model = dog.imgUrl,
+        AsyncImageFade(
+            data = dog.imgUrl,
             contentDescription = stringResource(
                 R.string.description_has_dog,
                 dog.index,

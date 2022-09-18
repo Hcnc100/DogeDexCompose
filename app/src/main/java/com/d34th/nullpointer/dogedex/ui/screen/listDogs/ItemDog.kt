@@ -1,8 +1,6 @@
 package com.d34th.nullpointer.dogedex.ui.screen.listDogs
 
-import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,22 +14,17 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.ui.share.AsyncImageFade
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -57,9 +50,7 @@ fun ListDogsSuccess(
 @Composable
 private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modifier) {
 
-    val hasDog by remember(dog.hasDog) {
-        derivedStateOf { dog.hasDog }
-    }
+    val hasDog = remember(dog.hasDog) { dog.hasDog }
 
     Card(
         modifier = modifier
@@ -73,8 +64,8 @@ private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modi
             contentAlignment = Alignment.Center,
         ) {
             if (hasDog) {
-                DogImgList(
-                    urlImg = dog.imgUrl,
+                AsyncImageFade(
+                    data = dog.imgUrl,
                     modifier = Modifier.fillMaxSize(),
                     contentDescription = stringResource(
                         R.string.description_has_dog,
@@ -92,27 +83,4 @@ private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modi
             }
         }
     }
-}
-
-@Composable
-private fun DogImgList(
-    urlImg: String,
-    modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
-    contentDescription: String
-) {
-    val painter =
-        rememberAsyncImagePainter(
-            model = ImageRequest
-                .Builder(context)
-                .data(urlImg)
-                .build(),
-            error = painterResource(id = R.drawable.ic_broken),
-            placeholder = painterResource(id = R.drawable.ic_image)
-        )
-    Image(
-        painter = painter,
-        modifier = modifier,
-        contentDescription = contentDescription
-    )
 }

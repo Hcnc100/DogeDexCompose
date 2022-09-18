@@ -15,6 +15,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,13 +34,17 @@ class DogsViewModel @Inject constructor(
     var isLoadingMyGogs by SavableComposeState(savedStateHandle, KEY_LOAD_MY_DOG, false)
         private set
 
-    init {
-        requestMyLastDogs()
-    }
-
-    val stateListDogs = flow<Resource<List<Dog>>> {
-        dogsRepository.listDogs.collect {
-            emit(Resource.Success(it))
+    val stateListDogs = flow {
+        try {
+            dogsRepository.firstRequestAllDogs()
+            requestMyLastDogs()
+        } catch (exception: Exception) {
+            Timber.e("Error first request all dogs or update $exception")
+            _messageDogs.trySend(showMessageForException(exception, "get my dogs"))
+        } finally {
+            dogsRepository.listDogs.collect {
+                if (it.isEmpty()) emit(Resource.Failure) else emit(Resource.Success(it))
+            }
         }
     }.catch {
         // ! only work this, for control the message error after

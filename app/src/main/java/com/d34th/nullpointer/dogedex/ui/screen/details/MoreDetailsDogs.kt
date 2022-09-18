@@ -20,7 +20,8 @@ fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .padding(10.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(IntrinsicSize.Max),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -33,7 +34,7 @@ fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
         Divider(
             modifier = Modifier
                 .padding(10.dp)
-                .height(60.dp)
+                .fillMaxHeight()
                 .width(1.dp)
         )
 
@@ -42,7 +43,7 @@ fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
         Divider(
             modifier = Modifier
                 .padding(10.dp)
-                .height(60.dp)
+                .fillMaxHeight()
                 .width(1.dp)
         )
 
@@ -73,8 +74,8 @@ fun GenderDetailsDog(
     modifier: Modifier = Modifier
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = gender,
