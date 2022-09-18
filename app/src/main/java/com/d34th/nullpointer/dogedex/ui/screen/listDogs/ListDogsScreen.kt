@@ -15,8 +15,9 @@ import com.d34th.nullpointer.dogedex.models.Dog
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.test.ListDogsTestTag
-import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
-import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
+import com.d34th.nullpointer.dogedex.ui.states.DogsScreenState
+import com.d34th.nullpointer.dogedex.ui.states.rememberDogsScreenState
+import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -25,23 +26,31 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun ListDogsScreen(
     navigator: DestinationsNavigator,
     dogsViewModel: DogsViewModel = hiltViewModel(),
-    dogeDexState: SimpleScreenState = rememberSimpleScreenState(),
+    dogeDexState: DogsScreenState = rememberDogsScreenState(isRefreshing = dogsViewModel.isLoadingMyGogs)
 ) {
     val stateListDogs by dogsViewModel.stateListDogs.collectAsState()
+
     LaunchedEffect(key1 = Unit) {
         dogsViewModel.messageDogs.collect(dogeDexState::showSnackMessage)
     }
-    Scaffold(
-        scaffoldState = dogeDexState.scaffoldState,
-    ) { paddingValues ->
-        ListDogsScreen(
-            stateListDogs = stateListDogs,
-            modifier = Modifier.padding(paddingValues),
-            clickDetails = {
-                navigator.navigate(DogDetailsDestination(it, false))
-            }
-        )
+
+    SwipeRefresh(
+        state = dogeDexState.swipeRefreshState,
+        onRefresh = dogsViewModel::requestMyLastDogs,
+    ) {
+        Scaffold(
+            scaffoldState = dogeDexState.scaffoldState,
+        ) { paddingValues ->
+            ListDogsScreen(
+                stateListDogs = stateListDogs,
+                modifier = Modifier.padding(paddingValues),
+                clickDetails = {
+                    navigator.navigate(DogDetailsDestination(it, false))
+                }
+            )
+        }
     }
+
 }
 
 @Composable
