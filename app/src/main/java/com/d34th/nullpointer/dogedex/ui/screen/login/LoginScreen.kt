@@ -205,11 +205,24 @@ private fun CreateAccount(
     actionClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Text(text = stringResource(R.string.text_has_not_account))
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentSize()
+            .height(IntrinsicSize.Min)
+    ) {
+        Text(
+            text = stringResource(R.string.text_has_not_account),
+            modifier = Modifier.alignByBaseline()
+        )
         Spacer(modifier = Modifier.size(10.dp))
-        OutlinedButton(onClick = actionClick) {
-            Text(text = stringResource(R.string.text_button_go_sign_up))
+        OutlinedButton(
+            onClick = actionClick,
+            modifier = Modifier.alignByBaseline()
+        ) {
+            Text(
+                text = stringResource(R.string.text_button_go_sign_up)
+            )
         }
     }
 }
