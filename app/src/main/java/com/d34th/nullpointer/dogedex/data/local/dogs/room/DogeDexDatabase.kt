@@ -11,9 +11,5 @@ import com.d34th.nullpointer.dogedex.models.Dog
 )
 abstract class DogeDexDatabase : RoomDatabase() {
 
-    companion object {
-        const val NAME_DB = "DOGE_DEX_DB"
-    }
-
     abstract fun getDogDao(): DogDAO
 }

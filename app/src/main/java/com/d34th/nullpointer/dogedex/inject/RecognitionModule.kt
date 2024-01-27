@@ -2,6 +2,7 @@ package com.d34th.nullpointer.dogedex.inject
 
 import android.content.Context
 import com.d34th.nullpointer.dogedex.domain.ia.RecognitionRepoImpl
+import com.d34th.nullpointer.dogedex.domain.ia.RecognitionRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,5 +18,5 @@ object RecognitionModule {
     @Singleton
     fun getRecognitionRepo(
         @ApplicationContext context: Context
-    ): RecognitionRepoImpl = RecognitionRepoImpl(context)
+    ): RecognitionRepository = RecognitionRepoImpl(context)
 }

@@ -8,6 +8,7 @@ import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
 import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceRemote
 import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceRemoteImpl
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepoImpl
+import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,7 +37,7 @@ object DogsModule {
         dogDataSourceLocal: DogDataSourceLocal,
         dogsDataSourceRemote: DogsDataSourceRemote,
         preferencesDataSource: PreferencesDataSource,
-    ): DogsRepoImpl = DogsRepoImpl(
+    ): DogsRepository = DogsRepoImpl(
         dogDataSourceLocal,
         dogsDataSourceRemote,
         preferencesDataSource

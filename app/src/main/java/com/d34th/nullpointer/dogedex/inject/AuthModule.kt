@@ -6,6 +6,7 @@ import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
 import com.d34th.nullpointer.dogedex.data.remote.auth.AuthDataSource
 import com.d34th.nullpointer.dogedex.data.remote.auth.AuthDataSourceImpl
 import com.d34th.nullpointer.dogedex.domain.auth.AuthRepoImpl
+import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,5 +29,5 @@ object AuthModule {
         authDataSource: AuthDataSource,
         preferencesDataSource: PreferencesDataSource,
         dogsDataSourceLocal: DogDataSourceLocal
-    ): AuthRepoImpl = AuthRepoImpl(authDataSource, dogsDataSourceLocal, preferencesDataSource)
+    ): AuthRepository = AuthRepoImpl(authDataSource, dogsDataSourceLocal, preferencesDataSource)
 }

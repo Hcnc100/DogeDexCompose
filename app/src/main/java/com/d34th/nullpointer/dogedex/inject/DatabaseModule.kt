@@ -15,6 +15,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
+    private const val NAME_DB = "DOGE_DEX_DB"
+
     @Provides
     @Singleton
     fun provideDatabase(
@@ -22,7 +24,7 @@ object DatabaseModule {
     ): DogeDexDatabase = Room.databaseBuilder(
         context,
         DogeDexDatabase::class.java,
-        DogeDexDatabase.NAME_DB
+        NAME_DB
     ).build()
 
     @Provides

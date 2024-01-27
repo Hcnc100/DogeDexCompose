@@ -165,6 +165,11 @@ dependencies {
     androidTestUtil("androidx.test:orchestrator:1.4.1")
 
     implementation("com.google.accompanist:accompanist-swiperefresh:0.25.1")
+
+    // * kotlin serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+
 }
 
 kapt {

@@ -15,7 +15,6 @@ import retrofit2.http.*
 interface DogsApiServices {
 
     companion object {
-        const val BASE_URL_API = "https://todogs.herokuapp.com/api/v1/"
         private const val DOG_PATH = "dogs"
         private const val SIGN_UP_PATH = "sign_up"
         private const val SIGN_IN_PATH = "sign_in"
