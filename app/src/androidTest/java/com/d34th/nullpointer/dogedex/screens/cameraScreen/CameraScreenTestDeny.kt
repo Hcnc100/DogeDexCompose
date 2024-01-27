@@ -31,6 +31,10 @@ class CameraScreenTestDeny {
 
         override suspend fun addDog(dog: Dog) = Unit
         override suspend fun refreshMyDogs() = Unit
+        override suspend fun firstRequestAllDogs() {
+            TODO("Not yet implemented")
+        }
+
         override suspend fun changeIsFirstRequestCamera() = Unit
         override suspend fun isNewDog(name: String): Boolean = true
         override suspend fun getRecognizeDog(idRecognizeDog: String): Dog = Dog()

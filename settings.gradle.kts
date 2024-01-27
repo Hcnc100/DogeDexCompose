@@ -4,23 +4,15 @@ pluginManagement {
         google()
         mavenCentral()
     }
-
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == 'dagger.hilt.android.plugin') {
-                useModule("com.google.dagger:hilt-android-gradle-plugin:2.39.1")
-            }
-        }
-    }
 }
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven { url 'https://jitpack.io' }
+        maven { url = uri("https://jitpack.io") }
         google()
         mavenCentral()
     }
 }
 rootProject.name = "Dogedex"
-include ':app'
+include(":app")
