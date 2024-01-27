@@ -10,8 +10,9 @@ import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager
 import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
 import com.d34th.nullpointer.dogedex.models.User
-import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
-import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
+import com.d34th.nullpointer.dogedex.models.auth.data.AuthData
+import com.d34th.nullpointer.dogedex.models.auth.dto.SignInDTO
+import com.d34th.nullpointer.dogedex.models.auth.dto.SignUpDTO
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.login.LoginScreen
@@ -35,9 +36,9 @@ class LoginScreenScreenTest {
         val delaySignIn: Long = 500L
     ) : AuthRepository {
 
-        private val _currentUser = MutableStateFlow(User())
+        private val _currentUser = MutableStateFlow(AuthData())
 
-        override val currentUser: Flow<User> = _currentUser.asStateFlow()
+        override val currentUser: Flow<AuthData?> = _currentUser.asStateFlow()
         override val isAuthUser: Flow<Boolean> = flowOf(false)
 
         override suspend fun signIn(userCredentials: SignInDTO) {
@@ -45,7 +46,7 @@ class LoginScreenScreenTest {
             if (exceptionMessage.isNotEmpty()) {
                 throw Exception(exceptionMessage)
             } else {
-                _currentUser.value = User(
+                _currentUser.value = AuthData(
                     id = 12345,
                     email = userCredentials.email,
                     token = "fakeToken"

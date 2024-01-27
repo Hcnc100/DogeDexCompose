@@ -8,8 +8,8 @@ import com.d34th.nullpointer.dogedex.core.states.AuthState
 import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager.showMessageForException
 import com.d34th.nullpointer.dogedex.core.utils.launchSafeIO
 import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
-import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
-import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
+import com.d34th.nullpointer.dogedex.models.auth.dto.SignInDTO
+import com.d34th.nullpointer.dogedex.models.auth.dto.SignUpDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -34,7 +34,7 @@ class AuthViewModel @Inject constructor(
 
     val stateUser = flow {
         authRepo.currentUser.collect { currentUser ->
-            if (currentUser.isAuth)
+            if (currentUser != null)
                 emit(AuthState.Authenticated(currentUser))
             else
                 emit(AuthState.Unauthenticated)

@@ -9,8 +9,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
 import com.d34th.nullpointer.dogedex.models.User
-import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
-import com.d34th.nullpointer.dogedex.models.dtos.SignUpDTO
+import com.d34th.nullpointer.dogedex.models.auth.data.AuthData
+import com.d34th.nullpointer.dogedex.models.auth.dto.SignInDTO
+import com.d34th.nullpointer.dogedex.models.auth.dto.SignUpDTO
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.register.SignUpScreen
@@ -32,7 +33,7 @@ class SignUpScreenTest {
     private class AuthFakeRepo(
         val delaySignIn: Long = 500
     ) : AuthRepository {
-        override val currentUser: Flow<User> = flowOf(User())
+        override val currentUser: Flow<AuthData> = flowOf(AuthData())
         override val isAuthUser: Flow<Boolean> = flowOf(false)
 
         override suspend fun signIn(userCredentials: SignInDTO) = Unit

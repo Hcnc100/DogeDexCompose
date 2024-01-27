@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
-import com.d34th.nullpointer.dogedex.models.dtos.SignInDTO
+import com.d34th.nullpointer.dogedex.models.auth.dto.SignInDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow

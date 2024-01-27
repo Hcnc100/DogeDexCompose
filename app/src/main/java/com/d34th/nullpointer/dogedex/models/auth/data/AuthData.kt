@@ -1,21 +1,25 @@
-package com.d34th.nullpointer.dogedex.models
+package com.d34th.nullpointer.dogedex.models.auth.data
 
 import com.d34th.nullpointer.dogedex.models.authDogApiResponse.auth.AuthResponse
+import kotlinx.serialization.Serializable
 
-data class User(
-    val id: Long = -1,
+
+@Serializable
+data class AuthData(
+    val id: Int =-1,
+    val token: String = "",
+    val username: String = "",
     val email: String = "",
-    val token: String = ""
 ) {
-    val isAuth: Boolean get() = id != -1L
-
     companion object {
-        fun fromAuthResponse(response: AuthResponse): User {
+        fun fromAuthResponse(response: AuthResponse): AuthData {
             return if (response.isSuccess) {
                 val data = response.data
-                User(
-                    id = data.user.id.toLong(),
+                AuthData(
+                    id = data.user.id,
                     token = data.user.authentication_token,
+                    // ! TODO: change this
+                    username ="",
                     email = data.user.email
                 )
             } else {

@@ -1,18 +1,20 @@
 package com.d34th.nullpointer.dogedex.inject
 
-import com.d34th.nullpointer.dogedex.data.local.dogs.DogDataSourceLocal
-import com.d34th.nullpointer.dogedex.data.local.dogs.DogDataSourceLocalImpl
-import com.d34th.nullpointer.dogedex.data.local.dogs.room.DogDAO
-import com.d34th.nullpointer.dogedex.data.local.prefereneces.PreferencesDataSource
-import com.d34th.nullpointer.dogedex.data.remote.DogsApiServices
-import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceRemote
-import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceRemoteImpl
+import com.d34th.nullpointer.dogedex.datasource.dogs.local.DogLocalDataSourceLocal
+import com.d34th.nullpointer.dogedex.datasource.dogs.local.DogLocalDataSourceLocalImpl
+import com.d34th.nullpointer.dogedex.data.dogs.local.DogDAO
+import com.d34th.nullpointer.dogedex.datasource.settings.local.SettingsLocalDataSource
+import com.d34th.nullpointer.dogedex.data.dogs.remote.DogsApiServices
+import com.d34th.nullpointer.dogedex.datasource.dogs.remote.DogsDataSourceRemote
+import com.d34th.nullpointer.dogedex.datasource.dogs.remote.DogsDataSourceRemoteImpl
+import com.d34th.nullpointer.dogedex.database.DogeDexDatabase
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepoImpl
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @Module
@@ -21,9 +23,22 @@ object DogsModule {
 
     @Provides
     @Singleton
+    fun provideDogsDao(
+        dogeDexDatabase: DogeDexDatabase
+    ): DogDAO = dogeDexDatabase.getDogDao()
+
+    @Singleton
+    @Provides
+    fun provideDogsApiServices(
+        retrofit: Retrofit
+    ): DogsApiServices =
+        retrofit.create(DogsApiServices::class.java)
+
+    @Provides
+    @Singleton
     fun provideDogDataSourceLocal(
         dogDAO: DogDAO
-    ): DogDataSourceLocal = DogDataSourceLocalImpl(dogDAO)
+    ): DogLocalDataSourceLocal = DogLocalDataSourceLocalImpl(dogDAO)
 
     @Provides
     @Singleton
@@ -34,12 +49,12 @@ object DogsModule {
     @Provides
     @Singleton
     fun provideDogsRepository(
-        dogDataSourceLocal: DogDataSourceLocal,
+        dogLocalDataSourceLocal: DogLocalDataSourceLocal,
         dogsDataSourceRemote: DogsDataSourceRemote,
-        preferencesDataSource: PreferencesDataSource,
+        settingsLocalDataSource: SettingsLocalDataSource,
     ): DogsRepository = DogsRepoImpl(
-        dogDataSourceLocal,
+        dogLocalDataSourceLocal,
         dogsDataSourceRemote,
-        preferencesDataSource
+        settingsLocalDataSource
     )
 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.states.AuthState
 import com.d34th.nullpointer.dogedex.models.User
+import com.d34th.nullpointer.dogedex.models.auth.data.AuthData
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
 import com.ramcosta.composedestinations.annotation.Destination
@@ -46,7 +47,7 @@ fun SettingsScreen(
             is AuthState.Authenticated -> {
                 UserAuthInfo(
                     modifier = Modifier.padding(it),
-                    user = currentUser.currentUser
+                    authData = currentUser.currentUser
                 )
             }
             else -> {
@@ -66,15 +67,15 @@ fun SettingsScreen(
 @Composable
 private fun UserAuthInfo(
     modifier: Modifier = Modifier,
-    user: User
+    authData: AuthData
 ) {
     Column(modifier = modifier.padding(10.dp)) {
         Text(text = stringResource(R.string.title_info_user), style = MaterialTheme.typography.h5)
         Spacer(modifier = Modifier.size(20.dp))
-        Text(text = stringResource(R.string.title_id_user, user.id))
+        Text(text = stringResource(R.string.title_id_user, authData.id))
         Spacer(modifier = Modifier.size(10.dp))
-        Text(text = stringResource(R.string.title_email_user, user.email))
+        Text(text = stringResource(R.string.title_email_user, authData.email))
         Spacer(modifier = Modifier.size(10.dp))
-        Text(text = stringResource(R.string.title_token_user, user.token))
+        Text(text = stringResource(R.string.title_token_user, authData.token))
     }
 }

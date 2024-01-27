@@ -1,59 +1,57 @@
 package com.d34th.nullpointer.dogedex.domain.dogs
 
-import com.d34th.nullpointer.dogedex.data.local.dogs.DogDataSourceLocal
-import com.d34th.nullpointer.dogedex.data.local.prefereneces.PreferencesDataSource
-import com.d34th.nullpointer.dogedex.data.remote.dogs.DogsDataSourceRemote
+import com.d34th.nullpointer.dogedex.datasource.dogs.local.DogLocalDataSourceLocal
+import com.d34th.nullpointer.dogedex.datasource.settings.local.SettingsLocalDataSource
+import com.d34th.nullpointer.dogedex.datasource.dogs.remote.DogsDataSourceRemote
 import com.d34th.nullpointer.dogedex.models.Dog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 
 class DogsRepoImpl(
-    private val dogDataSourceLocal: DogDataSourceLocal,
+    private val dogLocalDataSourceLocal: DogLocalDataSourceLocal,
     private val dogsDataSourceRemote: DogsDataSourceRemote,
-    private val preferencesDataSource: PreferencesDataSource
+    private val settingsLocalDataSource: SettingsLocalDataSource
 ) : DogsRepository {
 
-    override val listDogs: Flow<List<Dog>> = dogDataSourceLocal.listDogsSaved
+    override val listDogs: Flow<List<Dog>> = dogLocalDataSourceLocal.listDogsSaved
 
     override suspend fun firstRequestAllDogs() {
-        val isFirstLogin = preferencesDataSource.isFirstLoadingUser.first()
+        val isFirstLogin = settingsLocalDataSource.settingsData.first()?.isFirstLogin ?: true
         if (isFirstLogin) {
             val listDogs = dogsDataSourceRemote.getAllDogs()
-            dogDataSourceLocal.updateAllDogs(listDogs)
+            dogLocalDataSourceLocal.updateAllDogs(listDogs)
             // * change isFirstLogin
-            preferencesDataSource.changeIsFirstLoginUser()
+            settingsLocalDataSource.changeIsFirstLoginUser()
         }
     }
 
     override val isFirstRequestCameraPermission: Flow<Boolean> =
-        preferencesDataSource.isFirstRequestCameraPermission
+        settingsLocalDataSource.isFirstRequestCameraPermission
 
     override suspend fun addDog(dog: Dog) {
-        val userToken = preferencesDataSource.currentUser.first().token
-        dogsDataSourceRemote.addDog(dog, userToken)
-        dogDataSourceLocal.insertDog(dog.copy(hasDog = true))
+        dogsDataSourceRemote.addDog(dog)
+        dogLocalDataSourceLocal.insertDog(dog.copy(hasDog = true))
     }
 
     override suspend fun refreshMyDogs() {
-        val isFirstLogin = preferencesDataSource.isFirstLoadingUser.first()
+        val isFirstLogin = settingsLocalDataSource.isFirstLoadingUser.first()
         if (!isFirstLogin) {
-            val userToken = preferencesDataSource.currentUser.first().token
-            val listMyDogsServer = dogsDataSourceRemote.getMyDogs(userToken)
-            if (listMyDogsServer.size != dogDataSourceLocal.countHasDog()) {
+            val listMyDogsServer = dogsDataSourceRemote.getMyDogs()
+            if (listMyDogsServer.size != dogLocalDataSourceLocal.countHasDog()) {
                 val newLisHasDog = listMyDogsServer.map { it.copy(hasDog = true) }
-                dogDataSourceLocal.insertAllDogs(newLisHasDog)
+                dogLocalDataSourceLocal.insertAllDogs(newLisHasDog)
             }
         }
     }
 
     override suspend fun isNewDog(name: String): Boolean {
-        val dog = dogDataSourceLocal.getDogByName(name)
+        val dog = dogLocalDataSourceLocal.getDogByName(name)
         return dog != null && !dog.hasDog
     }
 
     override suspend fun changeIsFirstRequestCamera() =
-        preferencesDataSource.changeIsFirstRequestCamera()
+        settingsLocalDataSource.changeIsFirstRequestCamera()
 
     override suspend fun getRecognizeDog(idRecognizeDog: String): Dog =
         dogsDataSourceRemote.getRecognizeDog(idRecognizeDog)
