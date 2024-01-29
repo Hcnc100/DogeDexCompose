@@ -1,36 +1,25 @@
 package com.d34th.nullpointer.dogedex.ui.screen.register
 
-import android.app.LocaleConfig
 import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,19 +28,20 @@ import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
 import com.d34th.nullpointer.dogedex.ui.preview.config.OrientationPreviews
 import com.d34th.nullpointer.dogedex.ui.preview.provider.BooleanProvider
 import com.d34th.nullpointer.dogedex.ui.screen.register.actions.RegisterActions
-import com.d34th.nullpointer.dogedex.ui.screen.register.actions.RegisterActions.*
+import com.d34th.nullpointer.dogedex.ui.screen.register.actions.RegisterActions.ACTION_BACK
+import com.d34th.nullpointer.dogedex.ui.screen.register.actions.RegisterActions.ACTION_NEXT
+import com.d34th.nullpointer.dogedex.ui.screen.register.actions.RegisterActions.REGISTER
 import com.d34th.nullpointer.dogedex.ui.screen.register.components.ButtonProgressRegister
 import com.d34th.nullpointer.dogedex.ui.screen.register.components.FormRegister
-import com.d34th.nullpointer.dogedex.ui.screen.register.test.SignUpTestTag
 import com.d34th.nullpointer.dogedex.ui.screen.register.viewModel.SignUpViewModel
-import com.d34th.nullpointer.dogedex.ui.share.EditableTextSavable
-import com.d34th.nullpointer.dogedex.ui.share.PasswordTextSavable
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
 import com.d34th.nullpointer.dogedex.ui.states.FieldsScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberFieldsScreenState
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@RootNavGraph
 @Destination
 @Composable
 fun SignUpScreen(

@@ -40,8 +40,10 @@ import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
 import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@RootNavGraph
 @Destination
 @Composable
 fun DogDetails(

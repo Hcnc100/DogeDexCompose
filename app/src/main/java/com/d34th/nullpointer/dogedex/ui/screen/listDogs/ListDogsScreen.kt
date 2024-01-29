@@ -12,6 +12,7 @@ import androidx.compose.ui.semantics.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
+import com.d34th.nullpointer.dogedex.navigation.HomeNavGraph
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.test.ListDogsTestTag
@@ -21,6 +22,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@HomeNavGraph
 @Destination
 @Composable
 fun ListDogsScreen(

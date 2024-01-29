@@ -14,7 +14,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.d34th.nullpointer.dogedex.core.states.AuthState
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.NavGraphs
-import com.d34th.nullpointer.dogedex.ui.screen.destinations.CameraScreenDestination
+import com.d34th.nullpointer.dogedex.ui.screen.destinations.HomeScreenDestination
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.LoginScreenDestination
 import com.d34th.nullpointer.dogedex.ui.states.rememberRootScreenState
 import com.d34th.nullpointer.dogedex.ui.theme.DogedexTheme
@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
                      val rootState = rememberRootScreenState()
                      val isAuthUser by authViewModel.stateUser.collectAsState()
                      when (isAuthUser) {
-                         is AuthState.Authenticated -> CameraScreenDestination
+                         is AuthState.Authenticated -> HomeScreenDestination
                          AuthState.Unauthenticated -> LoginScreenDestination
                          AuthState.Authenticating -> null
                      }?.let {

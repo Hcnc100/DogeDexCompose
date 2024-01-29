@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.R
+import com.d34th.nullpointer.dogedex.navigation.HomeNavGraph
 import com.d34th.nullpointer.dogedex.presentation.CameraViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.camera.test.CameraTestTag
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
@@ -27,7 +28,9 @@ import com.d34th.nullpointer.dogedex.ui.screen.destinations.ListDogsScreenDestin
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.SettingsScreenDestination
 import com.d34th.nullpointer.dogedex.ui.share.ProcessingActionButton
 import com.d34th.nullpointer.dogedex.ui.states.ActionUiCamera
-import com.d34th.nullpointer.dogedex.ui.states.ActionUiCamera.*
+import com.d34th.nullpointer.dogedex.ui.states.ActionUiCamera.OPEN_COLLECTION
+import com.d34th.nullpointer.dogedex.ui.states.ActionUiCamera.OPEN_SETTINGS
+import com.d34th.nullpointer.dogedex.ui.states.ActionUiCamera.TAKE_PHOTO
 import com.d34th.nullpointer.dogedex.ui.states.CameraScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberCameraScreenState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -36,6 +39,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalPermissionsApi::class)
+@HomeNavGraph(start = true)
 @Destination
 @Composable
 fun CameraScreen(
