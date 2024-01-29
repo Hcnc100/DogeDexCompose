@@ -11,7 +11,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.core.states.Resource
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.test.ListDogsTestTag
@@ -55,14 +55,14 @@ fun ListDogsScreen(
 
 @Composable
 private fun ListDogsScreen(
-    stateListDogs: Resource<List<Dog>>,
-    clickDetails: (Dog) -> Unit,
+    stateListDogs: Resource<List<DogData>>,
+    clickDetails: (DogData) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (stateListDogs) {
 
         is Resource.Success -> ListDogsSuccess(
-            listDog = stateListDogs.data,
+            listDogData = stateListDogs.data,
             modifier = modifier.semantics { testTag = ListDogsTestTag.LIST_DOGS },
             clickDetails = clickDetails
         )

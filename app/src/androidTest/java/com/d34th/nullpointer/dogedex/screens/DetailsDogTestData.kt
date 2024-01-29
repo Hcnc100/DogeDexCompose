@@ -10,7 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.details.DogDetails
@@ -22,18 +22,18 @@ import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
-class DetailsDogTest {
+class DetailsDogTestData {
 
-    private class DogFakeRepository : DogsRepository {
-        override val listDogs: Flow<List<Dog>> = flowOf(emptyList())
+    private class DogDataFakeRepository : DogsRepository {
+        override val listDogs: Flow<List<DogData>> = flowOf(emptyList())
         override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
 
-        override suspend fun addDog(dog: Dog) = Unit
+        override suspend fun addDog(dogData: DogData) = Unit
         override suspend fun refreshMyDogs() = Unit
         override suspend fun firstRequestAllDogs() = Unit
         override suspend fun changeIsFirstRequestCamera() = Unit
         override suspend fun isNewDog(name: String): Boolean = true
-        override suspend fun getRecognizeDog(idRecognizeDog: String): Dog = Dog()
+        override suspend fun getRecognizeDog(idRecognizeDog: String): DogData = DogData()
 
     }
 
@@ -44,13 +44,13 @@ class DetailsDogTest {
 
     @Test
     fun showInterfaceIfIsNewDog() {
-        val dogTest = Dog(index = 0, name = "Test dog")
+        val dogDataTest = DogData(index = 0, name = "Test dog")
         composeTestRule.setContent {
             DogDetails(
-                dog = dogTest,
+                dogData = dogDataTest,
                 isNewDog = true,
                 navigator = navigator,
-                dogsViewModel = DogsViewModel(DogFakeRepository(), SavedStateHandle())
+                dogsViewModel = DogsViewModel(DogDataFakeRepository(), SavedStateHandle())
             )
         }
         with(composeTestRule) {
@@ -59,14 +59,19 @@ class DetailsDogTest {
             onNodeWithContentDescription(
                 context.getString(
                     R.string.description_has_dog,
-                    dogTest.index,
-                    dogTest.name
+                    dogDataTest.index,
+                    dogDataTest.name
                 )
             ).assertExists()
 
             // * show correct info dog
             onNodeWithText("Test dog").assertIsDisplayed()
-            onNodeWithText(context.getString(R.string.index_dog, dogTest.index)).assertIsDisplayed()
+            onNodeWithText(
+                context.getString(
+                    R.string.index_dog,
+                    dogDataTest.index
+                )
+            ).assertIsDisplayed()
 
             // * show title new dog
             onNodeWithText(context.getString(R.string.title_details_new_dog)).assertIsDisplayed()
@@ -78,13 +83,13 @@ class DetailsDogTest {
 
     @Test
     fun showInterfacesIfHasDog() {
-        val dogTest = Dog(index = 10, name = "Test dog")
+        val dogDataTest = DogData(index = 10, name = "Test dog")
         composeTestRule.setContent {
             DogDetails(
-                dog = dogTest,
+                dogData = dogDataTest,
                 isNewDog = false,
                 navigator = navigator,
-                dogsViewModel = DogsViewModel(DogFakeRepository(), SavedStateHandle())
+                dogsViewModel = DogsViewModel(DogDataFakeRepository(), SavedStateHandle())
             )
         }
         with(composeTestRule) {

@@ -1,6 +1,10 @@
 package com.d34th.nullpointer.dogedex.ui.screen.details
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -10,19 +14,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 
 @Composable
 fun HeaderDetailsDogs(
-    dog: Dog,
+    dogData: DogData,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        NameDog(name = dog.name,modifier=Modifier)
+        NameDog(name = dogData.name, modifier = Modifier)
         Spacer(modifier = Modifier.size(10.dp))
-        AgeDog(age = dog.lifeExpectancy)
+        AgeDog(age = dogData.lifeExpectancy)
         Spacer(modifier = Modifier.size(5.dp))
-        TemperamentDog(temperament = dog.temperament)
+        TemperamentDog(temperament = dogData.temperament)
         Divider(
             modifier = Modifier
                 .padding(10.dp)

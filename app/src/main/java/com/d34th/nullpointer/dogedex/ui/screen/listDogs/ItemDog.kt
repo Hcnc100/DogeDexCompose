@@ -23,23 +23,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.d34th.nullpointer.dogedex.R
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.ui.share.AsyncImageFade
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListDogsSuccess(
-    listDog: List<Dog>,
-    clickDetails: (Dog) -> Unit,
+    listDogData: List<DogData>,
+    clickDetails: (DogData) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Adaptive(dimensionResource(id = R.dimen.size_item_card_dog))
     ) {
-        items(listDog, key = { it.index }) { dog ->
-            ItemDog(dog = dog,
+        items(listDogData, key = { it.id }) { dog ->
+            ItemDog(dogData = dog,
                 modifier = Modifier.animateItemPlacement(),
                 actionClick = { if (dog.hasDog) clickDetails(dog) })
         }
@@ -48,9 +48,9 @@ fun ListDogsSuccess(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun ItemDog(dogData: DogData, actionClick: () -> Unit, modifier: Modifier = Modifier) {
 
-    val hasDog = remember(dog.hasDog) { dog.hasDog }
+    val hasDog = remember(dogData.hasDog) { dogData.hasDog }
 
     Card(
         modifier = modifier
@@ -65,17 +65,17 @@ private fun ItemDog(dog: Dog, actionClick: () -> Unit, modifier: Modifier = Modi
         ) {
             if (hasDog) {
                 AsyncImageFade(
-                    data = dog.imgUrl,
+                    data = dogData.imgUrl,
                     modifier = Modifier.fillMaxSize(),
                     contentDescription = stringResource(
                         R.string.description_has_dog,
-                        dog.index,
-                        dog.name
+                        dogData.id,
+                        dogData.name
                     )
                 )
             } else {
                 Text(
-                    text = stringResource(id = R.string.index_dog, dog.index),
+                    text = stringResource(id = R.string.index_dog, dogData.id),
                     style = MaterialTheme.typography.body1,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.W500

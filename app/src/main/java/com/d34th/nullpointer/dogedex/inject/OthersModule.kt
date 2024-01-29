@@ -2,7 +2,6 @@ package com.d34th.nullpointer.dogedex.inject
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
@@ -23,6 +22,7 @@ object OthersModule {
 
     private const val NAME_DB = "DOGE_DEX_DB"
     private const val NAME_SETTINGS = "DOGS_SETTINGS"
+
     @Provides
     @Singleton
     fun provideDatabase(
@@ -31,7 +31,7 @@ object OthersModule {
         context,
         DogeDexDatabase::class.java,
         NAME_DB
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
 
     @Singleton

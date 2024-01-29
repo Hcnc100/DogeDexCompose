@@ -1,14 +1,14 @@
 package com.d34th.nullpointer.dogedex.datasource.dogs.local
 
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import kotlinx.coroutines.flow.Flow
 
 interface DogLocalDataSourceLocal {
-    val listDogsSaved: Flow<List<Dog>>
-    suspend fun insertDog(dog: Dog)
-    suspend fun insertAllDogs(list: List<Dog>)
-    suspend fun updateAllDogs(list: List<Dog>)
-    suspend fun getDogByName(nameDog: String): Dog?
+    val listDogsSaved: Flow<List<DogData>>
+    suspend fun insertDog(dogData: DogData)
+    suspend fun insertAllDogs(list: List<DogData>)
+    suspend fun updateAllDogs(list: List<DogData>)
+    suspend fun getDogById(dogId: Long): DogData?
     suspend fun countHasDog(): Int
     suspend fun deleteAllDogs()
 }

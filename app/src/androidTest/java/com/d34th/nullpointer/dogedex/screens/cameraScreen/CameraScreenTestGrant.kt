@@ -14,7 +14,7 @@ import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import com.d34th.nullpointer.dogedex.domain.ia.RecognitionRepository
 import com.d34th.nullpointer.dogedex.ia.DogRecognition
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import com.d34th.nullpointer.dogedex.presentation.CameraViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.camera.CameraScreen
@@ -28,10 +28,10 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class CameraScreenTestGrant {
     private class DogsFakeRepo : DogsRepository {
-        override val listDogs: Flow<List<Dog>> = flowOf(emptyList())
+        override val listDogs: Flow<List<DogData>> = flowOf(emptyList())
         override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
 
-        override suspend fun addDog(dog: Dog) = Unit
+        override suspend fun addDog(dogData: DogData) = Unit
         override suspend fun refreshMyDogs() = Unit
         override suspend fun firstRequestAllDogs() {
             TODO("Not yet implemented")
@@ -39,7 +39,7 @@ class CameraScreenTestGrant {
 
         override suspend fun changeIsFirstRequestCamera() = Unit
         override suspend fun isNewDog(name: String): Boolean = true
-        override suspend fun getRecognizeDog(idRecognizeDog: String): Dog = Dog()
+        override suspend fun getRecognizeDog(idRecognizeDog: String): DogData = DogData()
 
     }
 

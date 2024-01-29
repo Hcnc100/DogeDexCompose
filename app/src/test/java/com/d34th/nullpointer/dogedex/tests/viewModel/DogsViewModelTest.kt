@@ -6,7 +6,7 @@ import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.core.utils.UtilsFake
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.utils.MainCoroutineRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,11 +26,11 @@ class DogsViewModelTest {
     private class DogFakeRepoImpl(
         private val delayRequestDog: Long = 2_000,
         private val launchErrorGetDogs: Boolean = false,
-        val listFakeDogs: List<Dog> = emptyList()
+        val listFakeDogData: List<DogData> = emptyList()
     ) : DogsRepository {
-        override val listDogs: Flow<List<Dog>> = flow {
+        override val listDogs: Flow<List<DogData>> = flow {
             delay(delayRequestDog)
-            emit(listFakeDogs)
+            emit(listFakeDogData)
         }
         override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
         override suspend fun refreshMyDogs() {
@@ -39,8 +39,8 @@ class DogsViewModelTest {
         }
 
         override suspend fun firstRequestAllDogs() = Unit
-        override suspend fun getRecognizeDog(idRecognizeDog: String): Dog = Dog()
-        override suspend fun addDog(dog: Dog) = Unit
+        override suspend fun getRecognizeDog(idRecognizeDog: String): DogData = DogData()
+        override suspend fun addDog(dogData: DogData) = Unit
         override suspend fun isNewDog(name: String): Boolean = true
         override suspend fun changeIsFirstRequestCamera() = Unit
     }
@@ -90,12 +90,12 @@ class DogsViewModelTest {
     fun `Test get all dogs for repository`() = runTest(mainCoroutineRule.dispatcher) {
         val listFakeDogs = UtilsFake.generateListsDogs(10)
         val dogsViewModel = DogsViewModel(
-            DogFakeRepoImpl(listFakeDogs = listFakeDogs),
+            DogFakeRepoImpl(listFakeDogData = listFakeDogs),
             SavedStateHandle()
         )
         val listDogs = dogsViewModel.stateListDogs.first {
             it is Resource.Success && it.data.isNotEmpty()
-        } as Resource.Success<List<Dog>>
+        } as Resource.Success<List<DogData>>
         assert(listDogs.data.size == listFakeDogs.size)
     }
 

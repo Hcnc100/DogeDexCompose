@@ -1,8 +1,24 @@
 package com.d34th.nullpointer.dogedex.ui.screen.details
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.ExtendedFloatingActionButton
+import androidx.compose.material.FabPosition
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -17,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.R
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.share.AsyncImageFade
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
@@ -29,7 +45,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination
 @Composable
 fun DogDetails(
-    dog: Dog,
+    dogData: DogData,
     isNewDog: Boolean,
     navigator: DestinationsNavigator,
     dogsViewModel: DogsViewModel = hiltViewModel(),
@@ -47,7 +63,7 @@ fun DogDetails(
         floatingActionButton = {
             if (isNewDog)
                 ButtonSaveDog(actionBack = {
-                    dogsViewModel.addDog(dog) {
+                    dogsViewModel.addDog(dogData) {
                         navigator.popBackStack()
                     }
                 })
@@ -67,13 +83,13 @@ fun DogDetails(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
             ) {
-                ImageDog(dog = dog)
+                ImageDog(dogData = dogData)
                 Card(shape = RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp)) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        HeaderDetailsDogs(dog = dog)
-                        MoreDetailsDogs(dog = dog)
+                        HeaderDetailsDogs(dogData = dogData)
+                        MoreDetailsDogs(dogData = dogData)
                     }
                 }
             }
@@ -83,7 +99,7 @@ fun DogDetails(
 
 @Composable
 private fun ImageDog(
-    dog: Dog,
+    dogData: DogData,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -98,7 +114,7 @@ private fun ImageDog(
             shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.index_dog, dog.index),
+                text = stringResource(id = R.string.index_dog, dogData.id),
                 modifier = Modifier.padding(10.dp),
                 style = MaterialTheme.typography.caption,
                 fontWeight = FontWeight.W500,
@@ -107,11 +123,11 @@ private fun ImageDog(
             )
         }
         AsyncImageFade(
-            data = dog.imgUrl,
+            data = dogData.imgUrl,
             contentDescription = stringResource(
                 R.string.description_has_dog,
-                dog.index,
-                dog.name
+                dogData.id,
+                dogData.name
             ),
             modifier = Modifier
                 .fillMaxHeight()

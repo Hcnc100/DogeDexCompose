@@ -1,5 +1,6 @@
 package com.d34th.nullpointer.dogedex.inject
 
+import com.d34th.nullpointer.dogedex.data.auth.remote.TokenInterceptor
 import com.d34th.nullpointer.dogedex.data.auth.remote.TokenRefreshAuthenticator
 import com.d34th.nullpointer.dogedex.datasource.auth.local.AuthLocalDataSource
 import com.d34th.nullpointer.dogedex.datasource.auth.remote.AuthRemoteDataSource
@@ -9,8 +10,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
-import okhttp3.Authenticator
-import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -54,11 +53,21 @@ object RetrofitModule {
 
     @Singleton
     @Provides
+    fun provideInterceptor(
+        authLocalDataSource: AuthLocalDataSource
+    ): TokenInterceptor = TokenInterceptor(authLocalDataSource)
+
+    @Singleton
+    @Provides
     fun provideLoggerClient(
-        tokenRefreshAuthenticator: TokenRefreshAuthenticator
+        tokenInterceptor: TokenInterceptor,
+        tokenRefreshAuthenticator: TokenRefreshAuthenticator,
     ): OkHttpClient = OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
-    }).authenticator(tokenRefreshAuthenticator).build()
+    })
+        .addInterceptor(tokenInterceptor)
+        .authenticator(tokenRefreshAuthenticator)
+        .build()
 
     @Provides
     @Singleton

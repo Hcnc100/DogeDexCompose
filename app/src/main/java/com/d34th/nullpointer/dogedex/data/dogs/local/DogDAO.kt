@@ -1,34 +1,41 @@
 package com.d34th.nullpointer.dogedex.data.dogs.local
 
-import androidx.room.*
-import com.d34th.nullpointer.dogedex.models.Dog
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import com.d34th.nullpointer.dogedex.models.dogs.entity.DogEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DogDAO {
 
-    @Query("SELECT * FROM dogs ORDER BY `index` ASC")
-    fun getAllDogs(): Flow<List<Dog>>
+    @Query("SELECT * FROM dogs ORDER BY id ASC")
+    fun getAllDogs(): Flow<List<DogEntity>>
 
     @Query("SELECT * FROM dogs WHERE hasDog")
-    fun getAllHasDog(): List<Dog>
+    fun getAllHasDog(): List<DogEntity>
 
     @Query("DELETE FROM dogs")
     fun deleterAllDogs()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllDogs(listDogs: List<Dog>)
+    fun insertAllDogs(listDogData: List<DogEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertDog(dog: Dog)
+    fun insertDog(dogData: DogEntity)
 
     @Transaction
-    fun updateAllDogs(listDogs: List<Dog>) {
+    fun updateAllDogs(listDogData: List<DogEntity>) {
         deleterAllDogs()
-        insertAllDogs(listDogs)
+        insertAllDogs(listDogData)
     }
 
     @Query("SELECT * FROM dogs WHERE name is :name limit 1")
-    fun getDogByName(name: String): Dog?
+    fun getDogByName(name: String): DogEntity?
+
+    @Query("SELECT * FROM dogs WHERE id is :id limit 1")
+    fun getDogById(id: Long): DogEntity?
 
 }

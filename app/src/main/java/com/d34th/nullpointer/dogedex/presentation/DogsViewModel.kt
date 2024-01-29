@@ -8,12 +8,17 @@ import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager.showMessageForException
 import com.d34th.nullpointer.dogedex.core.utils.launchSafeIO
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -67,14 +72,14 @@ class DogsViewModel @Inject constructor(
     )
 
     fun addDog(
-        dog: Dog,
+        dogData: DogData,
         callbackSuccess: () -> Unit
     ) = launchSafeIO(
         blockException = {
             _messageDogs.trySend(showMessageForException(it, "addDog"))
         },
         blockIO = {
-            dogsRepository.addDog(dog)
+            dogsRepository.addDog(dogData)
             delay(1_000)
             withContext(Dispatchers.Main) {
                 callbackSuccess()

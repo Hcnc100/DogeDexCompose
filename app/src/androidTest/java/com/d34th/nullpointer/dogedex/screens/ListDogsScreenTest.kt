@@ -10,7 +10,7 @@ import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.core.utils.UtilsFake
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.ListDogsScreen
@@ -31,24 +31,24 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ListDogsScreenTest {
 
-    private class DogFakeRepository(
+    private class DogDataFakeRepository(
         val delayGetDogs: Long = 0,
         val launchErrorGetDogs: Boolean = false,
-        val listDogsFake: List<Dog> = emptyList()
+        val listDogsFake: List<DogData> = emptyList()
     ) : DogsRepository {
-        override val listDogs: Flow<List<Dog>> = flow {
+        override val listDogs: Flow<List<DogData>> = flow {
             if (delayGetDogs > 0) delay(delayGetDogs)
             if (launchErrorGetDogs) throw Exception("Generic error occurred")
             emit(listDogsFake)
         }
 
         override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
-        override suspend fun addDog(dog: Dog) = Unit
+        override suspend fun addDog(dogData: DogData) = Unit
         override suspend fun refreshMyDogs() = Unit
         override suspend fun firstRequestAllDogs() = Unit
         override suspend fun changeIsFirstRequestCamera() = Unit
         override suspend fun isNewDog(name: String): Boolean = true
-        override suspend fun getRecognizeDog(idRecognizeDog: String) = Dog()
+        override suspend fun getRecognizeDog(idRecognizeDog: String) = DogData()
 
     }
 
@@ -63,7 +63,7 @@ class ListDogsScreenTest {
     @Test
     fun showShimmerLoading() {
         // * set delay for get a Loading resource
-        val dogFakeRepo = DogFakeRepository(delayGetDogs = 10_000)
+        val dogFakeRepo = DogDataFakeRepository(delayGetDogs = 10_000)
         val dogsViewModel = DogsViewModel(dogFakeRepo, SavedStateHandle())
         // * get number of items shimmer
         val numberItemsFake = context.resources.getInteger(R.integer.number_dog_loading)
@@ -88,7 +88,7 @@ class ListDogsScreenTest {
     @Test
     fun showMessageErrorDogsDatabase() = runTest {
         // * config the dog repository for launch error when get dogs
-        val dogFakeRepo = DogFakeRepository(launchErrorGetDogs = true)
+        val dogFakeRepo = DogDataFakeRepository(launchErrorGetDogs = true)
         val dogsViewModel = DogsViewModel(dogFakeRepo, SavedStateHandle())
         composeTestRule.setContent {
             ListDogsScreen(navigator = navController, dogsViewModel = dogsViewModel)
@@ -108,7 +108,8 @@ class ListDogsScreenTest {
         // ? this indirect confirm that dog exist in this list
         val numberDogScrollTest = (10..25).random()
         // * create a fake data
-        val dogFakeRepo = DogFakeRepository(listDogsFake = UtilsFake.generateListsDogs(randomDogs))
+        val dogFakeRepo =
+            DogDataFakeRepository(listDogsFake = UtilsFake.generateListsDogs(randomDogs))
         val dogsViewModel = DogsViewModel(dogFakeRepo, SavedStateHandle())
         composeTestRule.setContent {
             ListDogsScreen(navigator = navController, dogsViewModel = dogsViewModel)
@@ -141,7 +142,7 @@ class ListDogsScreenTest {
         val randomHasDogs = (10..50).random()
         val testRandom = (10..50).random()
         val list = UtilsFake.generateListsDogs(randomDogs, randomHasDogs)
-        val dogFakeRepo = DogFakeRepository(listDogsFake = list)
+        val dogFakeRepo = DogDataFakeRepository(listDogsFake = list)
         val dogsViewModel = DogsViewModel(dogFakeRepo, SavedStateHandle())
         composeTestRule.setContent {
             ListDogsScreen(navigator = navController, dogsViewModel = dogsViewModel)

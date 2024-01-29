@@ -3,11 +3,11 @@ package com.d34th.nullpointer.dogedex.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.d34th.nullpointer.dogedex.data.dogs.local.DogDAO
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.entity.DogEntity
 
 @Database(
-    entities = [Dog::class],
-    version = 1,
+    entities = [DogEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class DogeDexDatabase : RoomDatabase() {

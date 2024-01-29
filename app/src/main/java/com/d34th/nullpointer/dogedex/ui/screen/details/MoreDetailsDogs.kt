@@ -1,6 +1,16 @@
 package com.d34th.nullpointer.dogedex.ui.screen.details
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -12,10 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.d34th.nullpointer.dogedex.R
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 
 @Composable
-fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
+fun MoreDetailsDogs(dogData: DogData, modifier: Modifier = Modifier) {
 
     Row(
         modifier = modifier
@@ -27,8 +37,8 @@ fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
     ) {
         GenderDetailsDog(
             gender = stringResource(R.string.title_gender_female),
-            dogWeight = dog.weightFemale,
-            dogHeight = dog.heightFemale.toString()
+            dogWeight = dogData.weightFemale,
+            dogHeight = dogData.heightFemale.toString()
         )
 
         Divider(
@@ -38,7 +48,7 @@ fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
                 .width(1.dp)
         )
 
-        GroupDogDetails(dog = dog)
+        GroupDogDetails(dogData = dogData)
 
         Divider(
             modifier = Modifier
@@ -49,19 +59,19 @@ fun MoreDetailsDogs(dog: Dog, modifier: Modifier = Modifier) {
 
         GenderDetailsDog(
             gender = stringResource(R.string.title_gender_male),
-            dogWeight = dog.weightMale,
-            dogHeight = dog.heightMale.toString()
+            dogWeight = dogData.weightMale,
+            dogHeight = dogData.heightMale.toString()
         )
     }
 }
 
 @Composable
-fun GroupDogDetails(dog: Dog, modifier: Modifier = Modifier) {
+fun GroupDogDetails(dogData: DogData, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = dog.type)
+        Text(text = dogData.type)
         Text(stringResource(R.string.title_dog_group))
     }
 }

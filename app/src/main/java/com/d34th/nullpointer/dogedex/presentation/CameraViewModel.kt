@@ -12,12 +12,16 @@ import com.d34th.nullpointer.dogedex.core.utils.launchSafeIO
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
 import com.d34th.nullpointer.dogedex.domain.ia.RecognitionRepository
 import com.d34th.nullpointer.dogedex.ia.DogRecognition
-import com.d34th.nullpointer.dogedex.models.Dog
+import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -81,7 +85,7 @@ class CameraViewModel @Inject constructor(
     }
 
     fun getRecognizeDogSaved(
-        callbackSuccess: (Dog, isNewDog: Boolean) -> Unit
+        callbackSuccess: (DogData, isNewDog: Boolean) -> Unit
     ) = launchSafeIO(
         blockBefore = { recognitionDog = true },
         blockAfter = { recognitionDog = false },
@@ -89,11 +93,14 @@ class CameraViewModel @Inject constructor(
             _messageCamera.trySend(showMessageForException(it, "recognize dog"))
         },
         blockIO = {
-            val dogRecognition = dogsRepository.getRecognizeDog(idRecognizeDog = currentIdMlDog)
-            val isNewDog = dogsRepository.isNewDog(dogRecognition.name)
-            withContext(Dispatchers.Main) {
-                callbackSuccess(dogRecognition, isNewDog)
-            }
+            // ! TODO: fix this
+//            val dogIdRecognition = dogsRepository.getRecognizeDog(
+//                DogData()
+//            )
+//            val isNewDog = dogsRepository.isNewDog(dogRecognition.name)
+//            withContext(Dispatchers.Main) {
+//                callbackSuccess(dogRecognition, isNewDog)
+//            }
         }
     )
 
