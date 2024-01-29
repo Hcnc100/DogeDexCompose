@@ -2,6 +2,13 @@
     <string name="app_name" translatable="false">Dogedex</string>
     <string name="description_arrow_back">Navega a la pantalla anterior</string>
 
+    <!--error example-->
+    <string name="hint_example" translatable="false">hint_example</string>
+    <string name="label_example" translatable="false">label_example</string>
+    <string name="error_empty_example" translatable="false">Error example</string>
+    <string name="error_length_example" translatable="false">Error length example</string>
+
+
     <!-- errors exceptions -->
     <string name="error_credentials_sign_up">Verifique sus credenciales</string>
     <string name="error_user_no_register">El usuario no está registrado</string>
