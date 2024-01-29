@@ -12,16 +12,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
+import com.d34th.nullpointer.dogedex.ui.preview.config.OrientationPreviews
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.LoginScreenDestination
 import com.d34th.nullpointer.dogedex.ui.screen.login.actions.LoginAction
 import com.d34th.nullpointer.dogedex.ui.screen.login.actions.LoginAction.*
 import com.d34th.nullpointer.dogedex.ui.screen.login.componets.ButtonsSignInAndSignUp
 import com.d34th.nullpointer.dogedex.ui.screen.login.componets.FormLogin
 import com.d34th.nullpointer.dogedex.ui.screen.login.componets.LogoApp
+import com.d34th.nullpointer.dogedex.ui.screen.login.desings.LoginScreenLandscape
 import com.d34th.nullpointer.dogedex.ui.screen.login.desings.LoginScreenPortrait
 import com.d34th.nullpointer.dogedex.ui.screen.login.viewModel.LoginViewModel
 import com.d34th.nullpointer.dogedex.ui.states.FieldsScreenState
@@ -60,6 +63,7 @@ fun LoginScreen(
                         authViewModel.signIn(it)
                     }
                 }
+
                 REGISTER -> navigator.navigate(LoginScreenDestination)
             }
         }
@@ -69,11 +73,11 @@ fun LoginScreen(
 
 @Composable
 fun LoginScreen(
+    isAuthenticating: Boolean,
     scaffoldState: ScaffoldState,
-    onLoginAction: (LoginAction) -> Unit,
     emailValue: PropertySavableString,
     passwordValue: PropertySavableString,
-    isAuthenticating: Boolean,
+    onLoginAction: (LoginAction) -> Unit,
     configuration: Configuration = LocalConfiguration.current
 ) {
     Scaffold(
@@ -99,19 +103,31 @@ fun LoginScreen(
                 }
 
                 else -> {
-//                LoginScreenLandscape(
-//                    modifier = Modifier
-//                        .padding(paddingValues)
-//                        .fillMaxSize(),
-//                    emailValue = emailValue,
-//                    passwordValue = passwordValue,
-//                    isAuthenticating = isAuthenticating,
-//                    onLoginAction = onLoginAction
-//                )
+                    LoginScreenLandscape(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(configuration.screenHeightDp.dp),
+                        emailValue = emailValue,
+                        passwordValue = passwordValue,
+                        isAuthenticating = isAuthenticating,
+                        onLoginAction = onLoginAction
+                    )
                 }
             }
         }
     }
+}
+
+@OrientationPreviews
+@Composable
+private fun LoginScreenPreview() {
+    LoginScreen(
+        onLoginAction = {},
+        isAuthenticating = false,
+        scaffoldState = rememberScaffoldState(),
+        emailValue = PropertySavableString.example,
+        passwordValue = PropertySavableString.example
+    )
 }
 
 

@@ -30,21 +30,13 @@ fun LoginScreenPortrait(
     onLoginAction: (LoginAction) -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .padding(20.dp)
-            .fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceAround
     ) {
-        LogoApp(
-            modifier = Modifier
-                .weight(.33f)
-                .wrapContentSize()
-        )
+        LogoApp()
         Column(
-            modifier = Modifier
-                .weight(.66f)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(50.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             FormLogin(
