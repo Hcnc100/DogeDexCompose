@@ -22,15 +22,11 @@ class AuthViewModel @Inject constructor(
     private val authRepo: AuthRepository
 ) : ViewModel() {
 
-    companion object {
-        private const val KEY_IS_AUTH = "KEY_IS_AUTH"
-    }
+
 
     private val _messageAuth = Channel<Int>()
     val messageAuth = _messageAuth.receiveAsFlow()
 
-    var isAuthenticating by SavableComposeState(savedStateHandle, KEY_IS_AUTH, false)
-        private set
 
     val stateUser = flow {
         authRepo.currentUser.collect { currentUser ->
@@ -48,21 +44,6 @@ class AuthViewModel @Inject constructor(
         AuthState.Authenticating
     )
 
-    fun signIn(
-        userFieldsSignIn: SignInDTO
-    ) = launchSafeIO(
-        blockBefore = { isAuthenticating = true },
-        blockAfter = { isAuthenticating = false },
-        blockIO = { authRepo.signIn(userFieldsSignIn) },
-        blockException = { _messageAuth.trySend(showMessageForException(it, "signIn")) }
-    )
-
-    fun signUp(userFieldSignUp: SignUpDTO) = launchSafeIO(
-        blockBefore = { isAuthenticating = true },
-        blockAfter = { isAuthenticating = false },
-        blockIO = { authRepo.signUp(userFieldSignUp) },
-        blockException = { _messageAuth.trySend(showMessageForException(it, "signUp")) }
-    )
 
 
     fun signOut() = launchSafeIO {

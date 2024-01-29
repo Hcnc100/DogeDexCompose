@@ -5,7 +5,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
+import com.d34th.nullpointer.dogedex.core.delegate.SavableComposeState
+import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager
+import com.d34th.nullpointer.dogedex.core.utils.launchSafeIO
+import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
 import com.d34th.nullpointer.dogedex.models.auth.dto.SignUpDTO
+import com.d34th.nullpointer.dogedex.ui.screen.login.viewModel.LoginViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -13,8 +18,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
+
+    var isAuthenticating by SavableComposeState(savedStateHandle, KEY_IS_AUTH, false)
+        private set
 
     companion object {
         private const val MAX_LENGTH_EMAIL = 40
@@ -22,6 +31,7 @@ class SignUpViewModel @Inject constructor(
         private const val TAG_EMAIL_USER = "TAG_SIGN_UP_EMAIL_USER"
         private const val TAG_PASS_USER = "TAG_SIGN_UP_PASS_USER"
         private const val TAG_PASS_REPEAT_USER = "TAG_SIGN_UP_PASS_REPEAT_USER"
+        private const val KEY_IS_AUTH = "KEY_IS_AUTH"
     }
 
     private val _messageSignUp = Channel<Int>()
@@ -85,4 +95,18 @@ class SignUpViewModel @Inject constructor(
             )
         }
     }
+
+
+    fun signUp(userFieldSignUp: SignUpDTO) = launchSafeIO(
+        blockBefore = { isAuthenticating = true },
+        blockAfter = { isAuthenticating = false },
+        blockIO = { authRepository.signUp(userFieldSignUp) },
+        blockException = { _messageSignUp.trySend(
+            ExceptionManager.showMessageForException(
+                it,
+                "signUp"
+            )
+        ) }
+    )
+
 }

@@ -19,6 +19,7 @@ import com.d34th.nullpointer.dogedex.core.delegate.PropertySavableString
 import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
 import com.d34th.nullpointer.dogedex.ui.preview.config.OrientationPreviews
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.LoginScreenDestination
+import com.d34th.nullpointer.dogedex.ui.screen.destinations.SignUpScreenDestination
 import com.d34th.nullpointer.dogedex.ui.screen.login.actions.LoginAction
 import com.d34th.nullpointer.dogedex.ui.screen.login.actions.LoginAction.*
 import com.d34th.nullpointer.dogedex.ui.screen.login.componets.ButtonsSignInAndSignUp
@@ -36,35 +37,29 @@ import kotlinx.coroutines.flow.merge
 @Destination(start = true)
 @Composable
 fun LoginScreen(
-    authViewModel: AuthViewModel,
     navigator: DestinationsNavigator,
     loginViewModel: LoginViewModel = hiltViewModel(),
     loginScreenState: FieldsScreenState = rememberFieldsScreenState(),
 ) {
 
     LaunchedEffect(key1 = Unit) {
-        merge(
-            loginViewModel.messageLogin,
-            authViewModel.messageAuth
-        ).collect(loginScreenState::showSnackMessage)
+        loginViewModel.messageLogin.collect(loginScreenState::showSnackMessage)
     }
-
 
     LoginScreen(
         scaffoldState = loginScreenState.scaffoldState,
         emailValue = loginViewModel.emailLogin,
         passwordValue = loginViewModel.passwordLogin,
-        isAuthenticating = authViewModel.isAuthenticating,
+        isAuthenticating = loginViewModel.isAuthenticating,
         onLoginAction = { loginAction ->
             when (loginAction) {
                 LOGIN -> {
                     loginScreenState.clearFocus()
                     loginViewModel.getCredentialAndValidate()?.let {
-                        authViewModel.signIn(it)
+                        loginViewModel.signIn(it)
                     }
                 }
-
-                REGISTER -> navigator.navigate(LoginScreenDestination)
+                REGISTER -> navigator.navigate(SignUpScreenDestination)
             }
         }
     )
