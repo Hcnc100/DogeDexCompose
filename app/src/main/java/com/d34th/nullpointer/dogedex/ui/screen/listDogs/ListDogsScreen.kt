@@ -1,7 +1,12 @@
 package com.d34th.nullpointer.dogedex.ui.screen.listDogs
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,10 +20,11 @@ import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.navigation.HomeNavGraph
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
+import com.d34th.nullpointer.dogedex.ui.screen.listDogs.components.ListDogsSuccess
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.test.ListDogsTestTag
+import com.d34th.nullpointer.dogedex.ui.share.BlockProcessing
 import com.d34th.nullpointer.dogedex.ui.states.DogsScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberDogsScreenState
-import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -28,7 +34,10 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun ListDogsScreen(
     navigator: DestinationsNavigator,
     dogsViewModel: DogsViewModel = hiltViewModel(),
-    dogeDexState: DogsScreenState = rememberDogsScreenState(isRefreshing = dogsViewModel.isLoadingMyGogs)
+    dogeDexState: DogsScreenState = rememberDogsScreenState(
+        isRefreshing = false,
+        onRefresh = dogsViewModel::requestMyLastDogs,
+    )
 ) {
     val stateListDogs by dogsViewModel.stateListDogs.collectAsState()
 
@@ -36,40 +45,54 @@ fun ListDogsScreen(
         dogsViewModel.messageDogs.collect(dogeDexState::showSnackMessage)
     }
 
-    SwipeRefresh(
-        state = dogeDexState.swipeRefreshState,
-        onRefresh = dogsViewModel::requestMyLastDogs,
-    ) {
-        Scaffold(
-            scaffoldState = dogeDexState.scaffoldState,
-        ) { paddingValues ->
-            ListDogsScreen(
-                stateListDogs = stateListDogs,
-                modifier = Modifier.padding(paddingValues),
-                clickDetails = {
-                    navigator.navigate(DogDetailsDestination(it, false))
-                }
-            )
-        }
-    }
-
+    ListDogsScreen(
+        stateListDogs = stateListDogs,
+        scaffoldState = dogeDexState.scaffoldState,
+        pullRefreshState = dogeDexState.pullRefreshState,
+        isRefreshing = dogsViewModel.isLoadingMyGogs,
+        clickDetails = { dogData ->
+            navigator.navigate(DogDetailsDestination(dogData, false))
+        },
+    )
 }
 
 @Composable
 private fun ListDogsScreen(
-    stateListDogs: Resource<List<DogData>>,
+    isRefreshing: Boolean,
+    scaffoldState: ScaffoldState,
+    modifier: Modifier = Modifier,
     clickDetails: (DogData) -> Unit,
-    modifier: Modifier = Modifier
+    pullRefreshState: PullRefreshState,
+    stateListDogs: Resource<List<DogData>>,
 ) {
-    when (stateListDogs) {
 
-        is Resource.Success -> ListDogsSuccess(
-            listDogData = stateListDogs.data,
-            modifier = modifier.semantics { testTag = ListDogsTestTag.LIST_DOGS },
-            clickDetails = clickDetails
-        )
-        else -> DogsLoadings(modifier = modifier.semantics {
-            testTag = ListDogsTestTag.LOADING_LIST
-        })
+    Scaffold(
+        scaffoldState = scaffoldState,
+    ) { paddingValues ->
+        Box(
+            modifier = modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .then(
+                    when (stateListDogs) {
+                        is Resource.Success -> Modifier.pullRefresh(pullRefreshState)
+                        else -> Modifier
+                    }
+                )
+        ) {
+            when (stateListDogs) {
+                is Resource.Success -> {
+                    ListDogsSuccess(
+                        isRefreshing = isRefreshing,
+                        clickDetails = clickDetails,
+                        listDogData = stateListDogs.data,
+                        pullRefreshState = pullRefreshState,
+                        modifier = modifier.semantics { testTag = ListDogsTestTag.LIST_DOGS }
+                    )
+                }
+
+                else -> BlockProcessing()
+            }
+        }
     }
 }

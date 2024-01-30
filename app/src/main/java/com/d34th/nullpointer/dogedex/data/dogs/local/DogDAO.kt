@@ -17,6 +17,12 @@ interface DogDAO {
     @Query("SELECT * FROM dogs WHERE hasDog")
     fun getAllHasDog(): List<DogEntity>
 
+    @Query("SELECT COUNT(*) FROM dogs WHERE hasDog")
+    fun getCountHasDog(): Int
+
+    @Query("SELECT COUNT(*) FROM dogs")
+    fun getCountAllDogs(): Int
+
     @Query("DELETE FROM dogs")
     fun deleterAllDogs()
 

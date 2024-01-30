@@ -6,8 +6,9 @@ import com.d34th.nullpointer.dogedex.datasource.settings.local.SettingsLocalData
 import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.models.dogs.dto.AddDogDTO
 import com.d34th.nullpointer.dogedex.models.findDogByModel.dto.FindDogByModelDTO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 
 
 class DogsRepositoryImpl(
@@ -18,16 +19,6 @@ class DogsRepositoryImpl(
 
     override val listDogs: Flow<List<DogData>> = dogLocalDataSourceLocal.listDogsSaved
 
-    override suspend fun firstRequestAllDogs() {
-        val isFirstLogin = settingsLocalDataSource.settingsData.first()?.isFirstLogin ?: true
-        if (isFirstLogin) {
-            val listDogs = dogsRemoteDataSourceRemote.getAllDogs()
-            dogLocalDataSourceLocal.updateAllDogs(listDogs)
-            // * change isFirstLogin
-            settingsLocalDataSource.changeIsFirstLoginUser()
-        }
-    }
-
     override val isFirstRequestCameraPermission: Flow<Boolean> =
         settingsLocalDataSource.isFirstRequestCameraPermission
 
@@ -37,14 +28,33 @@ class DogsRepositoryImpl(
         dogLocalDataSourceLocal.insertDog(dogData.copy(hasDog = true))
     }
 
-    override suspend fun refreshMyDogs() {
-        val isFirstLogin = settingsLocalDataSource.isFirstLoadingUser.first()
-        if (!isFirstLogin) {
-            val listMyDogsServer = dogsRemoteDataSourceRemote.getMyDogs()
-            if (listMyDogsServer.size != dogLocalDataSourceLocal.countHasDog()) {
-                val newLisHasDog = listMyDogsServer.map { it.copy(hasDog = true) }
-                dogLocalDataSourceLocal.insertAllDogs(newLisHasDog)
+    override suspend fun refreshMyDogs() = coroutineScope {
+
+        // * get all dogs from server if not exist in local storage
+        val taskGetAllDogs = async {
+            val hasAllDogs = dogLocalDataSourceLocal.countAllDogs() != 0
+            if (hasAllDogs) {
+                emptyList()
+            } else {
+                dogsRemoteDataSourceRemote.getAllDogs()
             }
+        }
+        // * get my dogs from server
+        val taskMyDogs = async {
+            dogsRemoteDataSourceRemote.getMyDogs()
+        }
+
+        // * wait for both tasks to finish
+        val listDogsServer = taskGetAllDogs.await()
+        val listMyDogsServer = taskMyDogs.await()
+
+        // * update local storage
+        if (listDogsServer.isNotEmpty()) {
+            dogLocalDataSourceLocal.updateAllDogs(listDogsServer)
+        }
+        // * insert my dogs
+        if (listMyDogsServer.isNotEmpty()) {
+            dogLocalDataSourceLocal.insertAllDogs(listMyDogsServer)
         }
     }
 

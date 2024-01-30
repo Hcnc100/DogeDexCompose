@@ -2,29 +2,40 @@ package com.d34th.nullpointer.dogedex.ui.states
 
 import android.content.Context
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.swiperefresh.SwipeRefreshState
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+@Stable
 class DogsScreenState(
     context: Context,
     scaffoldState: ScaffoldState,
-    val swipeRefreshState: SwipeRefreshState
+    val pullRefreshState: PullRefreshState
 ) : SimpleScreenState(scaffoldState, context) {
-
-    val isRefreshing get() = swipeRefreshState.isRefreshing
 
 }
 
 @Composable
 fun rememberDogsScreenState(
+    onRefresh: () -> Unit,
     isRefreshing: Boolean,
     context: Context = LocalContext.current,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    swipeRefreshState: SwipeRefreshState = rememberSwipeRefreshState(isRefreshing)
-) = remember(scaffoldState) {
-    DogsScreenState(context, scaffoldState, swipeRefreshState)
+    pullRefreshState: PullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = onRefresh
+    )
+) = remember(
+    scaffoldState,
+    pullRefreshState
+) {
+    DogsScreenState(
+        context = context,
+        scaffoldState = scaffoldState,
+        pullRefreshState = pullRefreshState
+    )
 }
