@@ -11,13 +11,16 @@ import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.label.TensorLabel
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.MappedByteBuffer
-import java.util.*
+import java.util.PriorityQueue
 
 class Classifier(tfLiteModel: MappedByteBuffer, private val labels: List<String>) {
 
     companion object {
         private const val MAX_RECOGNITION_DOG_RESULTS = 5
+        private const val QUANTIZE_OP_SCALE = 1 / 255.0f
+        private const val QUANTIZE_OP_ZERO_POINT = 0f
     }
+
 
     /**
      * Image size along the x axis.
@@ -75,22 +78,32 @@ class Classifier(tfLiteModel: MappedByteBuffer, private val labels: List<String>
         )
 
         // Creates the post processor for the output probability.
-        tensorProcessor = TensorProcessor.Builder().add(DequantizeOp(0f, 1 / 255.0f)).build()
+        tensorProcessor =
+            TensorProcessor.Builder().add(DequantizeOp(QUANTIZE_OP_ZERO_POINT, QUANTIZE_OP_SCALE))
+                .build()
     }
 
     /**
      * Runs inference and returns the classification results.
      */
     fun recognizeImage(bitmap: Bitmap): List<DogRecognition> {
-        inputImageBuffer = loadImage(bitmap)
-        val rewoundOutputBuffer = outputProbabilityBuffer.buffer.rewind()
-        tfLite.run(inputImageBuffer.buffer, rewoundOutputBuffer)
-        // Gets the map of label and probability.
-        val labeledProbability =
-            TensorLabel(labels, tensorProcessor.process(outputProbabilityBuffer)).mapWithFloatValue
+        return try {
+            inputImageBuffer = loadImage(bitmap)
+            val rewoundOutputBuffer = outputProbabilityBuffer.buffer.rewind()
+            tfLite.run(inputImageBuffer.buffer, rewoundOutputBuffer)
+            // Gets the map of label and probability.
+            val labeledProbability =
+                TensorLabel(
+                    labels,
+                    tensorProcessor.process(outputProbabilityBuffer)
+                ).mapWithFloatValue
 
-        // Gets top-k results.
-        return getTopKProbability(labeledProbability)
+            // Gets top-k results.
+            getTopKProbability(labeledProbability)
+        } catch (e: Exception) {
+            // Handle the exception in a way that makes sense for your application
+            emptyList()
+        }
     }
 
     /**
@@ -101,11 +114,19 @@ class Classifier(tfLiteModel: MappedByteBuffer, private val labels: List<String>
         inputImageBuffer.load(bitmap)
 
         // Creates processor for the TensorImage.
-        val imageProcessor = ImageProcessor.Builder()
-            .add(ResizeOp(imageSizeX, imageSizeY, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
-            .build()
+        val imageProcessor = createImageProcessor()
         return imageProcessor.process(inputImageBuffer)
     }
+
+    /**
+     * Creates an ImageProcessor for the TensorImage.
+     */
+    private fun createImageProcessor(): ImageProcessor {
+        return ImageProcessor.Builder()
+            .add(ResizeOp(imageSizeX, imageSizeY, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
+            .build()
+    }
+
 
     /**
      * Gets the top-k results.

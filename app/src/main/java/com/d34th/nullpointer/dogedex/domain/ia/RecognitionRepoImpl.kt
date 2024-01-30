@@ -7,7 +7,6 @@ import androidx.camera.core.Preview
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import com.d34th.nullpointer.dogedex.core.utils.getCameraProvider
-import com.d34th.nullpointer.dogedex.core.utils.toBitmap
 import com.d34th.nullpointer.dogedex.ia.Classifier
 import com.d34th.nullpointer.dogedex.ia.DogRecognition
 import org.tensorflow.lite.support.common.FileUtil
@@ -25,8 +24,8 @@ class RecognitionRepoImpl(
 
     private val executor = Executors.newSingleThreadExecutor()
     private val previewUseCase: Preview = Preview.Builder().build()
-    private val currentCameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private val imageAnalysis: ImageAnalysis by lazy { createImageAnalysis() }
+    private val currentCameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
     private fun createImageAnalysis(): ImageAnalysis {
         // * only get last image

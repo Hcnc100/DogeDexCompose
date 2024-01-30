@@ -23,7 +23,6 @@ class DetailsDogTestData {
 
         override suspend fun addDog(dogData: DogData) = Unit
         override suspend fun refreshMyDogs() = Unit
-        override suspend fun firstRequestAllDogs() = Unit
         override suspend fun changeIsFirstRequestCamera() = Unit
         override suspend fun isNewDog(dogId: Long): Boolean {
             TODO("Not yet implemented")

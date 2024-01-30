@@ -3,7 +3,6 @@ package com.d34th.nullpointer.dogedex.screens
 import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.d34th.nullpointer.dogedex.R
@@ -44,7 +43,6 @@ class ListDogsScreenTest {
         override val isFirstRequestCameraPermission: Flow<Boolean> = flowOf(true)
         override suspend fun addDog(dogData: DogData) = Unit
         override suspend fun refreshMyDogs() = Unit
-        override suspend fun firstRequestAllDogs() = Unit
         override suspend fun changeIsFirstRequestCamera() = Unit
         override suspend fun isNewDog(dogId: Long): Boolean {
             TODO("Not yet implemented")
@@ -69,7 +67,7 @@ class ListDogsScreenTest {
     fun showShimmerLoading() {
         // * set delay for get a Loading resource
         val dogFakeRepo = DogDataFakeRepository(delayGetDogs = 10_000)
-        val dogsViewModel = DogsViewModel(dogFakeRepo, SavedStateHandle())
+        val dogsViewModel = DogsViewModel(dogFakeRepo)
         // * get number of items shimmer
         val numberItemsFake = context.resources.getInteger(R.integer.number_dog_loading)
         // * get any item between item start and last item
@@ -94,7 +92,7 @@ class ListDogsScreenTest {
     fun showMessageErrorDogsDatabase() = runTest {
         // * config the dog repository for launch error when get dogs
         val dogFakeRepo = DogDataFakeRepository(launchErrorGetDogs = true)
-        val dogsViewModel = DogsViewModel(dogFakeRepo, SavedStateHandle())
+        val dogsViewModel = DogsViewModel(dogFakeRepo)
         composeTestRule.setContent {
             ListDogsScreen(navigator = navController, dogsViewModel = dogsViewModel)
         }

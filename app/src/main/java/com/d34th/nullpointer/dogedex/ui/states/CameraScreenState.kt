@@ -43,8 +43,8 @@ class CameraScreenState(
 fun rememberCameraScreenState(
     context: Context = LocalContext.current,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    cameraPermissionState: PermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA),
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+    cameraPermissionState: PermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
 ) = remember(scaffoldState, cameraPermissionState) {
     CameraScreenState(
         context = context,

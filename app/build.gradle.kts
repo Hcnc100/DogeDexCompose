@@ -156,7 +156,7 @@ dependencies {
     testImplementation("com.squareup.okhttp3:mockwebserver:4.8.1")
 
     // * camera
-    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-extensions:1.3.1")
     implementation("androidx.camera:camera-lifecycle:1.3.1")
     implementation("androidx.camera:camera-view:1.3.1")
 
