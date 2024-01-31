@@ -49,8 +49,8 @@ fun DogDetails(
 
     val title = remember(hasDog) {
         when (hasDog) {
-            false -> R.string.title_details_saved_dog
-            true -> R.string.title_details_new_dog
+            false -> R.string.title_details_new_dog
+            true -> R.string.title_details_saved_dog
         }
     }
 
