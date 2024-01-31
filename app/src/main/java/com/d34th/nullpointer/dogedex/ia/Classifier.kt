@@ -133,22 +133,18 @@ class Classifier(tfLiteModel: MappedByteBuffer, private val labels: List<String>
      */
     private fun getTopKProbability(labelProb: Map<String, Float>): List<DogRecognition> {
         // Find the best classifications.
-        val priorityQueue =
+        val recognitions =
             PriorityQueue(MAX_RECOGNITION_DOG_RESULTS) { lhs: DogRecognition, rhs: DogRecognition ->
                 (rhs.confidence).compareTo(lhs.confidence)
+            }.also { queue ->
+                labelProb.forEach { (key, value) ->
+                    queue.add(DogRecognition(key, value))
+                }
+            }.let { queue ->
+                List(minOf(queue.size, MAX_RECOGNITION_DOG_RESULTS)) {
+                    queue.poll()
+                }
             }
-
-        for ((key, value) in labelProb) {
-            priorityQueue.add(DogRecognition(key, value * 100.0f))
-        }
-
-        val recognitions = mutableListOf<DogRecognition>()
-        val recognitionsSize = minOf(priorityQueue.size, MAX_RECOGNITION_DOG_RESULTS)
-
-        repeat(recognitionsSize) {
-            priorityQueue.poll()?.let { recognitions.add(it) }
-        }
-
         return recognitions
     }
 }

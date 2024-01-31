@@ -40,7 +40,7 @@ fun CameraScreen(
 ) {
 
     val isFirstRequestCamera by cameraViewModel.isFirstRequestCamera.collectAsState()
-    val isPhotoReady by cameraViewModel.isReadyTakePhoto2.collectAsState(false)
+    val isPhotoReady by cameraViewModel.isReadyTakePhoto.collectAsState(false)
 
 
     LaunchedEffect(
@@ -62,7 +62,7 @@ fun CameraScreen(
         cameraPermissionStatus = cameraScreenState.cameraPermissionStatus,
         onCameraAction = { action ->
             when (action) {
-                INIT_RECOGNITION -> cameraViewModel.getRecognizeDogSaved {
+                INIT_RECOGNITION -> cameraViewModel.startRecognition {
                     actionRootDestinations.changeRoot(DogDetailsDestination(it))
                 }
 

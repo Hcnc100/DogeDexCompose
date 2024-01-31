@@ -28,14 +28,14 @@ class RecognitionRepoImpl(
 
     override fun bindAnalyzeImage(
         cameraController: LifecycleCameraController,
-        callbackRecognizeDog: (dog: DogRecognition, isConfidence: Boolean) -> Unit
+        callbackRecognizeDog: (dog: DogRecognition?) -> Unit
     ) {
         // * This values is for default
         //cameraController.imageAnalysisBackpressureStrategy = ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
         cameraController.setImageAnalysisAnalyzer(executor) { analyzer ->
             analyzer.toBitmap().let { bitmap ->
-                classifier.recognizeImage(bitmap).firstOrNull()?.let {
-                    callbackRecognizeDog(it, it.confidence > 70f)
+                classifier.recognizeImage(bitmap).firstOrNull().let {
+                    callbackRecognizeDog(it)
                 }
             }
             analyzer.close()

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.d34th.nullpointer.dogedex.core.utils.Constants.PERCENTAGE_CONFIDENCE
 import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager.showMessageForException
 import com.d34th.nullpointer.dogedex.core.utils.launchSafeIO
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
@@ -15,18 +16,16 @@ import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.lang.Thread.sleep
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,14 +40,8 @@ class CameraViewModel @Inject constructor(
     var recognitionDog by mutableStateOf(false)
         private set
 
-    private val currentIdMlDog2 = MutableStateFlow<DogRecognition?>(null)
-
-    val isReadyTakePhoto2 = currentIdMlDog2.onEach {
-        Timber.d("Model Recognize: $it")
-    }.map { it != null }
-
-    private var canChangeModel = true
-
+    private val currentMlDogId = MutableStateFlow<DogRecognition?>(null)
+    val isReadyTakePhoto = currentMlDogId.map { it != null }
 
     val isFirstRequestCamera =
         dogsRepository.isFirstRequestCameraPermission.flowOn(Dispatchers.IO).catch {
@@ -68,25 +61,29 @@ class CameraViewModel @Inject constructor(
     fun bindAnalyzeImage(
         cameraController: LifecycleCameraController,
     ) {
-        recognitionRepository.bindAnalyzeImage(cameraController) { dog: DogRecognition, isConfidence: Boolean ->
-            if (!canChangeModel) return@bindAnalyzeImage
-            viewModelScope.launch {
-                canChangeModel = false
-                currentIdMlDog2.value = when (isConfidence) {
-                    true -> dog
-                    false -> null
+        recognitionRepository.bindAnalyzeImage(
+            cameraController,
+            callbackRecognizeDog = { dog: DogRecognition? ->
+                Timber.d("Dog Recognize: $dog")
+                currentMlDogId.value = when {
+                    (dog?.confidence ?: 0f) > PERCENTAGE_CONFIDENCE -> dog
+                    else -> null
                 }
-                withContext(Dispatchers.IO) { delay(2_000) }
-                canChangeModel = true
+                // * add delay for not recognize the same dog
+                // * and for can the user take a photo if the model change fast
+
+                // ! can user delay 'cause internal this method is called in a new thread
+                // ! this no block the main thread (Don't worry)
+                sleep(2_000)
             }
-        }
+        )
     }
 
 
-    fun getRecognizeDogSaved(
+    fun startRecognition(
         callbackSuccess: (dogData: DogData) -> Unit
     ) {
-        this.currentIdMlDog2.value?.let { dogRecognition ->
+        currentMlDogId.value?.let { dogRecognition ->
             launchSafeIO(
                 blockBefore = { recognitionDog = true },
                 blockAfter = { recognitionDog = false },

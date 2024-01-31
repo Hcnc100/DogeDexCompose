@@ -6,7 +6,7 @@ import com.d34th.nullpointer.dogedex.ia.DogRecognition
 interface RecognitionRepository {
     fun bindAnalyzeImage(
         cameraController: LifecycleCameraController,
-        callbackRecognizeDog: (dog: DogRecognition, isConfidence: Boolean) -> Unit
+        callbackRecognizeDog: (dog: DogRecognition?) -> Unit
     )
 
     fun clearCamera()
