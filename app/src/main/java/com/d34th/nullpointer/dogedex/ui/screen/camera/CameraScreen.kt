@@ -1,6 +1,6 @@
 package com.d34th.nullpointer.dogedex.ui.screen.camera
 
-import androidx.camera.view.PreviewView
+import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FabPosition
 import androidx.compose.material.Scaffold
@@ -15,9 +15,13 @@ import androidx.compose.ui.semantics.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.navigation.HomeNavGraph
 import com.d34th.nullpointer.dogedex.presentation.CameraViewModel
-import com.d34th.nullpointer.dogedex.ui.screen.camera.CameraAction.*
+import com.d34th.nullpointer.dogedex.ui.interfaces.ActionRootDestinations
+import com.d34th.nullpointer.dogedex.ui.screen.camera.CameraAction.INIT_RECOGNITION
+import com.d34th.nullpointer.dogedex.ui.screen.camera.CameraAction.OPEN_SETTINGS
+import com.d34th.nullpointer.dogedex.ui.screen.camera.CameraAction.REQUEST_CAMERA_PERMISSION
 import com.d34th.nullpointer.dogedex.ui.screen.camera.components.CameraPreview
 import com.d34th.nullpointer.dogedex.ui.screen.camera.test.CameraTestTag
+import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.d34th.nullpointer.dogedex.ui.share.ProcessingActionButton
 import com.d34th.nullpointer.dogedex.ui.states.CameraScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberCameraScreenState
@@ -30,34 +34,37 @@ import com.ramcosta.composedestinations.annotation.Destination
 @Destination
 @Composable
 fun CameraScreen(
+    actionRootDestinations: ActionRootDestinations,
     cameraViewModel: CameraViewModel = hiltViewModel(),
     cameraScreenState: CameraScreenState = rememberCameraScreenState()
 ) {
+
     val isFirstRequestCamera by cameraViewModel.isFirstRequestCamera.collectAsState()
-    val isPhotoReady by cameraViewModel.isReadyTakePhoto.collectAsState()
+    val isPhotoReady by cameraViewModel.isReadyTakePhoto2.collectAsState(false)
+
+
+    LaunchedEffect(
+        key1 = cameraScreenState.cameraController
+    ) {
+        cameraViewModel.bindAnalyzeImage(cameraScreenState.cameraController)
+    }
 
     LaunchedEffect(key1 = Unit) {
         cameraViewModel.messageCamera.collect(cameraScreenState::showSnackMessage)
     }
 
     CameraScreen(
-        isFirstRequestCamera = isFirstRequestCamera,
         isPhotoReady = isPhotoReady,
+        isFirstRequestCamera = isFirstRequestCamera,
         recognitionDog = cameraViewModel.recognitionDog,
         scaffoldState = cameraScreenState.scaffoldState,
+        cameraController = cameraScreenState.cameraController,
         cameraPermissionStatus = cameraScreenState.cameraPermissionStatus,
-        bindCameraToUseCases = {
-            cameraViewModel.initRecognition(
-                previewView = it,
-                lifecycleOwner = cameraScreenState.lifecycleOwner
-            )
-        },
         onCameraAction = { action ->
             when (action) {
-                INIT_RECOGNITION -> cameraViewModel.initRecognition(
-                    previewView = PreviewView(cameraScreenState.context),
-                    lifecycleOwner = cameraScreenState.lifecycleOwner
-                )
+                INIT_RECOGNITION -> cameraViewModel.getRecognizeDogSaved {
+                    actionRootDestinations.changeRoot(DogDetailsDestination(it))
+                }
 
                 REQUEST_CAMERA_PERMISSION -> {
                     cameraScreenState.launchPermissionCamera()
@@ -79,7 +86,7 @@ fun CameraScreen(
     isFirstRequestCamera: Boolean,
     onCameraAction: (CameraAction) -> Unit,
     cameraPermissionStatus: PermissionStatus,
-    bindCameraToUseCases: (previewView: PreviewView) -> Unit
+    cameraController: LifecycleCameraController
 ) {
 
 
@@ -100,7 +107,7 @@ fun CameraScreen(
                     modifier = Modifier
                         .padding(paddingValues)
                         .semantics { testTag = CameraTestTag.SCREEN_CAPTURE_IMAGE },
-                    bindCameraToUseCases = bindCameraToUseCases,
+                    cameraController = cameraController,
                 )
             }
 

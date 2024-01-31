@@ -53,8 +53,8 @@ object DogsModule {
         dogsRemoteDataSourceRemote: DogsRemoteDataSourceRemote,
         settingsLocalDataSource: SettingsLocalDataSource,
     ): DogsRepository = DogsRepositoryImpl(
-        dogLocalDataSourceLocal,
-        dogsRemoteDataSourceRemote,
-        settingsLocalDataSource
+        dogLocalDataSourceLocal = dogLocalDataSourceLocal,
+        settingsLocalDataSource = settingsLocalDataSource,
+        dogsRemoteDataSourceRemote = dogsRemoteDataSourceRemote
     )
 }

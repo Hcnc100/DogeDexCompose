@@ -48,13 +48,12 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun DogDetails(
     dogData: DogData,
-    isNewDog: Boolean,
     navigator: DestinationsNavigator,
     dogsViewModel: DogsViewModel = hiltViewModel(),
     dogDetailsState: SimpleScreenState = rememberSimpleScreenState()
 ) {
     val title = remember {
-        if (isNewDog) R.string.title_details_new_dog else R.string.title_details_saved_dog
+        if (!dogData.hasDog) R.string.title_details_new_dog else R.string.title_details_saved_dog
     }
     LaunchedEffect(key1 = Unit) {
         dogsViewModel.messageDogs.collect(dogDetailsState::showSnackMessage)
@@ -63,7 +62,7 @@ fun DogDetails(
     Scaffold(
         scaffoldState = dogDetailsState.scaffoldState,
         floatingActionButton = {
-            if (isNewDog)
+            if (!dogData.hasDog)
                 ButtonSaveDog(actionBack = {
                     dogsViewModel.addDog(dogData) {
                         navigator.popBackStack()

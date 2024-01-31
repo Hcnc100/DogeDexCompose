@@ -180,6 +180,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+
 }
 
 kapt {

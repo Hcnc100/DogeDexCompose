@@ -7,7 +7,6 @@ import com.d34th.nullpointer.dogedex.models.dogs.dto.AddDogDTO
 import com.d34th.nullpointer.dogedex.models.dogs.response.AddDogResponse
 import com.d34th.nullpointer.dogedex.models.dogs.response.ListDogsResponse
 import com.d34th.nullpointer.dogedex.models.dogs.response.ListMyDogsResponse
-import com.d34th.nullpointer.dogedex.models.findDogByModel.dto.FindDogByModelDTO
 import com.d34th.nullpointer.dogedex.models.findDogByModel.response.FindDogByModelResponse
 import kotlinx.coroutines.withTimeoutOrNull
 import retrofit2.http.*
@@ -35,7 +34,7 @@ interface DogsApiServices {
 
     @GET(DOG_FOR_IM_PATH)
     suspend fun requestRecognizeDog(
-        @Body findDogByMLDTO: FindDogByModelDTO
+        @Query(ML_ID_PARAMETER) modelId: String
     ): FindDogByModelResponse
 
 }

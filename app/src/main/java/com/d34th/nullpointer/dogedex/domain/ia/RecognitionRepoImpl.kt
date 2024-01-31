@@ -1,16 +1,10 @@
 package com.d34th.nullpointer.dogedex.domain.ia
 
 import android.content.Context
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview
-import androidx.camera.view.PreviewView
-import androidx.lifecycle.LifecycleOwner
-import com.d34th.nullpointer.dogedex.core.utils.getCameraProvider
+import androidx.camera.view.LifecycleCameraController
 import com.d34th.nullpointer.dogedex.ia.Classifier
 import com.d34th.nullpointer.dogedex.ia.DogRecognition
 import org.tensorflow.lite.support.common.FileUtil
-import timber.log.Timber
 import java.util.concurrent.Executors
 
 class RecognitionRepoImpl(
@@ -23,15 +17,6 @@ class RecognitionRepoImpl(
     }
 
     private val executor = Executors.newSingleThreadExecutor()
-    private val previewUseCase: Preview = Preview.Builder().build()
-    private val imageAnalysis: ImageAnalysis by lazy { createImageAnalysis() }
-    private val currentCameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-    private fun createImageAnalysis(): ImageAnalysis {
-        // * only get last image
-        return ImageAnalysis.Builder()
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()
-    }
 
     // * ia
     private val classifier: Classifier by lazy {
@@ -41,35 +26,22 @@ class RecognitionRepoImpl(
         )
     }
 
-    override suspend fun bindCameraToUseCases(
-        previewView: PreviewView,
-        lifecycleOwner: LifecycleOwner,
+    override fun bindAnalyzeImage(
+        cameraController: LifecycleCameraController,
         callbackRecognizeDog: (dog: DogRecognition, isConfidence: Boolean) -> Unit
     ) {
-        imageAnalysis.setAnalyzer(executor) { analyzer ->
-            analyzer.toBitmap()?.let { bitmap ->
+        // * This values is for default
+        //cameraController.imageAnalysisBackpressureStrategy = ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
+        cameraController.setImageAnalysisAnalyzer(executor) { analyzer ->
+            analyzer.toBitmap().let { bitmap ->
                 classifier.recognizeImage(bitmap).firstOrNull()?.let {
                     callbackRecognizeDog(it, it.confidence > 70f)
                 }
             }
             analyzer.close()
         }
-        // * bind view preview to preview use case
-        previewUseCase.setSurfaceProvider(previewView.surfaceProvider)
-        val cameraProvider = context.getCameraProvider()
-        try {
-            // * Must unbind the use-cases before rebinding them.
-            cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
-                lifecycleOwner,
-                currentCameraSelector,
-                previewUseCase,
-                imageAnalysis
-            )
-        } catch (ex: Exception) {
-            Timber.d("Use case binding failed $ex")
-        }
     }
+
 
     override fun clearCamera() {
         executor.shutdown()

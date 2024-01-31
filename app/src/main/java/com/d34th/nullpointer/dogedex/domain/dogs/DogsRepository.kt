@@ -1,5 +1,6 @@
 package com.d34th.nullpointer.dogedex.domain.dogs
 
+import com.d34th.nullpointer.dogedex.ia.DogRecognition
 import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import kotlinx.coroutines.flow.Flow
 
@@ -9,6 +10,5 @@ interface DogsRepository {
     suspend fun addDog(dogData: DogData)
     suspend fun refreshMyDogs()
     suspend fun changeIsFirstRequestCamera()
-    suspend fun isNewDog(dogId: Long): Boolean
-    suspend fun getRecognizeDog(dogData: DogData): Long
+    suspend fun getRecognizeDog(dogRecognition: DogRecognition): DogData
 }

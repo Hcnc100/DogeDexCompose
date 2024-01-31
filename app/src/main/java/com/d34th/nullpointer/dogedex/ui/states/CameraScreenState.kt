@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.camera.core.CameraSelector
+import androidx.camera.view.LifecycleCameraController
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -22,13 +24,20 @@ class CameraScreenState(
     context: Context,
     scaffoldState: ScaffoldState,
     val lifecycleOwner: LifecycleOwner,
-    private val cameraPermissionState: PermissionState
+    private val cameraPermissionState: PermissionState,
 ) : SimpleScreenState(scaffoldState, context) {
+
+
+    val cameraController = LifecycleCameraController(context).apply {
+        bindToLifecycle(lifecycleOwner)
+        cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    }
 
     // * permissions
     val cameraPermissionStatus get() = cameraPermissionState.status
     val isCameraPermissionGranted get() = cameraPermissionState.status == PermissionStatus.Granted
     fun launchPermissionCamera() = cameraPermissionState.launchPermissionRequest()
+
 
     fun openSettingsApp() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)

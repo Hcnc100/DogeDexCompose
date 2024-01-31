@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
+import com.d34th.nullpointer.dogedex.ia.DogRecognition
 import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import kotlinx.coroutines.flow.Flow
@@ -24,11 +25,9 @@ class DetailsDogTestData {
         override suspend fun addDog(dogData: DogData) = Unit
         override suspend fun refreshMyDogs() = Unit
         override suspend fun changeIsFirstRequestCamera() = Unit
-        override suspend fun isNewDog(dogId: Long): Boolean {
-            TODO("Not yet implemented")
-        }
 
-        override suspend fun getRecognizeDog(dogData: DogData): Long {
+
+        override suspend fun getRecognizeDog(dogRecognition: DogRecognition): DogData {
             TODO("Not yet implemented")
         }
 

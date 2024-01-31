@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
                              navController = rootState.navHostController,
                              dependenciesContainerBuilder = {
                                  dependency(authViewModel)
+                                 dependency(rootState.actionRootDestinations)
                              }
                          )
                      }

@@ -19,6 +19,7 @@ import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.navigation.HomeNavGraph
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
+import com.d34th.nullpointer.dogedex.ui.interfaces.ActionRootDestinations
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DogDetailsDestination
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.components.ListDogsSuccess
 import com.d34th.nullpointer.dogedex.ui.screen.listDogs.test.ListDogsTestTag
@@ -26,13 +27,12 @@ import com.d34th.nullpointer.dogedex.ui.share.BlockProcessing
 import com.d34th.nullpointer.dogedex.ui.states.DogsScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberDogsScreenState
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @HomeNavGraph
 @Destination
 @Composable
 fun ListDogsScreen(
-    navigator: DestinationsNavigator,
+    actionRootDestinations: ActionRootDestinations,
     dogsViewModel: DogsViewModel = hiltViewModel(),
     dogeDexState: DogsScreenState = rememberDogsScreenState(
         isRefreshing = false,
@@ -51,7 +51,7 @@ fun ListDogsScreen(
         pullRefreshState = dogeDexState.pullRefreshState,
         isRefreshing = dogsViewModel.isLoadingMyGogs,
         clickDetails = { dogData ->
-            navigator.navigate(DogDetailsDestination(dogData, false))
+            actionRootDestinations.changeRoot(DogDetailsDestination(dogData))
         },
     )
 }

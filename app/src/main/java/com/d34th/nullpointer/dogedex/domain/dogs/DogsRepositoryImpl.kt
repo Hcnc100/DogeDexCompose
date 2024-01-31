@@ -3,6 +3,7 @@ package com.d34th.nullpointer.dogedex.domain.dogs
 import com.d34th.nullpointer.dogedex.datasource.dogs.local.DogLocalDataSourceLocal
 import com.d34th.nullpointer.dogedex.datasource.dogs.remote.DogsRemoteDataSourceRemote
 import com.d34th.nullpointer.dogedex.datasource.settings.local.SettingsLocalDataSource
+import com.d34th.nullpointer.dogedex.ia.DogRecognition
 import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.models.dogs.dto.AddDogDTO
 import com.d34th.nullpointer.dogedex.models.findDogByModel.dto.FindDogByModelDTO
@@ -13,8 +14,8 @@ import kotlinx.coroutines.flow.Flow
 
 class DogsRepositoryImpl(
     private val dogLocalDataSourceLocal: DogLocalDataSourceLocal,
+    private val settingsLocalDataSource: SettingsLocalDataSource,
     private val dogsRemoteDataSourceRemote: DogsRemoteDataSourceRemote,
-    private val settingsLocalDataSource: SettingsLocalDataSource
 ) : DogsRepository {
 
     override val listDogs: Flow<List<DogData>> = dogLocalDataSourceLocal.listDogsSaved
@@ -58,18 +59,13 @@ class DogsRepositoryImpl(
         }
     }
 
-    override suspend fun isNewDog(dogId: Long): Boolean {
-        val dog = dogLocalDataSourceLocal.getDogById(dogId)
-        return dog?.hasDog != true
-    }
-
-    override suspend fun getRecognizeDog(dogData: DogData): Long {
-        val findDogByModelDTO = FindDogByModelDTO.fromDogData(dogData)
-        return dogsRemoteDataSourceRemote.getRecognizeDog(findDogByModelDTO)
+    override suspend fun getRecognizeDog(dogRecognition: DogRecognition): DogData {
+        val findDogByModelDTO = FindDogByModelDTO.fromDogRecognition(dogRecognition)
+        val dogId = dogsRemoteDataSourceRemote.getRecognizeDog(findDogByModelDTO)
+        return dogLocalDataSourceLocal.getDogById(dogId)!!
     }
 
     override suspend fun changeIsFirstRequestCamera() =
         settingsLocalDataSource.changeIsFirstRequestCamera()
-
 
 }

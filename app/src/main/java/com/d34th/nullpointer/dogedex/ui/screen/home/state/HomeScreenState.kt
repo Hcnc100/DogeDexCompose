@@ -18,7 +18,6 @@ class HomeScreenState(
     context: Context
 ) : SimpleScreenState(scaffoldState, context)
 
-
 @Composable
 fun rememberHomeScreenState(
     navController: NavHostController = rememberNavController(),

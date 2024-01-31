@@ -1,10 +1,9 @@
 package com.d34th.nullpointer.dogedex.presentation
 
-import androidx.camera.view.PreviewView
+import androidx.camera.view.LifecycleCameraController
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager.showMessageForException
@@ -17,9 +16,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -39,11 +41,14 @@ class CameraViewModel @Inject constructor(
     var recognitionDog by mutableStateOf(false)
         private set
 
-    private var currentIdMlDog by mutableStateOf("")
+    private val currentIdMlDog2 = MutableStateFlow<DogRecognition?>(null)
 
-    val isPhotoReady get() = currentIdMlDog.isNotEmpty()
+    val isReadyTakePhoto2 = currentIdMlDog2.onEach {
+        Timber.d("Model Recognize: $it")
+    }.map { it != null }
 
-    private var editIdEnable = true
+    private var canChangeModel = true
+
 
     val isFirstRequestCamera =
         dogsRepository.isFirstRequestCameraPermission.flowOn(Dispatchers.IO).catch {
@@ -59,50 +64,44 @@ class CameraViewModel @Inject constructor(
         dogsRepository.changeIsFirstRequestCamera()
     }
 
-    private fun changeReadyPhoto(dogId: String) = viewModelScope.launch {
-        // * has delay for no remove id dog selected fasted
-        if (editIdEnable && dogId != currentIdMlDog) {
-            editIdEnable = false
-            currentIdMlDog = dogId
-            // * delay move to IO thread
-            withContext(Dispatchers.IO) { delay(2_000) }
-            editIdEnable = true
+
+    fun bindAnalyzeImage(
+        cameraController: LifecycleCameraController,
+    ) {
+        recognitionRepository.bindAnalyzeImage(cameraController) { dog: DogRecognition, isConfidence: Boolean ->
+            if (!canChangeModel) return@bindAnalyzeImage
+            viewModelScope.launch {
+                canChangeModel = false
+                currentIdMlDog2.value = when (isConfidence) {
+                    true -> dog
+                    false -> null
+                }
+                withContext(Dispatchers.IO) { delay(2_000) }
+                canChangeModel = true
+            }
         }
     }
 
-
-    fun initRecognition(
-        previewView: PreviewView,
-        lifecycleOwner: LifecycleOwner
-    ) = viewModelScope.launch {
-        recognitionRepository.bindCameraToUseCases(
-            previewView = previewView,
-            lifecycleOwner = lifecycleOwner
-        ) { dog: DogRecognition, isConfidence: Boolean ->
-            Timber.d("${dog.confidence}")
-            changeReadyPhoto(if (isConfidence) dog.id else "")
-        }
-    }
 
     fun getRecognizeDogSaved(
-        callbackSuccess: (DogData, isNewDog: Boolean) -> Unit
-    ) = launchSafeIO(
-        blockBefore = { recognitionDog = true },
-        blockAfter = { recognitionDog = false },
-        blockException = {
-            _messageCamera.trySend(showMessageForException(it, "recognize dog"))
-        },
-        blockIO = {
-            // ! TODO: fix this
-//            val dogIdRecognition = dogsRepository.getRecognizeDog(
-//                DogData()
-//            )
-//            val isNewDog = dogsRepository.isNewDog(dogRecognition.name)
-//            withContext(Dispatchers.Main) {
-//                callbackSuccess(dogRecognition, isNewDog)
-//            }
+        callbackSuccess: (dogData: DogData) -> Unit
+    ) {
+        this.currentIdMlDog2.value?.let { dogRecognition ->
+            launchSafeIO(
+                blockBefore = { recognitionDog = true },
+                blockAfter = { recognitionDog = false },
+                blockException = {
+                    _messageCamera.trySend(showMessageForException(it, "recognize dog"))
+                },
+                blockIO = {
+                    val dogFound = dogsRepository.getRecognizeDog(dogRecognition)
+                    withContext(Dispatchers.Main) {
+                        callbackSuccess(dogFound)
+                    }
+                }
+            )
         }
-    )
+    }
 
     override fun onCleared() {
         super.onCleared()

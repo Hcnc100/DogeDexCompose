@@ -40,7 +40,7 @@ class DogsRemoteDataSourceRemoteImpl(
         findDogByModelDTO: FindDogByModelDTO
     ): Long {
         val dogRecognize = callApiDogsWithTimeOut {
-            dogsApiServices.requestRecognizeDog(findDogByModelDTO)
+            dogsApiServices.requestRecognizeDog(findDogByModelDTO.modelId)
         }
 
         return when (dogRecognize.isSuccess) {
