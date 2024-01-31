@@ -15,6 +15,8 @@
     <string name="description_button_settings">Go to settings screen</string>
     <string name="message_permission_camera_is_necesary">Camera permission required</string>
     <string name="message_button_lauch_camera_permission">Grant permission</string>
+    <string name="title_lifeExpectancy">Life expectancy: %s</string>
+    <string name="title_temperament">Temperament: %s</string>
     <string name="title_details_new_dog">New dog</string>
     <string name="title_details_saved_dog">Dog information</string>
     <string name="description_img_details_dog">Current dog %s with index %d</string>

@@ -1,41 +1,32 @@
 package com.d34th.nullpointer.dogedex.ui.screen.details
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.FabPosition
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
-import com.d34th.nullpointer.dogedex.ui.share.AsyncImageFade
+import com.d34th.nullpointer.dogedex.ui.preview.config.SimplePreview
+import com.d34th.nullpointer.dogedex.ui.screen.details.actions.DogDetailsActions
+import com.d34th.nullpointer.dogedex.ui.screen.details.componets.ButtonSaveDog
+import com.d34th.nullpointer.dogedex.ui.screen.details.componets.CardDogInfo
+import com.d34th.nullpointer.dogedex.ui.screen.details.componets.ImageDog
 import com.d34th.nullpointer.dogedex.ui.share.ToolbarBack
 import com.d34th.nullpointer.dogedex.ui.states.SimpleScreenState
 import com.d34th.nullpointer.dogedex.ui.states.rememberSimpleScreenState
@@ -52,110 +43,86 @@ fun DogDetails(
     dogsViewModel: DogsViewModel = hiltViewModel(),
     dogDetailsState: SimpleScreenState = rememberSimpleScreenState()
 ) {
-    val title = remember {
-        if (!dogData.hasDog) R.string.title_details_new_dog else R.string.title_details_saved_dog
+    var hasDog by remember {
+        mutableStateOf(dogData.hasDog)
     }
+
+    val title = remember(hasDog) {
+        when (hasDog) {
+            false -> R.string.title_details_saved_dog
+            true -> R.string.title_details_new_dog
+        }
+    }
+
     LaunchedEffect(key1 = Unit) {
         dogsViewModel.messageDogs.collect(dogDetailsState::showSnackMessage)
     }
 
-    Scaffold(
+    DogDetails(
+        dogData = dogData,
         scaffoldState = dogDetailsState.scaffoldState,
+        titleString = title,
+        onDogDetailsActions = { action ->
+            when (action) {
+                DogDetailsActions.BACK -> navigator.popBackStack()
+                DogDetailsActions.SAVE_DOG -> dogsViewModel.addDog(
+                    dogData = dogData,
+                    callbackSuccess = { hasDog = true }
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun DogDetails(
+    dogData: DogData,
+    @StringRes
+    titleString: Int,
+    scaffoldState: ScaffoldState,
+    onDogDetailsActions: (DogDetailsActions) -> Unit
+) {
+    Scaffold(
+        scaffoldState = scaffoldState,
         floatingActionButton = {
-            if (!dogData.hasDog)
-                ButtonSaveDog(actionBack = {
-                    dogsViewModel.addDog(dogData) {
-                        navigator.popBackStack()
-                    }
-                })
+            ButtonSaveDog(
+                isVisible = !dogData.hasDog,
+                actionBack = { onDogDetailsActions(DogDetailsActions.SAVE_DOG) }
+            )
         },
-        floatingActionButtonPosition = FabPosition.Center,
-        topBar = { ToolbarBack(title = stringResource(id = title), navigator::popBackStack) }
+        topBar = {
+            ToolbarBack(
+                title = stringResource(id = titleString),
+                actionBack = { onDogDetailsActions(DogDetailsActions.BACK) },
+            )
+        },
+        floatingActionButtonPosition = FabPosition.Center
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
-            contentAlignment = Alignment.TopCenter
+            contentAlignment = Alignment.Center
         ) {
             Column(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 ImageDog(dogData = dogData)
-                Card(shape = RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp)) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        HeaderDetailsDogs(dogData = dogData)
-                        MoreDetailsDogs(dogData = dogData)
-                    }
-                }
+                CardDogInfo(dogData = dogData)
             }
         }
     }
 }
 
-@Composable
-private fun ImageDog(
-    dogData: DogData,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(240.dp)
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .align(Alignment.BottomEnd),
-            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.index_dog, dogData.id),
-                modifier = Modifier.padding(10.dp),
-                style = MaterialTheme.typography.caption,
-                fontWeight = FontWeight.W500,
-                fontSize = 18.sp,
-                textAlign = TextAlign.End
-            )
-        }
-        AsyncImageFade(
-            data = dogData.imgUrl,
-            contentDescription = stringResource(
-                R.string.description_has_dog,
-                dogData.id,
-                dogData.name
-            ),
-            modifier = Modifier
-                .fillMaxHeight()
-                .aspectRatio(1f)
-                .align(Alignment.BottomCenter)
-        )
-    }
-}
 
+@SimplePreview
 @Composable
-private fun ButtonSaveDog(
-    actionBack: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    ExtendedFloatingActionButton(
-        modifier = modifier.padding(horizontal = 20.dp),
-        onClick = actionBack,
-        text = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = stringResource(R.string.text_save_dog))
-                Spacer(modifier = Modifier.size(10.dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_save),
-                    contentDescription = stringResource(R.string.description_button_save_dog)
-                )
-            }
-        })
+fun DogDetailsPreview() {
+    DogDetails(
+        onDogDetailsActions = {},
+        dogData = DogData.exampleHasDog,
+        scaffoldState = rememberScaffoldState(),
+        titleString = R.string.title_details_new_dog
+    )
 }
-
 

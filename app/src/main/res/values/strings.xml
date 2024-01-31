@@ -34,6 +34,8 @@
     <string name="title_details_saved_dog">Información del perro</string>
     <string name="index_dog" translatable="false">#%d</string>
     <string name="description_img_details_dog">Perro actual %s con índice %d</string>
+    <string name="title_lifeExpectancy">Esperanza de vida: %s</string>
+    <string name="title_temperament">Temperamento: %s</string>
     <string name="text_save_dog">Guardar perro</string>
     <string name="description_button_save_dog">Guardar perro actual</string>
     <string name="title_gender_female">Femenino</string>
