@@ -32,7 +32,7 @@ android {
 
     defaultConfig {
         applicationId = "com.nullpointer.dogedex"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 34
         versionCode = 3
         versionName = "3.0.0"
@@ -180,7 +180,8 @@ dependencies {
     ksp("io.github.raamcosta.compose-destinations:ksp:$destinationsVersion")
 
     // * data store
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("io.github.osipxd:security-crypto-datastore-preferences:1.0.0-beta01")
+    implementation("com.google.errorprone:error_prone_annotations:2.15.0")
 
 
     // * Retrofit

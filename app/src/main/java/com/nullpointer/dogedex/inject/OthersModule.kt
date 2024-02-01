@@ -8,12 +8,15 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
+import androidx.security.crypto.EncryptedFile
+import androidx.security.crypto.MasterKeys
 import com.nullpointer.dogedex.database.DogeDexDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.github.osipxd.security.crypto.createEncrypted
 import javax.inject.Singleton
 
 @Module
@@ -21,7 +24,7 @@ import javax.inject.Singleton
 object OthersModule {
 
     private const val NAME_DB = "DOGE_DEX_DB"
-    private const val NAME_SETTINGS = "DOGS_SETTINGS"
+    private const val NAME_SETTINGS = "DOGS_SETTINGS.preferences_pb"
 
     @Provides
     @Singleton
@@ -39,11 +42,19 @@ object OthersModule {
     fun providePreferencesDataStore(
         @ApplicationContext appContext: Context
     ): DataStore<Preferences> {
-        return PreferenceDataStoreFactory.create(
+        return PreferenceDataStoreFactory.createEncrypted(
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = { emptyPreferences() }
             ),
-            produceFile = { appContext.preferencesDataStoreFile(NAME_SETTINGS) },
+            produceFile = {
+                val file = appContext.preferencesDataStoreFile(NAME_SETTINGS)
+                EncryptedFile.Builder(
+                    file,
+                    appContext,
+                    MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+                ).build()
+            },
         )
     }
 
