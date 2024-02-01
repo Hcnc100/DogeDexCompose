@@ -76,6 +76,7 @@
     <string name="dog_list" translatable="false">Perros</string>
     <string name="camera" translatable="false">Escaner</string>
     <string name="settings" translatable="false">Ajustes</string>
+    <string name="message_dog_saved">Perro guardado con éxito</string>
 
     <!-- SignUP screen -->
 

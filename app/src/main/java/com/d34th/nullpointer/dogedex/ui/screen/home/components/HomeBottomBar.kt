@@ -10,9 +10,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.d34th.nullpointer.dogedex.navigation.HomeNavItems
 import com.d34th.nullpointer.dogedex.ui.screen.appCurrentDestinationAsState
-import com.d34th.nullpointer.dogedex.ui.screen.destinations.HomeScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 
 @Composable
@@ -34,7 +34,7 @@ fun HomeBottomBar(
                 selected = currentDestination == destination.destination,
                 onClick = {
                     navController.navigate(destination.destination) {
-                        popUpTo(HomeScreenDestination.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
                         restoreState = true

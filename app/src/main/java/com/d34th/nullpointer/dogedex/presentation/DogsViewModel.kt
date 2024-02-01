@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.core.states.Resource
 import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager.showMessageForException
 import com.d34th.nullpointer.dogedex.core.utils.launchSafeIO
@@ -13,7 +14,6 @@ import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
@@ -47,6 +47,11 @@ class DogsViewModel @Inject constructor(
             Resource.Loading
         )
 
+
+    init {
+        requestMyLastDogs()
+    }
+
     fun requestMyLastDogs() = launchSafeIO(
         blockBefore = { isLoadingMyGogs = true },
         blockAfter = { isLoadingMyGogs = false },
@@ -65,7 +70,7 @@ class DogsViewModel @Inject constructor(
         },
         blockIO = {
             dogsRepository.addDog(dogData)
-            delay(1_000)
+            _messageDogs.trySend(R.string.message_dog_saved)
             withContext(Dispatchers.Main) {
                 callbackSuccess()
             }

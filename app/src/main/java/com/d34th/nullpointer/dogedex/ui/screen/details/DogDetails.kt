@@ -1,11 +1,13 @@
 package com.d34th.nullpointer.dogedex.ui.screen.details
 
-import androidx.annotation.StringRes
+import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.FabPosition
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
@@ -17,12 +19,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
 import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
-import com.d34th.nullpointer.dogedex.ui.preview.config.SimplePreview
+import com.d34th.nullpointer.dogedex.ui.preview.config.OrientationPreviews
+import com.d34th.nullpointer.dogedex.ui.preview.provider.BooleanProvider
 import com.d34th.nullpointer.dogedex.ui.screen.details.actions.DogDetailsActions
 import com.d34th.nullpointer.dogedex.ui.screen.details.componets.ButtonSaveDog
 import com.d34th.nullpointer.dogedex.ui.screen.details.componets.CardDogInfo
@@ -47,21 +53,15 @@ fun DogDetails(
         mutableStateOf(dogData.hasDog)
     }
 
-    val title = remember(hasDog) {
-        when (hasDog) {
-            false -> R.string.title_details_new_dog
-            true -> R.string.title_details_saved_dog
-        }
-    }
 
     LaunchedEffect(key1 = Unit) {
         dogsViewModel.messageDogs.collect(dogDetailsState::showSnackMessage)
     }
 
     DogDetails(
+        hasDog = hasDog,
         dogData = dogData,
         scaffoldState = dogDetailsState.scaffoldState,
-        titleString = title,
         onDogDetailsActions = { action ->
             when (action) {
                 DogDetailsActions.BACK -> navigator.popBackStack()
@@ -77,26 +77,28 @@ fun DogDetails(
 @Composable
 fun DogDetails(
     dogData: DogData,
-    @StringRes
-    titleString: Int,
+    hasDog: Boolean,
     scaffoldState: ScaffoldState,
-    onDogDetailsActions: (DogDetailsActions) -> Unit
+    onDogDetailsActions: (DogDetailsActions) -> Unit,
+    orientation: Int = LocalConfiguration.current.orientation
 ) {
+
+    val title = remember(hasDog) {
+        when (hasDog) {
+            false -> R.string.title_details_new_dog
+            true -> R.string.title_details_saved_dog
+        }
+    }
+
+
     Scaffold(
         scaffoldState = scaffoldState,
-        floatingActionButton = {
-            ButtonSaveDog(
-                isVisible = !dogData.hasDog,
-                actionBack = { onDogDetailsActions(DogDetailsActions.SAVE_DOG) }
-            )
-        },
         topBar = {
             ToolbarBack(
-                title = stringResource(id = titleString),
+                title = stringResource(id = title),
                 actionBack = { onDogDetailsActions(DogDetailsActions.BACK) },
             )
         },
-        floatingActionButtonPosition = FabPosition.Center
     ) {
         Box(
             modifier = Modifier
@@ -104,25 +106,57 @@ fun DogDetails(
                 .padding(it),
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                ImageDog(dogData = dogData)
-                CardDogInfo(dogData = dogData)
+
+            when (orientation) {
+                ORIENTATION_PORTRAIT -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        ImageDog(dogData = dogData)
+                        CardDogInfo(dogData = dogData)
+                        Spacer(modifier = Modifier.padding(16.dp))
+                        ButtonSaveDog(
+                            isVisible = !hasDog,
+                            actionBack = { onDogDetailsActions(DogDetailsActions.SAVE_DOG) }
+                        )
+                    }
+                }
+
+                else -> {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(50.dp),
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            ImageDog(dogData = dogData)
+                            ButtonSaveDog(
+                                isVisible = !hasDog,
+                                actionBack = { onDogDetailsActions(DogDetailsActions.SAVE_DOG) }
+                            )
+                        }
+                        CardDogInfo(dogData = dogData)
+                    }
+                }
             }
         }
     }
 }
 
 
-@SimplePreview
+@OrientationPreviews
 @Composable
-fun DogDetailsPreview() {
+fun DogDetailsPreview(
+    @PreviewParameter(BooleanProvider::class)
+    hasDog: Boolean
+) {
     DogDetails(
+        hasDog = hasDog,
         onDogDetailsActions = {},
         dogData = DogData.exampleHasDog,
-        scaffoldState = rememberScaffoldState(),
-        titleString = R.string.title_details_new_dog
+        scaffoldState = rememberScaffoldState()
     )
 }
 
