@@ -54,10 +54,11 @@ fun ButtonsSignInAndSignUp(
                         text = { Text(stringResource(R.string.text_button_sign_in)) },
                         onClick = { onLoginAction(LoginAction.LOGIN) },
                     )
-                    CreateAccountSection(
-                        actionClick = { onLoginAction(LoginAction.REGISTER) },
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
+                    // ! This is remove to update in google play store
+//                    CreateAccountSection(
+//                        actionClick = { onLoginAction(LoginAction.REGISTER) },
+//                        modifier = Modifier.align(Alignment.CenterHorizontally)
+//                    )
                 }
             }
         }
