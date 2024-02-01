@@ -20,12 +20,22 @@ class AuthRepoImpl(
     override val isAuthUser: Flow<Boolean> = currentUser.map { it != null }
 
     override suspend fun signIn(userCredentials: SignInDTO) {
-        val authData = authRemoteDataSource.signIn(userCredentials)
+        val authData = authRemoteDataSource.signIn(userCredentials).let {
+            it.copy(
+                email = userCredentials.email,
+                password = userCredentials.password
+            )
+        }
         authLocalDataSource.updateAuthData(authData)
     }
 
     override suspend fun signUp(userCredentials: SignUpDTO) {
-        val authData = authRemoteDataSource.signUp(userCredentials)
+        val authData = authRemoteDataSource.signUp(userCredentials).let {
+            it.copy(
+                email = userCredentials.email,
+                password = userCredentials.password
+            )
+        }
         authLocalDataSource.updateAuthData(authData)
     }
 
