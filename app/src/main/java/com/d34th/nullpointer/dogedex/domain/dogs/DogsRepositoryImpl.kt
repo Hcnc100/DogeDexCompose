@@ -18,6 +18,8 @@ class DogsRepositoryImpl(
     private val dogsRemoteDataSourceRemote: DogsRemoteDataSourceRemote,
 ) : DogsRepository {
 
+    override val dogsCaught: Flow<Int> = dogLocalDataSourceLocal.countHasDog()
+
     override val listDogs: Flow<List<DogData>> = dogLocalDataSourceLocal.listDogsSaved
 
     override val isFirstRequestCameraPermission: Flow<Boolean> =

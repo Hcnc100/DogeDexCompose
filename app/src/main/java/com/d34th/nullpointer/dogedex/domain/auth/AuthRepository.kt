@@ -1,6 +1,5 @@
 package com.d34th.nullpointer.dogedex.domain.auth
 
-import com.d34th.nullpointer.dogedex.models.User
 import com.d34th.nullpointer.dogedex.models.auth.data.AuthData
 import com.d34th.nullpointer.dogedex.models.auth.dto.SignInDTO
 import com.d34th.nullpointer.dogedex.models.auth.dto.SignUpDTO

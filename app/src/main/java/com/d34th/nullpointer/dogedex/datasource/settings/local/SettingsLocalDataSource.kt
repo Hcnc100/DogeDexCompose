@@ -1,6 +1,5 @@
 package com.d34th.nullpointer.dogedex.datasource.settings.local
 
-import com.d34th.nullpointer.dogedex.models.User
 import com.d34th.nullpointer.dogedex.models.settings.data.SettingsData
 import kotlinx.coroutines.flow.Flow
 

@@ -1,7 +1,7 @@
 package com.d34th.nullpointer.dogedex.core.states
 
 sealed class Resource<out T> {
-    object Loading: Resource<Nothing>()
+    data object Loading : Resource<Nothing>()
     data class Success<out T>(val data: T) : Resource<T>()
-    object Failure: Resource<Nothing>()
+    data object Failure : Resource<Nothing>()
 }

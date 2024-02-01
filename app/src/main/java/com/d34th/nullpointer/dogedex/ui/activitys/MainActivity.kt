@@ -36,7 +36,6 @@ class MainActivity : ComponentActivity() {
          }
          setContent {
              DogedexTheme {
-                 // A surface container using the 'background' color from the theme
                  Surface(
                      modifier = Modifier.fillMaxSize(),
                      color = MaterialTheme.colors.background
@@ -54,7 +53,6 @@ class MainActivity : ComponentActivity() {
                              navGraph = NavGraphs.root,
                              navController = rootState.navHostController,
                              dependenciesContainerBuilder = {
-                                 dependency(authViewModel)
                                  dependency(rootState.actionRootDestinations)
                              }
                          )

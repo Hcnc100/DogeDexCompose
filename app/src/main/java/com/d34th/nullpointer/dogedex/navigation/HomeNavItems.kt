@@ -4,7 +4,7 @@ import com.d34th.nullpointer.dogedex.R
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.CameraScreenDestination
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.DirectionDestination
 import com.d34th.nullpointer.dogedex.ui.screen.destinations.ListDogsScreenDestination
-import com.d34th.nullpointer.dogedex.ui.screen.destinations.SettingsScreenDestination
+import com.d34th.nullpointer.dogedex.ui.screen.destinations.ProfileScreenDestination
 
 enum class HomeNavItems(
     val label: Int,
@@ -21,9 +21,9 @@ enum class HomeNavItems(
         icon = R.drawable.ic_camera,
         destination = CameraScreenDestination
     ),
-    Settings(
+    Profile(
         label = R.string.settings,
-        icon = R.drawable.ic_settings,
-        destination = SettingsScreenDestination
+        icon = R.drawable.person,
+        destination = ProfileScreenDestination
     )
 }

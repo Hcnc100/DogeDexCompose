@@ -49,4 +49,9 @@
     <string name="description_show_password">Show password</string>
     <string name="description_hide_password">Hide password</string>
     <string name="title_info_user">User information</string>
+    <string name="message_dog_saved">Dog saved successfully</string>
+    <string name="title_dogs_caught">Number of dogs scanned %d</string>
+    <string name="dog_list">Dogs</string>
+    <string name="camera">Scanner</string>
+    <string name="settings">Profile</string>
 </resources>

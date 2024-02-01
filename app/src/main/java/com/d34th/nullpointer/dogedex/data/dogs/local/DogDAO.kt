@@ -15,33 +15,33 @@ interface DogDAO {
     fun getAllDogs(): Flow<List<DogEntity>>
 
     @Query("SELECT * FROM dogs WHERE hasDog")
-    fun getAllHasDog(): List<DogEntity>
+    suspend fun getAllHasDog(): List<DogEntity>
 
     @Query("SELECT COUNT(*) FROM dogs WHERE hasDog")
-    fun getCountHasDog(): Int
+    fun getCountHasDog(): Flow<Int>
 
     @Query("SELECT COUNT(*) FROM dogs")
-    fun getCountAllDogs(): Int
+    suspend fun getCountAllDogs(): Int
 
     @Query("DELETE FROM dogs")
-    fun deleterAllDogs()
+    suspend fun deleterAllDogs()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllDogs(listDogData: List<DogEntity>)
+    suspend fun insertAllDogs(listDogData: List<DogEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertDog(dogData: DogEntity)
+    suspend fun insertDog(dogData: DogEntity)
 
     @Transaction
-    fun updateAllDogs(listDogData: List<DogEntity>) {
+    suspend fun updateAllDogs(listDogData: List<DogEntity>) {
         deleterAllDogs()
         insertAllDogs(listDogData)
     }
 
     @Query("SELECT * FROM dogs WHERE name is :name limit 1")
-    fun getDogByName(name: String): DogEntity?
+    suspend fun getDogByName(name: String): DogEntity?
 
     @Query("SELECT * FROM dogs WHERE id is :id limit 1")
-    fun getDogById(id: Long): DogEntity?
+    suspend fun getDogById(id: Long): DogEntity?
 
 }

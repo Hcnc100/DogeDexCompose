@@ -31,7 +31,7 @@ class DogLocalDataSourceLocalImpl(
         return response?.let { DogData.fromDogEntity(it) }
     }
 
-    override suspend fun countHasDog(): Int =
+    override fun countHasDog(): Flow<Int> =
         dogDAO.getCountHasDog()
 
     override suspend fun countAllDogs(): Int =

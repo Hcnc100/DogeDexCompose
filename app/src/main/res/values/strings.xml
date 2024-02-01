@@ -73,10 +73,11 @@
     <string name="title_id_user" translatable="false">Id: %s</string>
     <string name="title_email_user" translatable="false">Email: %s</string>
     <string name="title_token_user" translatable="false">Token: %s</string>
-    <string name="dog_list" translatable="false">Perros</string>
-    <string name="camera" translatable="false">Escaner</string>
-    <string name="settings" translatable="false">Ajustes</string>
+    <string name="dog_list">Perros</string>
+    <string name="camera">Escaner</string>
+    <string name="settings">Perfil</string>
     <string name="message_dog_saved">Perro guardado con éxito</string>
+    <string name="title_dogs_caught">Número de perros escaneados %d</string>
 
     <!-- SignUP screen -->
 

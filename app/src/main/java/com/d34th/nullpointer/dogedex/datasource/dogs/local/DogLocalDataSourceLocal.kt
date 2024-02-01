@@ -9,7 +9,7 @@ interface DogLocalDataSourceLocal {
     suspend fun insertAllDogs(list: List<DogData>)
     suspend fun updateAllDogs(list: List<DogData>)
     suspend fun getDogById(dogId: Long): DogData?
-    suspend fun countHasDog(): Int
+    fun countHasDog(): Flow<Int>
 
     suspend fun countAllDogs(): Int
     suspend fun deleteAllDogs()
