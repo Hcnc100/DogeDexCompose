@@ -24,7 +24,7 @@ import javax.inject.Singleton
 object OthersModule {
 
     private const val NAME_DB = "DOGE_DEX_DB"
-    private const val NAME_SETTINGS = "DOGS_SETTINGS.preferences_pb"
+    private const val NAME_SETTINGS = "DOGS_SETTINGS"
 
     @Provides
     @Singleton
