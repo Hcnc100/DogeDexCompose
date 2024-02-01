@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.inject
+package com.nullpointer.dogedex.inject
 
 import android.app.Application
 import android.content.Context

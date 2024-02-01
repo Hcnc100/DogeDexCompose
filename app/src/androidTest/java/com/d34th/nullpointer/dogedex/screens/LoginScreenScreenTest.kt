@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.screens
+package com.nullpointer.dogedex.screens
 
 import android.content.Context
 import androidx.compose.ui.test.*
@@ -6,15 +6,15 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.d34th.nullpointer.dogedex.R
-import com.d34th.nullpointer.dogedex.core.utils.ExceptionManager
-import com.d34th.nullpointer.dogedex.domain.auth.AuthRepository
-import com.d34th.nullpointer.dogedex.models.auth.data.AuthData
-import com.d34th.nullpointer.dogedex.models.auth.dto.SignInDTO
-import com.d34th.nullpointer.dogedex.models.auth.dto.SignUpDTO
-import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
-import com.d34th.nullpointer.dogedex.presentation.AuthViewModel
-import com.d34th.nullpointer.dogedex.ui.screen.login.test.LoginTestTags
+import com.nullpointer.dogedex.R
+import com.nullpointer.dogedex.core.utils.ExceptionManager
+import com.nullpointer.dogedex.domain.auth.AuthRepository
+import com.nullpointer.dogedex.models.auth.data.AuthData
+import com.nullpointer.dogedex.models.auth.dto.SignInDTO
+import com.nullpointer.dogedex.models.auth.dto.SignUpDTO
+import com.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
+import com.nullpointer.dogedex.presentation.AuthViewModel
+import com.nullpointer.dogedex.ui.screen.login.test.LoginTestTags
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

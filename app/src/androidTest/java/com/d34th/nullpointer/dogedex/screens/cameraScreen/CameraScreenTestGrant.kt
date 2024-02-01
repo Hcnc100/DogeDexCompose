@@ -1,4 +1,4 @@
-//package com.d34th.nullpointer.dogedex.screens.cameraScreen
+//package com.nullpointer.dogedex.screens.cameraScreen
 //
 //import android.content.Context
 //import androidx.camera.view.PreviewView
@@ -10,15 +10,15 @@
 //import androidx.test.ext.junit.runners.AndroidJUnit4
 //import androidx.test.platform.app.InstrumentationRegistry
 //import androidx.test.rule.GrantPermissionRule
-//import com.d34th.nullpointer.dogedex.R
-//import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-//import com.d34th.nullpointer.dogedex.domain.ia.RecognitionRepository
-//import com.d34th.nullpointer.dogedex.ia.DogRecognition
-//import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
-//import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
-//import com.d34th.nullpointer.dogedex.presentation.CameraViewModel
-//import com.d34th.nullpointer.dogedex.ui.screen.camera.CameraScreen
-//import com.d34th.nullpointer.dogedex.ui.screen.camera.test.CameraTestTag
+//import com.nullpointer.dogedex.R
+//import com.nullpointer.dogedex.domain.dogs.DogsRepository
+//import com.nullpointer.dogedex.domain.ia.RecognitionRepository
+//import com.nullpointer.dogedex.ia.DogRecognition
+//import com.nullpointer.dogedex.models.dogs.data.DogData
+//import com.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
+//import com.nullpointer.dogedex.presentation.CameraViewModel
+//import com.nullpointer.dogedex.ui.screen.camera.CameraScreen
+//import com.nullpointer.dogedex.ui.screen.camera.test.CameraTestTag
 //import kotlinx.coroutines.flow.Flow
 //import kotlinx.coroutines.flow.flowOf
 //import org.junit.Rule

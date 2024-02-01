@@ -31,7 +31,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.d34th.nullpointer.dogedex"
+        applicationId = "com.nullpointer.dogedex"
         minSdk = 21
         targetSdk = 34
         versionCode = 3
@@ -116,7 +116,7 @@ android {
         )
     }
 
-    namespace ="com.d34th.nullpointer.dogedex"
+    namespace = "com.nullpointer.dogedex"
 }
 
 dependencies {

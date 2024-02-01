@@ -1,13 +1,13 @@
-package com.d34th.nullpointer.dogedex.screens
+package com.nullpointer.dogedex.screens
 
 import android.content.Context
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-import com.d34th.nullpointer.dogedex.ia.DogRecognition
-import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
-import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
+import com.nullpointer.dogedex.domain.dogs.DogsRepository
+import com.nullpointer.dogedex.ia.DogRecognition
+import com.nullpointer.dogedex.models.dogs.data.DogData
+import com.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule

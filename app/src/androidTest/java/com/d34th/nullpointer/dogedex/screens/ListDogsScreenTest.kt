@@ -1,18 +1,18 @@
-package com.d34th.nullpointer.dogedex.screens
+package com.nullpointer.dogedex.screens
 
 import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.d34th.nullpointer.dogedex.R
-import com.d34th.nullpointer.dogedex.core.states.Resource
-import com.d34th.nullpointer.dogedex.domain.dogs.DogsRepository
-import com.d34th.nullpointer.dogedex.ia.DogRecognition
-import com.d34th.nullpointer.dogedex.models.dogs.data.DogData
-import com.d34th.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
-import com.d34th.nullpointer.dogedex.presentation.DogsViewModel
-import com.d34th.nullpointer.dogedex.ui.screen.listDogs.test.ListDogsTestTag
+import com.nullpointer.dogedex.R
+import com.nullpointer.dogedex.core.states.Resource
+import com.nullpointer.dogedex.domain.dogs.DogsRepository
+import com.nullpointer.dogedex.ia.DogRecognition
+import com.nullpointer.dogedex.models.dogs.data.DogData
+import com.nullpointer.dogedex.navigation.DestinationsNavigatorImpl
+import com.nullpointer.dogedex.presentation.DogsViewModel
+import com.nullpointer.dogedex.ui.screen.listDogs.test.ListDogsTestTag
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

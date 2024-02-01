@@ -1,4 +1,4 @@
-package com.d34th.nullpointer.dogedex.navigation
+package com.nullpointer.dogedex.navigation
 
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder
