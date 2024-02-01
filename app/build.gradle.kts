@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -8,16 +10,32 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+// * DEFINE CONSTANTS
+
+val storeFileProperty: String = gradleLocalProperties(rootDir).getProperty("STORE_FILE")
+val storePasswordProperty: String = gradleLocalProperties(rootDir).getProperty("STORE_PASSWORD")
+val keyAliasProperty: String = gradleLocalProperties(rootDir).getProperty("KEY_ALIAS")
+val keyPasswordProperty: String = gradleLocalProperties(rootDir).getProperty("KEY_PASSWORD")
+
 
 android {
     compileSdk = 34
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(storeFileProperty)
+            storePassword = storePasswordProperty
+            keyAlias = keyAliasProperty
+            keyPassword = keyPasswordProperty
+        }
+    }
 
     defaultConfig {
         applicationId = "com.d34th.nullpointer.dogedex"
         minSdk = 21
         targetSdk = 34
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 3
+        versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -40,10 +58,29 @@ android {
     }
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+                "retrofit2.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
         }
+
+        create("profile") {
+            isMinifyEnabled = true
+            isDebuggable = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+                "proguard-rules-profile.pro",
+                "retrofit2.pro"
+            )
+            signingConfig = signingConfigs.getByName("debug")
+        }
+
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
